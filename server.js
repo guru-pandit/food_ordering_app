@@ -5,6 +5,8 @@ const db = require("./src/models");
 const nodemailer = require("nodemailer");
 require("dotenv").config();
 
+global.__basedir = __dirname;
+
 const app = express();
 
 let corsOptions = {
