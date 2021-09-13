@@ -52,12 +52,12 @@ const getMenuitems = async(req, res) => {
     }
 }
 
-//to get menuitems by restaurantid
+//to get menuitems by restaurantId
 const getMenuitemsByRestaurant = async(req, res) => {
     try {
         const restaurantId = req.params.restaurantId;
         const response = await Menuitem.findAll({
-            where: { /*this id variable from restaurant table*/ restaurantId: restaurantId /*this id variable from params*/ },
+            where: { /*this id variable from Menuitem table*/ restaurantId: restaurantId /*this id variable from params*/ },
             include: [{ model: Mealtype, attributes: ["name", "content"] },
                 { model: Restaurant, attributes: ["name", "address", "contact", "locationId"] }
             ]
@@ -77,5 +77,54 @@ const getMenuitemsByRestaurant = async(req, res) => {
     }
 }
 
+//to get menuitems by mealtypeId
+const getMenuitemsByMealtype = async(req, res) => {
+    try {
+        const mealtypeId = req.params.mealtypeId;
+        const response = await Menuitem.findAll({
+            where: { /*this id variable from Menuitem table*/ mealtypeId: mealtypeId /*this id variable from params*/ },
+            include: [{ model: Mealtype, attributes: ["name", "content"] },
+                { model: Restaurant, attributes: ["name", "address", "contact", "locationId"] }
+            ]
+        })
 
-module.exports = { addNewMenuitem, getMenuitems, getMenuitemsByRestaurant }
+        //to check if we get response or not
+        /*findAll method returns array of objects because of that we check length of array to ensure 
+        whether array is empty or not*/
+        if (response.length > 0) {
+            return res.status(200).json({ message: "Menuitems Fetched Successfully.", Menuitems: response });
+        } else {
+            return res.status(500).json({ error: "Menuitems Not Fetched Successfully." });
+        }
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+const searchMenuitems = async(req, res) => {
+    let { menuitem } = req.query;
+
+    const Op = db.Sequelize.Op;
+    try {
+        const filteredMenuitems = await Menuitem.findAll({
+            where: {
+                name: {
+                    [Op.like]: '%' + menuitem + '%'
+                }
+            },
+            include: [{ model: Mealtype, attributes: ["name", "content"] },
+                { model: Restaurant, attributes: ["name", "address", "contact", "locationId"] }
+            ]
+        })
+        if (filteredMenuitems) {
+            return res.status(200).json({ message: "Menuitems fetched successfully", Menuitem: filteredMenuitems })
+        } else {
+            return res.status(500).json({ error: "No Result Found.." })
+        }
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({ error: "No Result Found..", Error: err })
+    }
+}
+
+module.exports = { addNewMenuitem, getMenuitems, getMenuitemsByRestaurant, getMenuitemsByMealtype, searchMenuitems }
