@@ -52,4 +52,30 @@ const getMenuitems = async(req, res) => {
     }
 }
 
-module.exports = { addNewMenuitem, getMenuitems }
+//to get menuitems by restaurantid
+const getMenuitemsByRestaurant = async(req, res) => {
+    try {
+        const restaurantId = req.params.restaurantId;
+        const response = await Menuitem.findAll({
+            where: { /*this id variable from restaurant table*/ restaurantId: restaurantId /*this id variable from params*/ },
+            include: [{ model: Mealtype, attributes: ["name", "content"] },
+                { model: Restaurant, attributes: ["name", "address", "contact", "locationId"] }
+            ]
+        })
+
+        //to check if we get response or not
+        /*findAll method returns array of objects because of that we check length of array to ensure 
+        whether array is empty or not*/
+        if (response.length > 0) {
+            return res.status(200).json({ message: "Menuitems Fetched Successfully.", Menuitems: response });
+        } else {
+            return res.status(500).json({ error: "Menuitems Not Fetched Successfully." });
+        }
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ error: "Menuitems Not Fetched Successfully.", error: err });
+    }
+}
+
+
+module.exports = { addNewMenuitem, getMenuitems, getMenuitemsByRestaurant }
