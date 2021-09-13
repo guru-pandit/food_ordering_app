@@ -1,11 +1,12 @@
 const db = require("../models");
-const { User, Token } = require("../models");
+const { User, Token } = require("../models");//models destructure 
 const bcrypt = require("bcryptjs"); //bcrypt password
-const { validationResult } = require("express-validator");
-const crypto = require("crypto");
-const { sendEmail } = require("../services/mail.service");
+const { validationResult } = require("express-validator");//for validations
+const crypto = require("crypto");//convert token into hexabytes
+const { sendEmail } = require("../services/mail.service");//import service file
 
-const createUser = async (req, res) => {
+//create user
+const createUser = async (req, res) => { // async means not waiting
     try {
         let errors = validationResult(req); // expressvalidator
         if (!errors.isEmpty()) {
@@ -35,14 +36,12 @@ const createUser = async (req, res) => {
             user.password = hashedPassword; //save in database
 
             const data = await User.create(user); // create new user
-            // console.log(data.id)
             if (data) {
-                let currentDate = new Date()
-                // console.log(currentDate)
+                let currentDate = new Date()//get current date
                 const token = {
-                    token: crypto.randomBytes(64).toString("hex"),
-                    userId: data.id,
-                    expiredAt: new Date(currentDate.getTime() + 30 * 60000)
+                    token: crypto.randomBytes(64).toString("hex"),//convert token into random bytes
+                    userId: data.id,//take user id
+                    expiredAt: new Date(currentDate.getTime() + 30 * 60000)//expired token after 30 min
                 }
 
                 let mailOptions = {
@@ -54,10 +53,7 @@ const createUser = async (req, res) => {
               <a href="http://${req.headers.host}/api/V1/verifyUser?token=${token.token}">Varify here</a>`,
                 };
                 sendEmail(mailOptions);
-
-                //console.log(token)
-                await Token.create(token)
-
+                await Token.create(token)//create token here
                 return res.status(200).json({
                     message: " User register succesfull",
                     user: data,
@@ -72,36 +68,29 @@ const createUser = async (req, res) => {
         console.log(err);
     }
 };
+//verifyUser here
 const verifyUser = async (req, res) => {
-    let { token } = req.query
+    let { token } = req.query //take token query
     let tokenData = await Token.findOne({ where: { token: token } })
-    //console.log(tokenData)
     let currentDate = new Date()
-    if (tokenData.expiredAt < currentDate) {
+    if (tokenData.expiredAt < currentDate) { //if token expired is less that current date then it will expired
         res.status(400).json({ message: "Token expired" })
     } else {
-
         let user = await User.findOne({ where: { id: tokenData.userId } })
-
         user.isVerified = true
         user.save()
-        console.log(user)
+        // console.log(user)
+        res.status(400).json({ message: "user Verified" })
     }
-
 }
 
-// for login
-
+// for login user
 const loginUser = async (req, res) => {
-
-
     try {
-        const { email, password } = req.body;
-
-        const data = await User.findOne({ where: { email } });
-
+        const { email, password } = req.body;//take email and password
+        const data = await User.findOne({ where: { email } }); //find email
         if (!data) {
-            return res.status(400).json({ error: "user does not exist" });
+            return res.status(400).json({ error: "user does not exist" });//if not data found then return user does not exist
         } else {
             let isPassMatched = await bcrypt.compareSync(
                 password,
@@ -118,7 +107,7 @@ const loginUser = async (req, res) => {
         console.log(err);
     }
 };
-
+//get user by id 
 const getUsersById = async (req, res) => {
     console.log(req.params); //parameters
     let { id } = req.params;
@@ -133,7 +122,7 @@ const getUsersById = async (req, res) => {
         res.status(400).json({ error: "user not found" });
     }
 };
-
+//user delete
 const deleteUser = async (req, res) => {
     try {
         const userId = req.params.id;

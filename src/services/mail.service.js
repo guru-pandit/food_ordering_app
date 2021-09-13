@@ -6,8 +6,8 @@ const sendEmail = (mailOptions) => {
         port: 465,
         secure: true, //true for 465 port
         auth: {
-            user: "namchavhan@gmail.com",
-            pass: "Namchavhan25@",
+            user: process.env.EMAIL,
+            pass: process.env.PASS
         },
     });
     transporter.sendMail(mailOptions);
