@@ -17,12 +17,45 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
   Menuitem.init({
-    name: DataTypes.STRING,
-    description: DataTypes.STRING,
-    image: DataTypes.JSON,
-    price: DataTypes.INTEGER,
-    restaurantId: DataTypes.INTEGER,
-    mealtypeId: DataTypes.INTEGER
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notEmpty: { msg: "Name should not be empty" },
+      }
+    },
+    description: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notEmpty: { msg: "Description should not be empty" }
+      }
+    },
+    image: {
+      type: DataTypes.JSON,
+    },
+    price: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      validate: {
+        notEmpty: { msg: "Price should not be empty" },
+        isNumeric: { msg: "Price should be a number" }
+      }
+    },
+    restaurantId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      validate: {
+        notEmpty: { msg: "Please select a restaurant" }
+      }
+    },
+    mealtypeId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      validate: {
+        notEmpty: { msg: "Please select a meal type" }
+      }
+    },
   }, {
     sequelize,
     modelName: 'Menuitem',
