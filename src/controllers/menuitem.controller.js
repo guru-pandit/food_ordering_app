@@ -1,14 +1,17 @@
 const { Menuitem, Restaurant, Mealtype } = require("../models");
 const db = require("../models");
 const Op = db.Sequelize.Op;
+const path = require("path");
+const fs = require("fs");
 
 //to add new menuitem
 const addNewMenuitem = async(req, res) => {
     try {
+        console.log(req.files);
         const menuitem = {
             name: req.body.name,
             description: req.body.description,
-            image: req.body.image,
+            image: null,
             price: req.body.price,
             restaurantId: req.body.restaurantId,
             mealtypeId: req.body.mealtypeId
@@ -17,6 +20,30 @@ const addNewMenuitem = async(req, res) => {
         if (isExist === null) {
             const menuitemCreated = await Menuitem.create(menuitem)
             if (menuitemCreated !== null) {
+                const result = req.files && req.files.length > 0 ? req.files.map(item => {
+                    return item.filename
+                }) : null;
+                //console.log(result)
+
+                const uploadedImages = {
+                    images: result
+                }
+                console.log(uploadedImages)
+
+                menuitemCreated.image = uploadedImages;
+                await menuitemCreated.save();
+
+                let isFolderExist = fs.existsSync(path.join(__basedir, `public/images/${menuitemCreated.id}`));
+                if (isFolderExist) {
+                    req.files.forEach(({ filename }) => {
+                        fs.copyFileSync(path.join(__basedir, `public/tmp/${filename}`), path.join(__basedir, `public/images/${menuitemCreated.id}/${filename}`));
+                    })
+                } else {
+                    fs.mkdirSync(path.join(__basedir, `public/images/${menuitemCreated.id}`));
+                    req.files.forEach(({ filename }) => {
+                        fs.copyFileSync(path.join(__basedir, `public/tmp/${filename}`), path.join(__basedir, `public/images/${menuitemCreated.id}/${filename}`));
+                    })
+                }
                 return res.status(200).json({ message: "Menuitem Added Successfully", restaurant: menuitemCreated })
             } else {
                 return res.status(500).json({ error: "Menuitem NOT Added Successfully" })

@@ -1,7 +1,8 @@
 const menuitemController = require("../controllers").menuitem;
+const { uploadImage } = require("../services/upload.service");
 module.exports = (app) => {
     //to create new menuitem
-    app.post("/api/v1/addnewmenuitem", menuitemController.addNewMenuitem);
+    app.post("/api/v1/addnewmenuitem", uploadImage.array('images', 5), menuitemController.addNewMenuitem);
     //to fetch all menuitems
     app.get("/api/v1/getmenuitems", menuitemController.getMenuitems);
     //to get menuitems by restaurantid
