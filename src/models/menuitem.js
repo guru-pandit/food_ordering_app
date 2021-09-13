@@ -17,6 +17,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
   Menuitem.init({
+<<<<<<< HEAD
     name: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -57,6 +58,14 @@ module.exports = (sequelize, DataTypes) => {
         notEmpty: { msg: "Please select a meal type" }
       }
     },
+=======
+    name: DataTypes.STRING,
+    description: DataTypes.STRING,
+    image: DataTypes.JSON,
+    price: DataTypes.INTEGER,
+    restaurantId: DataTypes.INTEGER,
+    mealtypeId: DataTypes.INTEGER
+>>>>>>> 15b3699d7d6ebb07e269f3107143845421032a23
   }, {
     sequelize,
     modelName: 'Menuitem',
