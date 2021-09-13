@@ -50,7 +50,7 @@ const createUser = async (req, res) => { // async means not waiting
                     subject: "Please varify email",
                     html: `<h2>${user.firstName} Thanks for registering...</h2>
               <h4>please verify your email to proceed..</h4>
-              <a href="http://${req.headers.host}/api/V1/verifyUser?token=${token.token}">Varify here</a>`,
+              <a href="http://${req.headers.host}/api/v1/verifyUser?token=${token.token}">Varify here</a>`,
                 };
                 sendEmail(mailOptions);
                 await Token.create(token)//create token here

@@ -3,7 +3,7 @@ const userController = require("../controllers").user;
 const { body } = require("express-validator");
 module.exports = (app) => {
     app.post(
-        "/api/V1/register", [
+        "/api/v1/register", [
         body("firstName").trim().notEmpty().withMessage("firstName is required"),
         body("lastName").trim().notEmpty().withMessage("lastName is required"),
         body("email").trim().isEmail().withMessage({
@@ -19,12 +19,12 @@ module.exports = (app) => {
     ], userController.createUser
     );
     app.post(
-        "/api/V1/login", userController.loginUser
+        "/api/v1/login", userController.loginUser
     );
-    app.get("/api/V1/user/:id", userController.getUsersById);
-    app.delete("/api/V1/deleteUser/:id", userController.deleteUser);
-    app.put("/api/V1/updateUser/:id", userController.UpdateUser);
-    app.get("/api/V1/verifyUser", userController.verifyUser);
+    app.get("/api/v1/user/:id", userController.getUsersById);
+    app.delete("/api/v1/deleteUser/:id", userController.deleteUser);
+    app.put("/api/v1/updateUser/:id", userController.UpdateUser);
+    app.get("/api/v1/verifyUser", userController.verifyUser);
 
 
 };
