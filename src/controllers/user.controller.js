@@ -4,6 +4,7 @@ const bcrypt = require("bcryptjs"); //bcrypt password
 const { validationResult } = require("express-validator");//for validations
 const crypto = require("crypto");//convert token into hexabytes
 const { sendEmail } = require("../services/mail.service");//import service file
+const Op = db.Sequelize.Op;
 
 //create user
 const createUser = async (req, res) => { // async means not waiting
@@ -162,5 +163,25 @@ const UpdateUser = async (req, res) => {
         console.log(err);
     }
 };
+const getUsersByAddress = async (req, res) => {
+    //console.log(req.params); //parameters
+    try {
+        const { address } = req.body;//take address
+        const data = await User.findAll({
+            limit: 2, where: {
+                address: { [Op.like]: "%" + address + "%" },
+            },
+        }); //find all adress
+        if (data.length > 0) {
+            res.status(200).json({ data: data });
+        } else {
+            res.status(400).json({ error: "user not found" });
+        }
 
-module.exports = { createUser, verifyUser, loginUser, getUsersById, deleteUser, UpdateUser }
+    } catch (err) {
+        console.log(err);
+    }
+};
+
+
+module.exports = { createUser, verifyUser, loginUser, getUsersById, deleteUser, UpdateUser, getUsersByAddress }
