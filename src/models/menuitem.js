@@ -9,10 +9,11 @@ module.exports = (sequelize, DataTypes) => {
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
-    static associate({ Mealtype, Restaurant }) {
+    static associate({ Mealtype, Restaurant,Cuisine }) {
       // define association here
       Menuitem.belongsTo(Mealtype, { foreignKey: "mealtypeId" })
       Menuitem.belongsTo(Restaurant, { foreignKey: "restaurantId" })
+      Menuitem.belongsTo(Cuisine, { foreignKey: "cuisineId" })
 
     }
   };
@@ -54,6 +55,13 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       validate: {
         notEmpty: { msg: "Please select a meal type" }
+      }
+    },
+    cuisineId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      validate: {
+        notEmpty: { msg: "Please select a cuisine" }
       }
     },
   }, {

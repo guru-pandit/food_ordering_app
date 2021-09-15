@@ -1,4 +1,4 @@
-const { Menuitem, Restaurant, Mealtype } = require("../models");
+const { Menuitem, Restaurant, Mealtype, Cuisine} = require("../models");
 const db = require("../models");
 const Op = db.Sequelize.Op;
 const path = require("path");
@@ -7,16 +7,23 @@ const fs = require("fs");
 //to add new menuitem
 const addNewMenuitem = async(req, res) => {
     try {
-        console.log(req.files);
+        //console.log(req.files);
         const menuitem = {
             name: req.body.name,
             description: req.body.description,
             image: null,
             price: req.body.price,
             restaurantId: req.body.restaurantId,
-            mealtypeId: req.body.mealtypeId
+            mealtypeId: req.body.mealtypeId,
+            cuisineId: req.body.cuisineId
         }
-        const isExist = await Menuitem.findOne({ where: { name: menuitem.name, restaurantId: menuitem.restaurantId } })
+        const isExist = await Menuitem.findOne({ where: {
+            [Op.and] : [
+                {name: menuitem.name},
+                {restaurantId: menuitem.restaurantId}
+            ]  
+        } 
+        })
         if (isExist === null) {
             const menuitemCreated = await Menuitem.create(menuitem)
             if (menuitemCreated !== null) {
@@ -28,7 +35,7 @@ const addNewMenuitem = async(req, res) => {
                 const uploadedImages = {
                     images: result
                 }
-                console.log(uploadedImages)
+                //console.log(uploadedImages)
 
                 menuitemCreated.image = uploadedImages;
                 await menuitemCreated.save();
@@ -52,7 +59,7 @@ const addNewMenuitem = async(req, res) => {
             return res.status(500).json({ message: "Menuitem already Exist" })
         }
     } catch (err) {
-        console.log(err);
+        // console.log(err);
         res.status(500).json({ error: "Menuitem NOT Added Successfully", Error: err })
     }
 }
@@ -61,7 +68,9 @@ const addNewMenuitem = async(req, res) => {
 const getMenuitems = async(req, res) => {
     try {
         const response = await Menuitem.findAll({
-            include: [{ model: Mealtype, attributes: ["name", "content"] },
+            include: [
+                { model: Mealtype, attributes: ["name", "content"] },
+                { model: Cuisine, attributes: ["name"] },
                 { model: Restaurant, attributes: ["name", "address", "contact", "locationId"] }
             ]
         });
@@ -129,21 +138,48 @@ const getMenuitemsByMealtype = async(req, res) => {
 }
 
 const searchMenuitems = async(req, res) => {
-    let { menuitem } = req.query;
-
-    const Op = db.Sequelize.Op;
     try {
-        const filteredMenuitems = await Menuitem.findAll({
-            where: {
-                name: {
-                    [Op.like]: '%' + menuitem + '%'
+        let { name,hcost,lcost } = req.query;
+        var payload = {}
+
+    if(name){
+        payload = {
+            name: {
+                [Op.like]: '%' + name + '%'
+            }
+        }
+    }
+    if(hcost && lcost){
+        payload = {
+            price: {
+                [Op.and]: {
+                    [Op.lte]: hcost,
+                    [Op.gte]: lcost
                 }
+            }
+        }
+    }
+    if(name && hcost && lcost){
+        payload = {
+            name: {
+                [Op.like]: '%' + name + '%'
             },
+            price: {
+                [Op.and]: {
+                    [Op.lte]: hcost,
+                    [Op.gte]: lcost
+                }
+            }
+        }
+    }
+
+        const filteredMenuitems = await Menuitem.findAll({
+            where: payload,
             include: [{ model: Mealtype, attributes: ["name", "content"] },
                 { model: Restaurant, attributes: ["name", "address", "contact", "locationId"] }
             ]
         })
-        if (filteredMenuitems) {
+        if (filteredMenuitems.length > 0) {
             return res.status(200).json({ message: "Menuitems fetched successfully", Menuitem: filteredMenuitems })
         } else {
             return res.status(500).json({ error: "No Result Found.." })
