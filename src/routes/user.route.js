@@ -26,6 +26,7 @@ module.exports = (app) => {
     app.put("/api/v1/updateUser/:id", userController.UpdateUser);
     app.get("/api/v1/verifyUser", userController.verifyUser);
     app.get("/api/v1/getUserByAddress", userController.getUsersByAddress);
+    app.patch("/api/v1/userPartialUpdate/:id", userController.userPartialUpdate);
 
 
 

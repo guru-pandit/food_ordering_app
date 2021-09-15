@@ -3,6 +3,7 @@ const express = require("express");
 const cors = require("cors");
 const db = require("./src/models");
 const nodemailer = require("nodemailer");
+const cookieParser = require("cookie-parser");
 require("dotenv").config();
 
 global.__basedir = __dirname;
@@ -14,6 +15,7 @@ let corsOptions = {
 };
 
 app.use(cors(corsOptions));
+app.use(cookieParser());
 app.use(express.json());
 //app.use(express.static('public'));
 
