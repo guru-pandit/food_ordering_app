@@ -16,11 +16,38 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
   Review.init({
-    stars: DataTypes.INTEGER,
-    comment: DataTypes.STRING,
-    userId: DataTypes.INTEGER,
-    restaurantId: DataTypes.INTEGER,
-    commentedAt: DataTypes.DATE
+    stars: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      validate: {
+        notEmpty: { msg: "stars should not be empty" },
+        isNumeric: { msg: "stars should be a number" }
+      }
+    },
+    comment: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+      validate: {
+        notEmpty: { msg: "comment should not be empty" },
+      }
+    },
+    userId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      validate: {
+        notEmpty: { msg: "userId should not be empty" },
+      }
+    },
+    restaurantId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      validate: {
+        notEmpty: { msg: "restaurantId should not be empty" },
+      }
+    },
+    commentedAt: {
+      type: DataTypes.DATE,
+    },
   }, {
     sequelize,
     modelName: 'Review',
