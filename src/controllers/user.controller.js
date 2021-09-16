@@ -68,22 +68,28 @@ const createUser = async (req, res) => { // async means not waiting
             }
         }
     } catch (err) {
-        console.log(err);
+        // console.log(err);
+        res.status(500).json({ error: err.message || "Something went wrong" });
     }
 };
 //verifyUser here
 const verifyUser = async (req, res) => {
-    let { token } = req.query //take token query
-    let tokenData = await Token.findOne({ where: { token: token } })
-    let currentDate = new Date()
-    if (tokenData.expiredAt < currentDate) { //if token expired is less that current date then it will expired
-        res.status(400).json({ message: "Token expired" })
-    } else {
-        let user = await User.findOne({ where: { id: tokenData.userId } })
-        user.isVerified = true
-        user.save()
-        // console.log(user)
-        res.status(400).json({ message: "user Verified" })
+    try {
+
+        let { token } = req.query //take token query
+        let tokenData = await Token.findOne({ where: { token: token } })
+        let currentDate = new Date()
+        if (tokenData.expiredAt < currentDate) { //if token expired is less that current date then it will expired
+            res.status(400).json({ message: "Token expired" })
+        } else {
+            let user = await User.findOne({ where: { id: tokenData.userId } })
+            user.isVerified = true
+            user.save()
+            // console.log(user)
+            res.status(400).json({ message: "user Verified" })
+        }
+    } catch (err) {
+        res.status(500).json({ error: err.message || "Something went wrong" });
     }
 }
 
@@ -115,22 +121,27 @@ const loginUser = async (req, res) => {
         }
 
     } catch (err) {
-        console.log(err);
+        // console.log(err);
+        res.status(500).json({ error: err.message || "Something went wrong" });
     }
 };
 //get user by id 
 const getUsersById = async (req, res) => {
-    console.log(req.params); //parameters
-    let { id } = req.params;
-    let info = await User.findOne({
+    try {
+        // console.log(req.params); //parameters
+        let { id } = req.params;
+        let info = await User.findOne({
 
-        where: { id: id },
+            where: { id: id },
 
-    });
-    if (info) {
-        res.status(200).json({ data: info });
-    } else {
-        res.status(400).json({ error: "user not found" });
+        });
+        if (info) {
+            res.status(200).json({ data: info });
+        } else {
+            res.status(400).json({ error: "user not found" });
+        }
+    } catch (err) {
+        res.status(500).json({ error: err.message || "Something went wrong" });
     }
 };
 //user delete
@@ -150,7 +161,8 @@ const deleteUser = async (req, res) => {
             }
         }
     } catch (err) {
-        console.log(err);
+        // console.log(err);
+        res.status(500).json({ error: err.message || "Something went wrong" });
     }
 };
 
@@ -170,7 +182,8 @@ const UpdateUser = async (req, res) => {
         }
     }
     catch (err) {
-        console.log(err);
+        // console.log(err);
+        res.status(500).json({ error: err.message || "Something went wrong" });
     }
 };
 const getUsersByAddress = async (req, res) => {
@@ -189,7 +202,8 @@ const getUsersByAddress = async (req, res) => {
         }
 
     } catch (err) {
-        console.log(err);
+        // console.log(err);
+        res.status(500).json({ error: err.message || "Something went wrong" });
     }
 };
 

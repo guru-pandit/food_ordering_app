@@ -9,11 +9,12 @@ module.exports = (sequelize, DataTypes) => {
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
-    static associate({Location,Menuitem,Review}) {
-       // define association here
-      Restaurant.belongsTo(Location,{foreignKey:"locationId"})
-      Restaurant.hasMany(Menuitem,{foreignKey:"restaurantId"})
-      Restaurant.hasMany(Review,{foreignKey:"restaurantId"})
+    static associate({ Location, Menuitem, Order }) {
+      // define association here
+      Restaurant.belongsTo(Location, { foreignKey: "locationId" });
+      Restaurant.hasMany(Menuitem, { foreignKey: "restaurantId" });
+      Restaurant.hasMany(Order, { foreignKey: "restaurantId" });
+      Restaurant.hasMany(Review, { foreignKey: "restaurantId" });
     }
   };
   Restaurant.init({
