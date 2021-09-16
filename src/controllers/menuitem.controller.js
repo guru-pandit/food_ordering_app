@@ -31,7 +31,7 @@ const addNewMenuitem = async (req, res) => {
 
                 //to get filename of uploaded images
                 const result = req.files && req.files.length > 0 ? req.files.map(item => {
-                    return item.filename
+                    return item.originalname;
                 }) : null;
                 //console.log(result)
 
