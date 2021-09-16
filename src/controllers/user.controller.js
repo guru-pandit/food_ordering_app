@@ -4,6 +4,8 @@ const bcrypt = require("bcryptjs"); //bcrypt password
 const { validationResult } = require("express-validator");//for validations
 const crypto = require("crypto");//convert token into hexabytes
 const { sendEmail } = require("../services/mail.service");//import service file
+const jwt = require('jsonwebtoken');
+const authConfig = require("../config/auth.config")
 const Op = db.Sequelize.Op;
 
 //create user
@@ -104,7 +106,15 @@ const loginUser = async (req, res) => {
                 data.dataValues.password
             );
             if (isPassMatched) {
-                return res.status(200).json({ message: "user login succesfull" });
+
+                let token = jwt.sign(
+                    { id: data.id, email: data.email },
+                    authConfig.secretKey,
+                    { expiresIn: "1h" }
+                );
+                console.log(token)
+                res.cookie("access-token", token).send("Login successfull");
+                //  return res.status(200).json({ message: "user login succesfull" });
             } else {
                 return res.status(500).json({ error: "user login unsuccesfull" });
             }
@@ -197,5 +207,24 @@ const getUsersByAddress = async (req, res) => {
     }
 };
 
+const userPartialUpdate = async (req, res) => {
+    try {
+        const userId = req.params.id;
+        const data = await User.update(req.body, { where: { id: userId } });
 
-module.exports = { createUser, verifyUser, loginUser, getUsersById, deleteUser, UpdateUser, getUsersByAddress }
+        if (data) {
+
+            return res
+                .status(200)
+                .json({ message: "user was Partiallyupdatad successfully!" });
+        } else {
+            return res.status(500).json({ error: "Cannot update user" });
+        }
+    }
+    catch (err) {
+        console.log(err);
+    }
+};
+
+
+module.exports = { createUser, verifyUser, loginUser, getUsersById, deleteUser, UpdateUser, getUsersByAddress, userPartialUpdate }

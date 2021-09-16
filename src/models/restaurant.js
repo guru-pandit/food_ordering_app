@@ -14,13 +14,15 @@ module.exports = (sequelize, DataTypes) => {
       Restaurant.belongsTo(Location, { foreignKey: "locationId" });
       Restaurant.hasMany(Menuitem, { foreignKey: "restaurantId" });
       Restaurant.hasMany(Order, { foreignKey: "restaurantId" });
+      Restaurant.hasMany(Review, { foreignKey: "restaurantId" });
     }
   };
   Restaurant.init({
     name: DataTypes.STRING,
     address: DataTypes.STRING,
     contact: DataTypes.STRING,
-    locationId: DataTypes.INTEGER
+    locationId: DataTypes.INTEGER,
+    avgRatings: DataTypes.FLOAT
   }, {
     sequelize,
     modelName: 'Restaurant',
