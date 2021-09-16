@@ -1,4 +1,4 @@
-const { Order, Menuitem } = require("../models");
+const { Order, Menuitem, User, Restaurant } = require("../models");
 
 // Function to store the rder details
 const placeOrder = async (req, res) => {
@@ -34,4 +34,53 @@ const placeOrder = async (req, res) => {
     }
 }
 
-module.exports = { placeOrder }
+// Function to get order details by order id
+const getOrderByOrderId = async (req, res) => {
+    try {
+        let { orderId } = req.params;
+        let order = await Order.findOne({
+            where: { id: orderId },
+            include: [
+                {
+                    model: User,
+                },
+                {
+                    model: Restaurant
+                }
+            ]
+        })
+        // console.log(order);
+        if (order !== null) {
+            return res.status(200).json({ order });
+        } else {
+            return res.status(400).json({ error: "No order found" });
+        }
+    } catch (err) {
+        res.status(500).json({ error: err.message || "Something went wrong" });
+    }
+}
+
+// Function to get orders by user id
+const getOrdersByUserId = async (req, res) => {
+    try {
+        let { userId } = req.params;
+        let user = await User.findOne({
+            where: { id: userId },
+            include: [
+                {
+                    model: Order,
+                }
+            ]
+        })
+        // console.log(order);
+        if (user !== null) {
+            return res.status(200).json({ user });
+        } else {
+            return res.status(400).json({ error: "No user found" });
+        }
+    } catch (err) {
+        res.status(500).json({ error: err.message || "Something went wrong" });
+    }
+}
+
+module.exports = { placeOrder, getOrderByOrderId, getOrdersByUserId }

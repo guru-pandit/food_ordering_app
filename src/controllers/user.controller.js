@@ -5,7 +5,7 @@ const { validationResult } = require("express-validator");//for validations
 const crypto = require("crypto");//convert token into hexabytes
 const { sendEmail } = require("../services/mail.service");//import service file
 const jwt = require('jsonwebtoken');
-const authConfig = require("../config/auth.config")
+// const authConfig = require("../config/auth.config")
 const Op = db.Sequelize.Op;
 
 //create user
@@ -106,20 +106,19 @@ const loginUser = async (req, res) => {
                 data.dataValues.password
             );
             if (isPassMatched) {
-
                 let token = jwt.sign(
                     { id: data.id, email: data.email },
                     authConfig.secretKey,
                     { expiresIn: "1h" }
                 );
-                console.log(token)
+
+                console.log(token);
                 res.cookie("access-token", token).send("Login successfull");
                 //  return res.status(200).json({ message: "user login succesfull" });
             } else {
                 return res.status(500).json({ error: "user login unsuccesfull" });
             }
         }
-
     } catch (err) {
         // console.log(err);
         res.status(500).json({ error: err.message || "Something went wrong" });
@@ -131,9 +130,7 @@ const getUsersById = async (req, res) => {
         // console.log(req.params); //parameters
         let { id } = req.params;
         let info = await User.findOne({
-
             where: { id: id },
-
         });
         if (info) {
             res.status(200).json({ data: info });
@@ -173,10 +170,7 @@ const UpdateUser = async (req, res) => {
         const data = await User.update(req.body, { where: { id: userId } });
 
         if (data) {
-
-            return res
-                .status(200)
-                .json({ message: "user was updatad successfully!" });
+            return res.status(200).json({ message: "user was updatad successfully!" });
         } else {
             return res.status(500).json({ error: "Cannot update user" });
         }
@@ -213,16 +207,14 @@ const userPartialUpdate = async (req, res) => {
         const data = await User.update(req.body, { where: { id: userId } });
 
         if (data) {
-
-            return res
-                .status(200)
-                .json({ message: "user was Partiallyupdatad successfully!" });
+            return res.status(200).json({ message: "user updated successfully!" });
         } else {
             return res.status(500).json({ error: "Cannot update user" });
         }
     }
     catch (err) {
         console.log(err);
+        res.status(500).json({ error: err.message || "Something went wrong" });
     }
 };
 
