@@ -5,7 +5,7 @@ const { validationResult } = require("express-validator");//for validations
 const crypto = require("crypto");//convert token into hexabytes
 const { sendEmail } = require("../services/mail.service");//import service file
 const jwt = require('jsonwebtoken');
-const authConfig = require("../config/auth.config")
+// const authConfig = require("../config/auth.config")
 const Op = db.Sequelize.Op;
 
 //create user

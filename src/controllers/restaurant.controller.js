@@ -19,7 +19,7 @@ const getAllRestaurants = async(req,res) => {
     }catch(err){
         res.status(500).json({error : err.message || "something went wrong"})
     }
-}
+} 
 
 //to get restaurants by location
 const getRestaurantsByLocation = async(req,res) => {
@@ -51,7 +51,7 @@ const addReview = async(req,res) => {
     try{
         // to take value from req.body
         const review = {
-            stars : req.body.stars,
+            stars : req.body.stars > 5 ? 5 : req.body.stars,
             comment : req.body.comment,
             userId : req.body.userId,
             restaurantId : req.body.restaurantId,

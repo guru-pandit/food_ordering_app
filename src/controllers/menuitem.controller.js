@@ -27,6 +27,8 @@ const addNewMenuitem = async(req, res) => {
         if (isExist === null) {
             const menuitemCreated = await Menuitem.create(menuitem)
             if (menuitemCreated !== null) {
+
+                //to get filename of uploaded images
                 const result = req.files && req.files.length > 0 ? req.files.map(item => {
                     return item.filename
                 }) : null;
@@ -37,16 +39,22 @@ const addNewMenuitem = async(req, res) => {
                 }
                 //console.log(uploadedImages)
 
+                //to update image field in menuitem model
                 menuitemCreated.image = uploadedImages;
                 await menuitemCreated.save();
 
+                //to check whether folder is exist or not
                 let isFolderExist = fs.existsSync(path.join(__basedir, `public/images/${menuitemCreated.id}`));
+                //if folder exists
                 if (isFolderExist) {
+                    //to copy images from tmp folder to images folder
                     req.files.forEach(({ filename }) => {
                         fs.copyFileSync(path.join(__basedir, `public/tmp/${filename}`), path.join(__basedir, `public/images/${menuitemCreated.id}/${filename}`));
                     })
                 } else {
+                    //to create new directory
                     fs.mkdirSync(path.join(__basedir, `public/images/${menuitemCreated.id}`));
+                    //to copy images from tmp folder to images folder
                     req.files.forEach(({ filename }) => {
                         fs.copyFileSync(path.join(__basedir, `public/tmp/${filename}`), path.join(__basedir, `public/images/${menuitemCreated.id}/${filename}`));
                     })

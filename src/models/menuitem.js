@@ -23,10 +23,11 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       validate: {
         notEmpty: { msg: "Name should not be empty" },
+        isAlphanumeric: {msg: "name should contains letters and numbers only"}
       }
     },
     description: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
       allowNull: false,
       validate: {
         notEmpty: { msg: "Description should not be empty" }
