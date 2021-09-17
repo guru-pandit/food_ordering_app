@@ -9,7 +9,7 @@ const jwt = require('jsonwebtoken');
 const Op = db.Sequelize.Op;
 
 //create user
-const createUser = async (req, res) => { // async means not waiting
+const createUser = async (req, res) => {
     try {
         let errors = validationResult(req); // expressvalidator
         if (!errors.isEmpty()) {
@@ -17,7 +17,7 @@ const createUser = async (req, res) => { // async means not waiting
         }
 
         // for data get
-        const user = {
+        const userBody = {
             firstName: req.body.firstName,
             lastName: req.body.lastName,
             email: req.body.email,
@@ -31,31 +31,34 @@ const createUser = async (req, res) => { // async means not waiting
             state: req.body.state,
             city: req.body.city,
         };
-        const info = await User.findOne({ where: { email: user.email } }); //await means handling async request
-        if (info) {
+        const user = await User.findOne({ where: { email: user.email } });
+
+        if (user) {
             res.send("email already exist");
         } else {
-            let hashedPassword = await bcrypt.hash(user.password, 8); // 8 round to encrypt password
-            user.password = hashedPassword; //save in database
+            let hashedPassword = await bcrypt.hash(userBody.password, 8);
+            userBody.password = hashedPassword; //save in database
 
-            const data = await User.create(user); // create new user
+            const data = await User.create(userBody); // create new user
             if (data) {
                 let currentDate = new Date()//get current date
-                const token = {
+                let token = {
                     token: crypto.randomBytes(64).toString("hex"),//convert token into random bytes
                     userId: data.id,//take user id
                     expiredAt: new Date(currentDate.getTime() + 30 * 60000)//expired token after 30 min
                 }
 
                 let mailOptions = {
-                    from: `"Varify your email address" ${process.env.EMAIL}`,
-                    to: user.email,
+                    from: `"Verify your email address" ${process.env.EMAIL}`,
+                    to: userBody.email,
                     subject: "Please varify email",
-                    html: `<h2>${user.firstName} Thanks for registering...</h2>
+                    html: `<h2>${userBody.firstName} Thanks for registering...</h2>
               <h4>please verify your email to proceed..</h4>
               <a href="http://${req.headers.host}/api/v1/verifyUser?token=${token.token}">Varify here</a>`,
                 };
+
                 sendEmail(mailOptions);
+
                 await Token.create(token)//create token here
                 return res.status(200).json({
                     message: " User register succesfull",
@@ -72,6 +75,8 @@ const createUser = async (req, res) => { // async means not waiting
         res.status(500).json({ error: err.message || "Something went wrong" });
     }
 };
+
+
 //verifyUser here
 const verifyUser = async (req, res) => {
     try {
@@ -112,7 +117,7 @@ const loginUser = async (req, res) => {
                     { expiresIn: "1h" }
                 );
 
-                console.log(token);
+                // console.log(token);
                 res.cookie("access-token", token).send("Login successfull");
                 //  return res.status(200).json({ message: "user login succesfull" });
             } else {
@@ -213,10 +218,77 @@ const userPartialUpdate = async (req, res) => {
         }
     }
     catch (err) {
-        console.log(err);
+        // console.log(err);
         res.status(500).json({ error: err.message || "Something went wrong" });
     }
 };
 
 
-module.exports = { createUser, verifyUser, loginUser, getUsersById, deleteUser, UpdateUser, getUsersByAddress, userPartialUpdate }
+// Function to send password reset link
+const sendPasswordResetLink = async (req, res) => {
+    try {
+        let { userId } = req.params;
+
+        let user = await User.findOne({ where: { id: userId } });
+        // console.log("User:", user);
+
+        // Checking user exist or not
+        if (user !== null) {
+            let currentDate = new Date()//get current date
+            let token = {
+                token: crypto.randomBytes(64).toString("hex"),//convert token into random bytes
+                userId: userId,
+                expiredAt: new Date(currentDate.getTime() + 30 * 60000)//expired token after 30 min
+            }
+
+            let mailOptions = {
+                from: `"Verify your email address" ${process.env.EMAIL}`,
+                to: user.email,
+                subject: "Reset Password",
+                html: `<h2>${user.firstName}</h2>
+              <h4>Click below to reset password</h4>
+              <a href="http://${req.headers.host}/api/v1/resetPassword?token=${token.token}">Reset Password</a>`,
+            };
+
+            sendEmail(mailOptions);
+            await Token.create(token)//create token here
+            return res.status(200).json({ message: "Link sent" })
+        } else {
+            return res.status(400).json({ error: "No user found" })
+        }
+    } catch (err) {
+        res.status(500).json({ error: err.message || "Something went wrong" });
+    }
+}
+
+
+// Resetting Password
+const resetPassword = async (req, res) => {
+    try {
+        let { token } = req.query
+        let { password, confirmPassword } = req.body
+        console.log("QueryToken:", token);
+
+        let tokenData = await Token.findOne({ where: { token: token } })
+        console.log("TokenData:", tokenData);
+        let currentDate = new Date()
+        //if token expired is less that current date then it will expired
+        if (tokenData.expiredAt < currentDate) {
+            return res.status(400).json({ message: "Token expired" })
+        } else {
+            if (password === confirmPassword) {
+                let user = await User.findOne({ where: { id: tokenData.userId } })
+                let hashedPassword = await bcrypt.hash(password, 8);
+                user.password = hashedPassword;
+                user.save()
+                return res.status(200).json({ error: "Password reset successfully" })
+            } else {
+                return res.status(400).json({ error: "Password & confirm password not matching" })
+            }
+        }
+    } catch (err) {
+        res.status(500).json({ error: err.message || "Something went wrong" });
+    }
+}
+
+module.exports = { createUser, verifyUser, loginUser, getUsersById, deleteUser, UpdateUser, getUsersByAddress, userPartialUpdate, sendPasswordResetLink, resetPassword }
