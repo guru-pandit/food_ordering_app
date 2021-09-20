@@ -1,11 +1,11 @@
-const { Menuitem, Restaurant, Mealtype, Cuisine} = require("../models");
+const { Menuitem, Restaurant, Mealtype, Cuisine } = require("../models");
 const db = require("../models");
 const Op = db.Sequelize.Op;
 const path = require("path");
 const fs = require("fs");
 
 //to add new menuitem
-const addNewMenuitem = async(req, res) => {
+const addNewMenuitem = async (req, res) => {
     try {
         //console.log(req.files);
         const menuitem = {
@@ -17,18 +17,21 @@ const addNewMenuitem = async(req, res) => {
             mealtypeId: req.body.mealtypeId,
             cuisineId: req.body.cuisineId
         }
-        const isExist = await Menuitem.findOne({ where: {
-            [Op.and] : [
-                {name: menuitem.name},
-                {restaurantId: menuitem.restaurantId}
-            ]  
-        } 
+        const isExist = await Menuitem.findOne({
+            where: {
+                [Op.and]: [
+                    { name: menuitem.name },
+                    { restaurantId: menuitem.restaurantId }
+                ]
+            }
         })
         if (isExist === null) {
             const menuitemCreated = await Menuitem.create(menuitem)
             if (menuitemCreated !== null) {
+
+                //to get filename of uploaded images
                 const result = req.files && req.files.length > 0 ? req.files.map(item => {
-                    return item.filename
+                    return item.originalname;
                 }) : null;
                 //console.log(result)
 
@@ -37,16 +40,22 @@ const addNewMenuitem = async(req, res) => {
                 }
                 //console.log(uploadedImages)
 
+                //to update image field in menuitem model
                 menuitemCreated.image = uploadedImages;
                 await menuitemCreated.save();
 
+                //to check whether folder is exist or not
                 let isFolderExist = fs.existsSync(path.join(__basedir, `public/images/${menuitemCreated.id}`));
+                //if folder exists
                 if (isFolderExist) {
+                    //to copy images from tmp folder to images folder
                     req.files.forEach(({ filename }) => {
                         fs.copyFileSync(path.join(__basedir, `public/tmp/${filename}`), path.join(__basedir, `public/images/${menuitemCreated.id}/${filename}`));
                     })
                 } else {
+                    //to create new directory
                     fs.mkdirSync(path.join(__basedir, `public/images/${menuitemCreated.id}`));
+                    //to copy images from tmp folder to images folder
                     req.files.forEach(({ filename }) => {
                         fs.copyFileSync(path.join(__basedir, `public/tmp/${filename}`), path.join(__basedir, `public/images/${menuitemCreated.id}/${filename}`));
                     })
@@ -60,12 +69,12 @@ const addNewMenuitem = async(req, res) => {
         }
     } catch (err) {
         // console.log(err);
-        res.status(500).json({ error: "Menuitem NOT Added Successfully", Error: err })
+        res.status(500).json({ error: err.message || "Something went wrong" });
     }
 }
 
 //to get all Menuitems
-const getMenuitems = async(req, res) => {
+const getMenuitems = async (req, res) => {
     try {
         const response = await Menuitem.findAll({
             include: [
@@ -83,19 +92,19 @@ const getMenuitems = async(req, res) => {
             return res.status(500).json({ error: "Menuitems Not Fetched Successfully." });
         }
     } catch (err) {
-        console.log(err);
-        res.status(500).json({ error: "Menuitems Not Fetched Successfully.", error: err });
+        // console.log(err);
+        res.status(500).json({ error: err.message || "Something went wrong" });
     }
 }
 
 //to get menuitems by restaurantId
-const getMenuitemsByRestaurant = async(req, res) => {
+const getMenuitemsByRestaurant = async (req, res) => {
     try {
         const restaurantId = req.params.restaurantId;
         const response = await Menuitem.findAll({
             where: { /*this id variable from Menuitem table*/ restaurantId: restaurantId /*this id variable from params*/ },
             include: [{ model: Mealtype, attributes: ["name", "content"] },
-                { model: Restaurant, attributes: ["name", "address", "contact", "locationId"] }
+            { model: Restaurant, attributes: ["name", "address", "contact", "locationId"] }
             ]
         })
 
@@ -108,19 +117,19 @@ const getMenuitemsByRestaurant = async(req, res) => {
             return res.status(500).json({ error: "Menuitems Not Fetched Successfully." });
         }
     } catch (err) {
-        console.log(err);
-        res.status(500).json({ error: "Menuitems Not Fetched Successfully.", error: err });
+        // console.log(err);
+        res.status(500).json({ error: err.message || "Something went wrong" });
     }
 }
 
 //to get menuitems by mealtypeId
-const getMenuitemsByMealtype = async(req, res) => {
+const getMenuitemsByMealtype = async (req, res) => {
     try {
         const mealtypeId = req.params.mealtypeId;
         const response = await Menuitem.findAll({
             where: { /*this id variable from Menuitem table*/ mealtypeId: mealtypeId /*this id variable from params*/ },
             include: [{ model: Mealtype, attributes: ["name", "content"] },
-                { model: Restaurant, attributes: ["name", "address", "contact", "locationId"] }
+            { model: Restaurant, attributes: ["name", "address", "contact", "locationId"] }
             ]
         })
 
@@ -133,50 +142,51 @@ const getMenuitemsByMealtype = async(req, res) => {
             return res.status(500).json({ error: "Menuitems Not Fetched Successfully." });
         }
     } catch (err) {
-        console.log(err)
+        // console.log(err)
+        res.status(500).json({ error: err.message || "Something went wrong" });
     }
 }
 
-const searchMenuitems = async(req, res) => {
+const searchMenuitems = async (req, res) => {
     try {
-        let { name,hcost,lcost } = req.query;
+        let { name, hcost, lcost } = req.query;
         var payload = {}
 
-    if(name){
-        payload = {
-            name: {
-                [Op.like]: '%' + name + '%'
-            }
-        }
-    }
-    if(hcost && lcost){
-        payload = {
-            price: {
-                [Op.and]: {
-                    [Op.lte]: hcost,
-                    [Op.gte]: lcost
+        if (name) {
+            payload = {
+                name: {
+                    [Op.like]: '%' + name + '%'
                 }
             }
         }
-    }
-    if(name && hcost && lcost){
-        payload = {
-            name: {
-                [Op.like]: '%' + name + '%'
-            },
-            price: {
-                [Op.and]: {
-                    [Op.lte]: hcost,
-                    [Op.gte]: lcost
+        if (hcost && lcost) {
+            payload = {
+                price: {
+                    [Op.and]: {
+                        [Op.lte]: hcost,
+                        [Op.gte]: lcost
+                    }
                 }
             }
         }
-    }
+        if (name && hcost && lcost) {
+            payload = {
+                name: {
+                    [Op.like]: '%' + name + '%'
+                },
+                price: {
+                    [Op.and]: {
+                        [Op.lte]: hcost,
+                        [Op.gte]: lcost
+                    }
+                }
+            }
+        }
 
         const filteredMenuitems = await Menuitem.findAll({
             where: payload,
             include: [{ model: Mealtype, attributes: ["name", "content"] },
-                { model: Restaurant, attributes: ["name", "address", "contact", "locationId"] }
+            { model: Restaurant, attributes: ["name", "address", "contact", "locationId"] }
             ]
         })
         if (filteredMenuitems.length > 0) {
@@ -185,8 +195,8 @@ const searchMenuitems = async(req, res) => {
             return res.status(500).json({ error: "No Result Found.." })
         }
     } catch (err) {
-        console.log(err)
-        res.status(500).json({ error: "No Result Found..", Error: err })
+        // console.log(err)
+        res.status(500).json({ error: err.message || "Something went wrong" });
     }
 }
 

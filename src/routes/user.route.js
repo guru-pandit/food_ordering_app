@@ -12,9 +12,9 @@ module.exports = (app) => {
     app.get("/api/v1/verifyUser", userController.verifyUser);
     app.get("/api/v1/getUserByAddress", userController.getUsersByAddress);
     app.patch("/api/v1/userPartialUpdate/:id", userController.userPartialUpdate);
-
-
-
-
+    // Send password reset link
+    // app.post("/api/v1/resetPassword/:userId", userController.sendPasswordResetLink);
+    // password reset
+    // app.post("/api/v1/resetPassword", userController.resetPassword);
 };
 

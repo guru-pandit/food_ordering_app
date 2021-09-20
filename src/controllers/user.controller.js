@@ -11,7 +11,7 @@ const jwt = require('jsonwebtoken');
 const Op = db.Sequelize.Op;
 
 //create user
-const createUser = async (req, res) => { // async means not waiting
+const createUser = async (req, res) => {
     try {
         let errors = validationResult(req); // expressvalidator
         if (!errors.isEmpty()) {
@@ -19,7 +19,7 @@ const createUser = async (req, res) => { // async means not waiting
         }
 
         // for data get
-        const user = {
+        const userBody = {
             firstName: req.body.firstName,
             lastName: req.body.lastName,
             email: req.body.email,
@@ -56,7 +56,8 @@ const createUser = async (req, res) => { // async means not waiting
         }
 
     } catch (err) {
-        console.log(err);
+        // console.log(err);
+        res.status(500).json({ error: err.message || "Something went wrong" });
     }
 };
 
@@ -93,7 +94,6 @@ const loginUser = async (req, res) => {
                 data.password
             );
             if (isPassMatched) {
-
                 let token = jwt.sign(
                     { id: data.id, email: data.email },
                     process.env.SECRETKEY,
@@ -106,9 +106,9 @@ const loginUser = async (req, res) => {
                 return res.status(500).json({ error: "user login unsuccesfull" });
             }
         }
-
     } catch (err) {
-        console.log(err);
+        // console.log(err);
+        res.status(500).json({ error: err.message || "Something went wrong" });
     }
 };
 
@@ -118,17 +118,19 @@ const logOut = async (req, res) => {
 };
 //get user by id 
 const getUsersById = async (req, res) => {
-    console.log(req.params); //parameters
-    let { id } = req.params;
-    let info = await User.findOne({
-
-        where: { id: id },
-
-    });
-    if (info) {
-        res.status(200).json({ data: info });
-    } else {
-        res.status(400).json({ error: "user not found" });
+    try {
+        // console.log(req.params); //parameters
+        let { id } = req.params;
+        let info = await User.findOne({
+            where: { id: id },
+        });
+        if (info) {
+            res.status(200).json({ data: info });
+        } else {
+            res.status(400).json({ error: "user not found" });
+        }
+    } catch (err) {
+        res.status(500).json({ error: err.message || "Something went wrong" });
     }
 };
 //user delete
@@ -148,7 +150,8 @@ const deleteUser = async (req, res) => {
             }
         }
     } catch (err) {
-        console.log(err);
+        // console.log(err);
+        res.status(500).json({ error: err.message || "Something went wrong" });
     }
 };
 
@@ -159,16 +162,14 @@ const UpdateUser = async (req, res) => {
         const data = await User.update(req.body, { where: { id: userId } });
 
         if (data) {
-
-            return res
-                .status(200)
-                .json({ message: "user was updatad successfully!" });
+            return res.status(200).json({ message: "user was updatad successfully!" });
         } else {
             return res.status(500).json({ error: "Cannot update user" });
         }
     }
     catch (err) {
-        console.log(err);
+        // console.log(err);
+        res.status(500).json({ error: err.message || "Something went wrong" });
     }
 };
 const getUsersByAddress = async (req, res) => {
@@ -187,7 +188,8 @@ const getUsersByAddress = async (req, res) => {
         }
 
     } catch (err) {
-        console.log(err);
+        // console.log(err);
+        res.status(500).json({ error: err.message || "Something went wrong" });
     }
 };
 
@@ -197,16 +199,14 @@ const userPartialUpdate = async (req, res) => {
         const data = await User.update(req.body, { where: { id: userId } });
 
         if (data) {
-
-            return res
-                .status(200)
-                .json({ message: "user was Partiallyupdatad successfully!" });
+            return res.status(200).json({ message: "user updated successfully!" });
         } else {
             return res.status(500).json({ error: "Cannot update user" });
         }
     }
     catch (err) {
-        console.log(err);
+        // console.log(err);
+        res.status(500).json({ error: err.message || "Something went wrong" });
     }
 };
 
