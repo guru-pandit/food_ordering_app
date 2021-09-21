@@ -5,6 +5,7 @@ const { checkDulicateEmail, checkConfirmPassword } = require("../middelwares/val
 module.exports = (app) => {
     app.post("/api/v1/register", [checkDulicateEmail, checkConfirmPassword], userController.createUser);
     app.post("/api/v1/login", userController.loginUser);
+    app.get("/api/v1/dashboard", userController.dashboard);
     app.get("/api/v1/logout", userController.logOut);
     app.get("/api/v1/user/:id", userController.getUsersById);
     app.delete("/api/v1/deleteUser/:id", userController.deleteUser);

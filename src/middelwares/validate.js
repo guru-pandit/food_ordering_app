@@ -2,7 +2,6 @@ const User = require("../models").User;
 const bcrypt = require("bcryptjs")
 const { validationResult } = require("express-validator");
 
-
 const checkConfirmPassword = async (req, res, next) => {
     let errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -19,6 +18,7 @@ const checkConfirmPassword = async (req, res, next) => {
     req.body.password = hashedPassword;
     next();
 };
+
 const checkDulicateEmail = async (req, res, next) => {
     try {
         let errors = validationResult(req);
@@ -36,10 +36,10 @@ const checkDulicateEmail = async (req, res, next) => {
     }
 };
 
-
 const validate = {
     checkConfirmPassword,
     checkDulicateEmail,
+    // LogedIn
 
 };
 

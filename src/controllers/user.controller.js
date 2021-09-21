@@ -4,10 +4,7 @@ const bcrypt = require("bcryptjs"); //bcrypt password
 const { validationResult } = require("express-validator");//for validations
 const crypto = require("crypto");//convert token into hexabytes
 const { sendVerificationMail } = require("../services/mail.service");//import service file
-const jwt = require('jsonwebtoken');
-
-
-
+const jwt = require('jsonwebtoken');//
 const Op = db.Sequelize.Op;
 
 //create user
@@ -15,11 +12,11 @@ const createUser = async (req, res) => {
     try {
         let errors = validationResult(req); // expressvalidator
         if (!errors.isEmpty()) {
-            return res.status(400).json({ errors: errors.array() }); //
+            return res.status(400).json({ errors: errors.array() });
         }
 
         // for data get
-        const userBody = {
+        const user = {
             firstName: req.body.firstName,
             lastName: req.body.lastName,
             email: req.body.email,
@@ -33,18 +30,28 @@ const createUser = async (req, res) => {
             state: req.body.state,
             city: req.body.city,
         };
-        const data = await User.create(user); // create new user
+        // create new user
+        const data = await User.create(user);
         if (data) {
-            let currentDate = new Date()//get current date
+
+            //get current date
+            let currentDate = new Date()
             const token = {
-                token: crypto.randomBytes(64).toString("hex"),//convert token into random bytes
-                userId: data.id,//take user id
-                expiredAt: new Date(currentDate.getTime() + 30 * 60000)//expired token after 30 min
+
+                //convert token into random bytes
+                token: crypto.randomBytes(64).toString("hex"),
+
+                //take user id
+                userId: data.id,
+
+                //expired token after 30 min
+                expiredAt: new Date(currentDate.getTime() + 30 * 60000)
             }
 
             sendVerificationMail(req, user, token);
 
-            await Token.create(token)//create token here
+            //create token here
+            await Token.create(token)
             return res.status(200).json({
                 message: " User register succesfull",
                 user: data,
@@ -84,10 +91,15 @@ const verifyUser = async (req, res) => {
 // for login user
 const loginUser = async (req, res) => {
     try {
-        const { email, password } = req.body;//take email and password
-        const data = await User.findOne({ where: { email } }); //find email
+        //take email and password
+        const { email, password } = req.body;
+
+        //find email
+        const data = await User.findOne({ where: { email } });
         if (!data) {
-            return res.status(400).json({ error: "user does not exist" });//if not data found then return user does not exist
+
+            //if not data found then return user does not exist
+            return res.status(400).json({ error: "user does not exist" });
         } else {
             let isPassMatched = await bcrypt.compareSync(
                 password,
@@ -99,7 +111,10 @@ const loginUser = async (req, res) => {
                     process.env.SECRETKEY,
                     { expiresIn: "1h" }
                 );
-                console.log(token)
+                // console.log(token)
+                req.session.user = data;
+                req.session.save();
+                // return res.send("user logged in");
                 res.cookie(`access-token`, token).send({ message: " user login successfull" });
 
             } else {
@@ -113,9 +128,26 @@ const loginUser = async (req, res) => {
 };
 
 const logOut = async (req, res) => {
-    res.clearCookie("access-token");
-    return res.status(200).json({ message: "Succesfull logout" });
+    // req.session.destroy();
+    // res.clearCookie("access-token");
+    // return res.status(200).json({ message: "Succesfull logout" });
+    if (req.data) {
+        req.session.destroy()
+        res.clearCookie('access-token') // clean up!
+        return res.json({ msg: 'logging you out' })
+    } else {
+        return res.json({ msg: 'no user to log out!' })
+    }
 };
+
+
+const dashboard = async (req, res) => {
+    if (!req.session.data) {
+        return res.status(401).send();
+    }
+    return res.status(200).send("welcome to food ordering app");
+
+}
 //get user by id 
 const getUsersById = async (req, res) => {
     try {
@@ -154,7 +186,6 @@ const deleteUser = async (req, res) => {
         res.status(500).json({ error: err.message || "Something went wrong" });
     }
 };
-
 
 const UpdateUser = async (req, res) => {
     try {
@@ -210,5 +241,4 @@ const userPartialUpdate = async (req, res) => {
     }
 };
 
-
-module.exports = { createUser, verifyUser, loginUser, logOut, getUsersById, deleteUser, UpdateUser, getUsersByAddress, userPartialUpdate }
+module.exports = { createUser, verifyUser, loginUser, dashboard, logOut, getUsersById, deleteUser, UpdateUser, getUsersByAddress, userPartialUpdate }

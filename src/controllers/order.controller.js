@@ -28,6 +28,7 @@ const placeOrder = async (req, res) => {
         orderBody.total = totalPrice < 1000 ? totalPrice + deliveryCharge : totalPrice;
         // console.log("OrderBody:",orderBody);
 
+
         let order = await Order.create(orderBody);
         // console.log("SavedOrder:",order);
         // Checking order is created or not
