@@ -1,5 +1,6 @@
 const { Order, Menuitem, User, Restaurant } = require("../models");
 const { v1 } = require("uuid")
+const Razorpay = require("razorpay")
 
 // Function to store the rder details
 const placeOrder = async (req, res) => {
@@ -93,4 +94,28 @@ const getOrdersByUserId = async (req, res) => {
     }
 }
 
-module.exports = { placeOrder, getOrderByOrderId, getOrdersByUserId }
+// Function for payment gateway integration
+const orderPayment = (req, res) => {
+    let { totalPrice } = req.body;
+    // console.log("TotalPrice: ", totalPrice);
+    const instance = new Razorpay({
+        key_id: process.env.RAZORPAY_KEYID,
+        key_secret: process.env.RAZORPAY_KEYSECRET,
+    })
+    // console.log("RazorpayInstance: ", instance);
+    let options = {
+        amount: totalPrice,
+        currency: "INR"
+    }
+
+    instance.orders
+        .create(options)
+        .then((data) => {
+            // res.status(200).json({ data });
+            // console.log("Data: ",data);
+        }).catch((err) => {
+            res.status(500).json({ error: err.message || "Something went wrong" });
+        });
+}
+
+module.exports = { placeOrder, getOrderByOrderId, getOrdersByUserId, orderPayment }
