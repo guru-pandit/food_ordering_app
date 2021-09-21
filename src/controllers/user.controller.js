@@ -3,17 +3,16 @@ const { User, Token } = require("../models");//models destructure
 const bcrypt = require("bcryptjs"); //bcrypt password
 const { validationResult } = require("express-validator");//for validations
 const crypto = require("crypto");//convert token into hexabytes
-const { sendEmail } = require("../services/mail.service");//import service file
-const jwt = require('jsonwebtoken');
-// const authConfig = require("../config/auth.config")
+const { sendVerificationMail } = require("../services/mail.service");//import service file
+const jwt = require('jsonwebtoken');//
 const Op = db.Sequelize.Op;
 
 //create user
-const createUser = async (req, res) => { // async means not waiting
+const createUser = async (req, res) => {
     try {
         let errors = validationResult(req); // expressvalidator
         if (!errors.isEmpty()) {
-            return res.status(400).json({ errors: errors.array() }); //
+            return res.status(400).json({ errors: errors.array() });
         }
 
         // for data get
@@ -31,90 +30,93 @@ const createUser = async (req, res) => { // async means not waiting
             state: req.body.state,
             city: req.body.city,
         };
-        const info = await User.findOne({ where: { email: user.email } }); //await means handling async request
-        if (info) {
-            res.send("email already exist");
-        } else {
-            let hashedPassword = await bcrypt.hash(user.password, 8); // 8 round to encrypt password
-            user.password = hashedPassword; //save in database
+        // create new user
+        const data = await User.create(user);
+        if (data) {
 
-            const data = await User.create(user); // create new user
-            if (data) {
-                let currentDate = new Date()//get current date
-                const token = {
-                    token: crypto.randomBytes(64).toString("hex"),//convert token into random bytes
-                    userId: data.id,//take user id
-                    expiredAt: new Date(currentDate.getTime() + 30 * 60000)//expired token after 30 min
-                }
+            //get current date
+            let currentDate = new Date()
+            const token = {
 
-                let mailOptions = {
-                    from: `"Varify your email address" ${process.env.EMAIL}`,
-                    to: user.email,
-                    subject: "Please varify email",
-                    html: `<h2>${user.firstName} Thanks for registering...</h2>
-              <h4>please verify your email to proceed..</h4>
-              <a href="http://${req.headers.host}/api/v1/verifyUser?token=${token.token}">Varify here</a>`,
-                };
-                sendEmail(mailOptions);
-                await Token.create(token)//create token here
-                return res.status(200).json({
-                    message: " User register succesfull",
-                    user: data,
-                });
-            } else {
-                return res.status(400).json({
-                    message: " User register unsuccesfull",
-                });
+                //convert token into random bytes
+                token: crypto.randomBytes(64).toString("hex"),
+
+                //take user id
+                userId: data.id,
+
+                //expired token after 30 min
+                expiredAt: new Date(currentDate.getTime() + 30 * 60000)
             }
+
+            sendVerificationMail(req, user, token);
+
+            //create token here
+            await Token.create(token)
+            return res.status(200).json({
+                message: " User register succesfull",
+                user: data,
+            });
+        } else {
+            return res.status(400).json({
+                message: " User register unsuccesfull",
+            });
         }
+
     } catch (err) {
         // console.log(err);
         res.status(500).json({ error: err.message || "Something went wrong" });
     }
 };
+
 //verifyUser here
 const verifyUser = async (req, res) => {
-    try {
+    //to take query parameter from url
+    let { token } = req.query
+    let tokenData = await Token.findOne({ where: { token: token } })
+    let currentDate = new Date()
 
-        let { token } = req.query //take token query
-        let tokenData = await Token.findOne({ where: { token: token } })
-        let currentDate = new Date()
-        if (tokenData.expiredAt < currentDate) { //if token expired is less that current date then it will expired
-            res.status(400).json({ message: "Token expired" })
-        } else {
-            let user = await User.findOne({ where: { id: tokenData.userId } })
-            user.isVerified = true
-            user.save()
-            // console.log(user)
-            res.status(400).json({ message: "user Verified" })
-        }
-    } catch (err) {
-        res.status(500).json({ error: err.message || "Something went wrong" });
+    // to check token expired or not
+    //if token expired is less than current date then it will expired
+    if (tokenData.expiredAt < currentDate) {
+        res.status(400).json({ message: "Token expired" })
+    } else {
+        let user = await User.findOne({ where: { id: tokenData.userId } })
+        user.isVerified = true
+        user.save()
+        // console.log(user)
+        res.status(400).json({ message: "user Verified" })
     }
 }
 
 // for login user
 const loginUser = async (req, res) => {
     try {
-        const { email, password } = req.body;//take email and password
-        const data = await User.findOne({ where: { email } }); //find email
+        //take email and password
+        const { email, password } = req.body;
+
+        //find email
+        const data = await User.findOne({ where: { email } });
         if (!data) {
-            return res.status(400).json({ error: "user does not exist" });//if not data found then return user does not exist
+
+            //if not data found then return user does not exist
+            return res.status(400).json({ error: "user does not exist" });
         } else {
             let isPassMatched = await bcrypt.compareSync(
                 password,
-                data.dataValues.password
+                data.password
             );
             if (isPassMatched) {
                 let token = jwt.sign(
                     { id: data.id, email: data.email },
-                    authConfig.secretKey,
+                    process.env.SECRETKEY,
                     { expiresIn: "1h" }
                 );
+                // console.log(token)
+                req.session.user = data;
+                req.session.save();
+                // return res.send("user logged in");
+                res.cookie(`access-token`, token).send({ message: " user login successfull" });
 
-                console.log(token);
-                res.cookie("access-token", token).send("Login successfull");
-                //  return res.status(200).json({ message: "user login succesfull" });
             } else {
                 return res.status(500).json({ error: "user login unsuccesfull" });
             }
@@ -124,6 +126,28 @@ const loginUser = async (req, res) => {
         res.status(500).json({ error: err.message || "Something went wrong" });
     }
 };
+
+const logOut = async (req, res) => {
+    // req.session.destroy();
+    // res.clearCookie("access-token");
+    // return res.status(200).json({ message: "Succesfull logout" });
+    if (req.data) {
+        req.session.destroy()
+        res.clearCookie('access-token') // clean up!
+        return res.json({ msg: 'logging you out' })
+    } else {
+        return res.json({ msg: 'no user to log out!' })
+    }
+};
+
+
+const dashboard = async (req, res) => {
+    if (!req.session.data) {
+        return res.status(401).send();
+    }
+    return res.status(200).send("welcome to food ordering app");
+
+}
 //get user by id 
 const getUsersById = async (req, res) => {
     try {
@@ -162,7 +186,6 @@ const deleteUser = async (req, res) => {
         res.status(500).json({ error: err.message || "Something went wrong" });
     }
 };
-
 
 const UpdateUser = async (req, res) => {
     try {
@@ -213,10 +236,9 @@ const userPartialUpdate = async (req, res) => {
         }
     }
     catch (err) {
-        console.log(err);
+        // console.log(err);
         res.status(500).json({ error: err.message || "Something went wrong" });
     }
 };
 
-
-module.exports = { createUser, verifyUser, loginUser, getUsersById, deleteUser, UpdateUser, getUsersByAddress, userPartialUpdate }
+module.exports = { createUser, verifyUser, loginUser, dashboard, logOut, getUsersById, deleteUser, UpdateUser, getUsersByAddress, userPartialUpdate }

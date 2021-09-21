@@ -1,34 +1,43 @@
 const { Order, Menuitem, User, Restaurant } = require("../models");
+const { v1 } = require("uuid")
+const Razorpay = require("razorpay")
 
 // Function to store the rder details
 const placeOrder = async (req, res) => {
     try {
         let totalPrice = 0;
+        let deliveryCharge = 60;
 
         let orderBody = {
+            orderId: v1(),
             items: req.body.items,
             total: 0,
             userId: req.body.userId,
             restaurantId: req.body.restaurantId,
+            transactionId: null,
+            orderedAt: Date.now(),
             isDelivered: false
         }
 
+        // Calculating total price
         await Promise.all(orderBody.items.map(async ({ menuitemId, quantity }) => {
             let menu = await Menuitem.findOne({ where: { id: menuitemId } });
             totalPrice += menu.price * quantity;
         }))
 
-        orderBody.total = totalPrice
-        // console.log(orderBody);
+        // Assigning total price to the orderBody.total
+        orderBody.total = totalPrice < 1000 ? totalPrice + deliveryCharge : totalPrice;
+        // console.log("OrderBody:",orderBody);
+
 
         let order = await Order.create(orderBody);
+        // console.log("SavedOrder:",order);
+        // Checking order is created or not
         if (order !== null) {
             return res.status(200).json({ message: "Order placed", orderDetails: order });
         } else {
             return res.status(400).json({ error: "Order not placed" });
         }
-        // console.log(order);
-
     } catch (err) {
         res.status(500).json({ error: err.message || "Something went wrong" });
     }
@@ -49,7 +58,8 @@ const getOrderByOrderId = async (req, res) => {
                 }
             ]
         })
-        // console.log(order);
+        // console.log("Order:",order);
+        // Checking order is exist or not
         if (order !== null) {
             return res.status(200).json({ order });
         } else {
@@ -72,7 +82,8 @@ const getOrdersByUserId = async (req, res) => {
                 }
             ]
         })
-        // console.log(order);
+        // console.log("User:",user);
+        // Checking user is exist or not
         if (user !== null) {
             return res.status(200).json({ user });
         } else {
@@ -83,4 +94,28 @@ const getOrdersByUserId = async (req, res) => {
     }
 }
 
-module.exports = { placeOrder, getOrderByOrderId, getOrdersByUserId }
+// Function for payment gateway integration
+const orderPayment = (req, res) => {
+    let { totalPrice } = req.body;
+    // console.log("TotalPrice: ", totalPrice);
+    const instance = new Razorpay({
+        key_id: process.env.RAZORPAY_KEYID,
+        key_secret: process.env.RAZORPAY_KEYSECRET,
+    })
+    // console.log("RazorpayInstance: ", instance);
+    let options = {
+        amount: totalPrice,
+        currency: "INR"
+    }
+
+    instance.orders
+        .create(options)
+        .then((data) => {
+            // res.status(200).json({ data });
+            // console.log("Data: ",data);
+        }).catch((err) => {
+            res.status(500).json({ error: err.message || "Something went wrong" });
+        });
+}
+
+module.exports = { placeOrder, getOrderByOrderId, getOrdersByUserId, orderPayment }
