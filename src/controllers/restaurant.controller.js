@@ -1,4 +1,4 @@
-const {Restaurant, Location,Review} = require("../models");
+const {Restaurant, Location,Review,Menuitem} = require("../models");
 const db = require("../models");
 const Op = db.Sequelize.Op;
 
@@ -8,7 +8,11 @@ const getAllRestaurants = async(req,res) => {
         //to get all restaurants
         const response = await Restaurant.findAll({
             //to include location model  in restaurant
-            include : {model : Location ,attributes : ["name","landmark","city","state","country"]}
+            include : [
+                {model : Location ,attributes : ["name","landmark","city","state","country"]},
+                {model : Menuitem },
+                {model : Review },
+        ]
         })
         //to check whether we get response or not
         if(response.length > 0){
@@ -32,7 +36,11 @@ const getRestaurantsByLocation = async(req,res) => {
                 locationId : locationId
         },
         //to include location model in restaurant
-        include : {model : Location ,attributes : ["name","landmark","city","state","country"]}
+        include : [
+            {model : Location ,attributes : ["name","landmark","city","state","country"]},
+            {model : Menuitem },
+            {model : Review },
+    ]
     })
     //to check whether we get response or not
     if(response.length>0){
@@ -95,4 +103,160 @@ const addReview = async(req,res) => {
     }
 }
 
-module.exports = {getAllRestaurants, getRestaurantsByLocation, addReview}
+//to filter restaurant
+const filterRestaurant = async(req,res)=> {
+    try{
+        const {review} = req.body;
+        var payload = {}
+        if(review){
+            payload = {
+                avgRatings : {
+                    [Op.gte] : review
+                }
+            }
+        }
+        const restaurant = await Restaurant.findAll({
+            where : payload,
+            include : [
+                {model : Location ,attributes : ["name","landmark","city","state","country"]},
+                {model : Menuitem },
+                {model : Review },
+        ]
+        })
+        if(restaurant.length > 0){
+            res.status(200).json({message:"Restaurants Fetched successfully",restaurants : restaurant})
+        }else{
+            res.status(500).json({message:"Restaurants not found"})
+        }
+
+    }catch(err){
+        res.status(500).json({error : err.message || "something went wrong"})
+    }
+}
+
+//to search restaurant
+// const searchRestaurant = async(req,res) => {
+//     try{
+//         const {search,name} = req.body;
+//         var payload = {}
+
+//         if (name) {
+//             payload = {
+//                 name: { [Op.like]: '%' + name + '%' } 
+//             }
+//         }
+
+//         //to get all restaurants
+//         const allRestaurant = await Restaurant.findAll({
+//             include:[
+//                 {model : Location ,attributes : ["name","landmark","city","state","country"]},
+//                 {model : Menuitem },
+//                 {model : Review}
+//             ]
+//         });
+
+//         //to check whether all restaurants empty or not
+//         if(allRestaurant.length > 0){ 
+            
+//             if(name){
+//                 const nameWiseRestaurants = await Restaurant.findAll({
+//                     where : payload,
+//                     include:[
+//                         {model : Location ,attributes : ["name","landmark","city","state","country"]},
+//                         {model : Menuitem },
+//                         {model : Review}
+//                     ]
+//                 })
+//             if(nameWiseRestaurants.length>0){
+//                 res.status(200).json({message : "Restaurants Fetched successfully",restaurants : nameWiseRestaurants})
+//             }else{
+//                 res.status(500).json({error : "Restaurants not found.."})
+//             }
+//             }else{
+
+//                 var finalresult = []
+
+//             //to map all restaurants from allRestaurant array
+//             allRestaurant.map((restaurant)=> {
+
+//                 //to filter restaurants reviews based on search string
+//                 const reviews = (restaurant.Reviews.length > 0 ? restaurant.Reviews.filter((review)=> {
+//                     return review.comment.trim().includes(search.trim())
+//                 }) : null)
+
+//                 //to check whether result is null of not and to map reviews array
+//                 reviews && reviews !== null ? reviews.map((item)=>{
+//                     if(item !== null){
+//                         //to filter restaurants based on restaurantIds from reviews array and id of all restaurants
+//                         magicresult = allRestaurant.filter((rest)=> {
+//                             return item.restaurantId === rest.id
+//                         })
+//                         //to push magicresult into finalresult
+//                         for(i of magicresult){
+//                             finalresult.push(i)
+//                         }
+//                         //console.log(magicresult)
+//                     }else{ 
+//                         return
+//                     }
+//                 }):null
+//             })
+//             //console.log(finalresult)
+
+//             //to remove duplicate elements from finalresult array
+//             let unique = [...new Set(finalresult)]
+//             console.log(unique)
+
+//             //to check whether unique array empty or not
+//             if(unique.length > 0){
+//                 res.status(200).json({message : "Restaurant fetched successfully",restaurants :unique })
+//             }else{
+//                 res.status(500).json({error : "Restaurants not found..."})
+//             }
+//             }
+
+            
+//         }else{
+//             res.status(500).json({error : "Restaurants not found..."})
+//         }
+        
+//     }catch(err){
+//         res.status(500).json({error : err.message || "something went wrong"})
+//     }
+// }
+const searchRestaurant = async(req,res)=> {
+    try{
+        const {search} = req.body;
+        // var payload = {}
+        // if (search) {
+        //     payload = {
+        //         [Op.or] : [
+        //             { name: { [Op.like]: '%' + search + '%' } },
+        //             { comment: { [Op.like]: '%' + search + '%' } }
+        //         ]
+        //     }
+        // }
+        var searchArray = []
+        const searchResult = await Restaurant.findAll({
+            where : { name: { [Op.like]: '%' + search + '%' } },
+            include:[
+                    {model : Location ,attributes : ["name","landmark","city","state","country"]},
+                    {model : Menuitem },
+                    {model : Review, where:{ comment: { [Op.like]: '%' + search + '%' } } }
+                    ]
+        })
+        for(i of searchResult){ 
+            searchArray.push(i)
+        }
+        if(searchArray.length > 0){
+            return res.status(200).json({message : "Restaurants Fetched successfully", restaurants : searchArray})
+        }else{
+            return res.status(500).json({message : "Restaurants not found..."})
+        }
+    }catch(err){
+        res.status(500).json({error : err.message || "something went wrong"})
+    }
+}
+
+
+module.exports = {getAllRestaurants, getRestaurantsByLocation, addReview, filterRestaurant, searchRestaurant}
