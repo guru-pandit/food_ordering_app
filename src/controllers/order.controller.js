@@ -1,6 +1,7 @@
 const { Order, Menuitem, User, Restaurant } = require("../models");
 const { v1 } = require("uuid")
 const Razorpay = require("razorpay")
+const request = require('request');
 
 // Function to store the rder details
 const placeOrder = async (req, res) => {
@@ -12,13 +13,13 @@ const placeOrder = async (req, res) => {
             orderId: v1(),
             items: req.body.items,
             total: 0,
-            userId: req.body.userId,
-            restaurantId: req.body.restaurantId,
+            userId: req.query.userId,
+            restaurantId: req.query.restaurantId,
             transactionId: null,
             orderedAt: Date.now(),
             isDelivered: false
         }
-
+        // console.log(orderBody)
         // Calculating total price
         await Promise.all(orderBody.items.map(async ({ menuitemId, quantity }) => {
             let menu = await Menuitem.findOne({ where: { id: menuitemId } });
@@ -48,7 +49,7 @@ const getOrderByOrderId = async (req, res) => {
     try {
         let { orderId } = req.params;
         let order = await Order.findOne({
-            where: { id: orderId },
+            where: { orderId },
             include: [
                 {
                     model: User,
@@ -96,26 +97,30 @@ const getOrdersByUserId = async (req, res) => {
 
 // Function for payment gateway integration
 const orderPayment = (req, res) => {
-    let { totalPrice } = req.body;
+    // let { totalPrice } = req.body;
     // console.log("TotalPrice: ", totalPrice);
     const instance = new Razorpay({
-        key_id: process.env.RAZORPAY_KEYID,
+        key_id: process.env.RAZORPAY_KEYID, 
         key_secret: process.env.RAZORPAY_KEYSECRET,
     })
     // console.log("RazorpayInstance: ", instance);
     let options = {
-        amount: totalPrice,
+        amount: "50000",
         currency: "INR"
     }
 
     instance.orders
         .create(options)
         .then((data) => {
-            // res.status(200).json({ data });
-            // console.log("Data: ",data);
+             res.status(200).json({ data });
+            //  console.log("Data: ",data); 
+            
         }).catch((err) => {
             res.status(500).json({ error: err.message || "Something went wrong" });
         });
 }
 
-module.exports = { placeOrder, getOrderByOrderId, getOrdersByUserId, orderPayment }
+const checkoutPayment = async(req,res) => {
+    res.render('paymentCheckout.hbs');
+}
+module.exports = { placeOrder, getOrderByOrderId, getOrdersByUserId, orderPayment, checkoutPayment }

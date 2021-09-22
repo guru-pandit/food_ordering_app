@@ -6,6 +6,7 @@ const nodemailer = require("nodemailer");
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
 require("dotenv").config();
+const path = require('path')
 
 global.__basedir = __dirname;
 
@@ -20,6 +21,14 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(session({ secret: process.env.SESSION_SECRET_KEY, resave: true, saveUninitialized: true }));
 //app.use(express.static('public'));
+
+//setting view engine
+app.set("views", "views");
+app.set("view engine",'hbs');
+
+//setting public directory
+const publicDir = path.join(__dirname, "./public");
+app.use(express.static(publicDir));
 
 // calling sync() method
 db.sequelize.sync();
