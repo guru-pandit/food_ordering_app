@@ -10,5 +10,7 @@ module.exports = (app) => {
     //to get menuitems by mealtypeId
     app.get("/api/v1/getmenuitemsbymealtype/:mealtypeId", menuitemController.getMenuitemsByMealtype);
     //to search menuitems based on perticular keyword
-    app.get("/api/v1/search", menuitemController.searchMenuitems);
+    app.post("/api/v1/search", menuitemController.searchMenuitems);
+    //to filter menuitems
+    app.post("/api/v1/filter", menuitemController.filterMenuitems)
 }

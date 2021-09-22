@@ -8,6 +8,7 @@ const cookieParser = require("cookie-parser");
 const session = require("express-session");
 const publicDirectory = path.join(__dirname, './public');
 require("dotenv").config();
+const path = require('path')
 
 global.__basedir = __dirname;
 
@@ -24,6 +25,14 @@ app.use(express.json());
 app.set('view engine', 'hbs');
 app.use(session({ secret: process.env.SESSION_SECRET_KEY, resave: false, saveUninitialized: true }));
 //app.use(express.static('public'));
+
+//setting view engine
+app.set("views", "views");
+app.set("view engine",'hbs');
+
+//setting public directory
+const publicDir = path.join(__dirname, "./public");
+app.use(express.static(publicDir));
 
 // calling sync() method
 db.sequelize.sync();

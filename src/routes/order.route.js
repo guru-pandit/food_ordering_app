@@ -7,4 +7,9 @@ module.exports = (app) => {
     app.get("/api/v1/order/:orderId", orderController.getOrderByOrderId);
     // Get orders by user id
     app.get("/api/v1/userOrders/:userId", orderController.getOrdersByUserId);
+    // payment
+    app.post("/api/v1/payment/order", orderController.orderPayment);
+    //checkout
+     app.get("/api/v1/payment/checkout", orderController.checkoutPayment)
+
 }

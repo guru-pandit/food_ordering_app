@@ -149,44 +149,24 @@ const getMenuitemsByMealtype = async (req, res) => {
 
 const searchMenuitems = async (req, res) => {
     try {
-        let { name, hcost, lcost } = req.query;
+        let { search } = req.body;
         var payload = {}
 
-        if (name) {
+        if (search) {
             payload = {
-                name: {
-                    [Op.like]: '%' + name + '%'
-                }
-            }
-        }
-        if (hcost && lcost) {
-            payload = {
-                price: {
-                    [Op.and]: {
-                        [Op.lte]: hcost,
-                        [Op.gte]: lcost
-                    }
-                }
-            }
-        }
-        if (name && hcost && lcost) {
-            payload = {
-                name: {
-                    [Op.like]: '%' + name + '%'
-                },
-                price: {
-                    [Op.and]: {
-                        [Op.lte]: hcost,
-                        [Op.gte]: lcost
-                    }
-                }
+                [Op.or] : [
+                    { name: { [Op.like]: '%' + search + '%' } },
+                    { description: { [Op.like]: '%' + search + '%' } }
+                ]
             }
         }
 
         const filteredMenuitems = await Menuitem.findAll({
             where: payload,
-            include: [{ model: Mealtype, attributes: ["name", "content"] },
-            { model: Restaurant, attributes: ["name", "address", "contact", "locationId"] }
+            include: [
+                { model: Mealtype, attributes: ["name", "content"] },
+                { model: Cuisine, attributes: ["name"] },
+                { model: Restaurant, attributes: ["name", "address", "contact", "locationId"] }
             ]
         })
         if (filteredMenuitems.length > 0) {
@@ -200,4 +180,56 @@ const searchMenuitems = async (req, res) => {
     }
 }
 
-module.exports = { addNewMenuitem, getMenuitems, getMenuitemsByRestaurant, getMenuitemsByMealtype, searchMenuitems }
+//to filter menuitems
+const filterMenuitems = async(req,res)=> {
+    try{
+        let { hcost, lcost } = req.body;
+        const mealtype = req.body.mealtype;
+
+        var payload = {}
+
+        if (hcost && lcost) {
+            payload = {
+                price: {
+                        [Op.between]: [lcost, hcost],
+                }
+            }
+        }
+
+        const allMenuitems = await Menuitem.findAll({
+            include: [
+                { model: Mealtype, attributes: ["name", "content"] },
+                { model: Cuisine, attributes: ["name"] },
+                { model: Restaurant, attributes: ["name", "address", "contact", "locationId"] }
+            ]
+        }).sort((a,b) => a-b )
+        if(allMenuitems.length > 0){
+        if(hcost && lcost){
+            const costWiseMenuitems = await Menuitem.findAll({where : payload})
+            if(costWiseMenuitems.length>0){
+                res.status(200).json({message : "Menuitems Fetched successfully",menuitems : costWiseMenuitems})
+            }else{
+                res.status(500).json({error : "Menuitems NOT Fetched successfully"})
+            }
+
+        }else{
+            const mealtypeWiseMenuitems = allMenuitems.filter((menuitem) => {
+                return menuitem.Mealtype.name.toLowerCase() === req.body.mealtype.toLowerCase()
+             })
+             console.log(mealtypeWiseMenuitems.length)
+     
+             if(mealtypeWiseMenuitems.length > 0){
+                 res.status(200).json({message : "Menuitems Fetched successfully",menuitems : mealtypeWiseMenuitems})
+             }else{
+                 res.status(500).json({error : "Menuitems NOT Fetched successfully"})
+             }
+        } 
+    }else{
+        res.status(200).json({error : "Menuitems NOT Fetched successfully"})
+    }
+    }catch(err){
+        res.status(500).json({error : err.message || "something went wrong"})
+    }
+}
+
+module.exports = { addNewMenuitem, getMenuitems, getMenuitemsByRestaurant, getMenuitemsByMealtype, searchMenuitems, filterMenuitems }
