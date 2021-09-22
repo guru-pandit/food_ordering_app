@@ -15,7 +15,6 @@ let corsOptions = {
 };
 
 app.use(cors(corsOptions));
-app.use(express.static(publicDirectory));
 app.use(cookieParser());
 app.use(express.json());
 app.set('view engine', 'hbs');
@@ -28,7 +27,7 @@ app.set("view engine", 'hbs');
 
 //setting public directory
 const publicDirectory = path.join(__dirname, './public');
-app.use(express.static(publicDir));
+app.use(express.static(publicDirectory));
 
 // calling sync() method
 db.sequelize.sync();
