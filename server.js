@@ -1,10 +1,12 @@
 // Importing required packages
 const express = require("express");
+const path = require("path");
 const cors = require("cors");
 const db = require("./src/models");
 const nodemailer = require("nodemailer");
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
+const publicDirectory = path.join(__dirname, './public');
 require("dotenv").config();
 
 global.__basedir = __dirname;
@@ -16,9 +18,11 @@ let corsOptions = {
 };
 
 app.use(cors(corsOptions));
+app.use(express.static(publicDirectory));
 app.use(cookieParser());
 app.use(express.json());
-app.use(session({ secret: process.env.SESSION_SECRET_KEY, resave: true, saveUninitialized: true }));
+app.set('view engine', 'hbs');
+app.use(session({ secret: process.env.SESSION_SECRET_KEY, resave: false, saveUninitialized: true }));
 //app.use(express.static('public'));
 
 // calling sync() method
@@ -33,6 +37,7 @@ require("./src/routes/user.route")(app);
 require("./src/routes/menuitem.route")(app);
 require("./src/routes/order.route")(app);
 require("./src/routes/restaurant.route")(app);
+
 
 // Setting Port and listening for requests
 const PORT = process.env.PORT || 8080;

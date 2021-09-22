@@ -89,6 +89,7 @@ const verifyUser = async (req, res) => {
 }
 
 // for login user
+//var sessionArray = []
 const loginUser = async (req, res) => {
     try {
         //take email and password
@@ -100,20 +101,29 @@ const loginUser = async (req, res) => {
 
             //if not data found then return user does not exist
             return res.status(400).json({ error: "user does not exist" });
+
+            //if user there then convert there password into hashed
         } else {
             let isPassMatched = await bcrypt.compareSync(
                 password,
                 data.password
             );
-            if (isPassMatched) {
+
+            //if password is match then generate a token
+            if (isPassMatched && data.isVerified == true) {
                 let token = jwt.sign(
                     { id: data.id, email: data.email },
                     process.env.SECRETKEY,
                     { expiresIn: "1h" }
                 );
                 // console.log(token)
-                req.session.user = data;
-                req.session.save();
+
+                // console.log(req.session.id)
+
+                // sessionArray.push(data.email);
+                // req.session.user = sessionArray;
+                // console.log(req.session.user)
+                // //req.session.save();
                 // return res.send("user logged in");
                 res.cookie(`access-token`, token).send({ message: " user login successfull" });
 
@@ -127,27 +137,63 @@ const loginUser = async (req, res) => {
     }
 };
 
-const logOut = async (req, res) => {
-    // req.session.destroy();
-    // res.clearCookie("access-token");
-    // return res.status(200).json({ message: "Succesfull logout" });
-    if (req.data) {
-        req.session.destroy()
-        res.clearCookie('access-token') // clean up!
-        return res.json({ msg: 'logging you out' })
-    } else {
-        return res.json({ msg: 'no user to log out!' })
-    }
-};
+//user logout here
+// const logOut = async (req, res) => {
+// const { email } = req.body;
 
+// sessionStore = express.session.MemoryStore();
+// sessionStore.get(id, function (err, sess) {
+//     sess.destroy(function (err) {
 
+//     });
+// });
+
+// 
+
+// sessionArray = sessionArray.filter((userEmail) => {
+//     return email !== userEmail
+// })
+// req.session.user=sessionArray
+
+//     const result = sessionArray.filter((userEmail) => {
+//         return email === userEmail
+//     })
+
+//     //then destroy there session
+//     req.session.destroy();
+
+//     console.log(result)
+//     console.log(req.session.user)
+
+//     //clear access token
+//     res.clearCookie("access-token");
+
+// }
+
+// app dashboard
 const dashboard = async (req, res) => {
-    if (!req.session.data) {
-        return res.status(401).send();
+
+    //if user session is not there
+    if (!req.session.user) {
+
+        //then you cannot allow to access
+        return res.status(401).send("You can not allow to access this page ");
+
+    } else {
+
+        //how many time you visit page
+        if (req.session.page_views) {
+            req.session.page_views++;
+            res.send("You visited this page " + req.session.page_views + " times");
+        } else {
+            req.session.page_views = 1;
+            res.send("Welcome to this page for the first time!");
+        }
     }
-    return res.status(200).send("welcome to food ordering app");
+    // return res.status(200).send("welcome to food ordering app");
 
 }
+
 //get user by id 
 const getUsersById = async (req, res) => {
     try {
@@ -165,7 +211,7 @@ const getUsersById = async (req, res) => {
         res.status(500).json({ error: err.message || "Something went wrong" });
     }
 };
-//user delete
+//user delete here
 const deleteUser = async (req, res) => {
     try {
         const userId = req.params.id;
@@ -187,6 +233,7 @@ const deleteUser = async (req, res) => {
     }
 };
 
+//update user 
 const UpdateUser = async (req, res) => {
     try {
         const userId = req.params.id;
@@ -224,6 +271,7 @@ const getUsersByAddress = async (req, res) => {
     }
 };
 
+//user partially update 
 const userPartialUpdate = async (req, res) => {
     try {
         const userId = req.params.id;
@@ -241,4 +289,4 @@ const userPartialUpdate = async (req, res) => {
     }
 };
 
-module.exports = { createUser, verifyUser, loginUser, dashboard, logOut, getUsersById, deleteUser, UpdateUser, getUsersByAddress, userPartialUpdate }
+module.exports = { createUser, verifyUser, loginUser, dashboard, getUsersById, deleteUser, UpdateUser, getUsersByAddress, userPartialUpdate }
