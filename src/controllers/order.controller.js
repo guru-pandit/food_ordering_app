@@ -2,6 +2,7 @@ const { Order, Menuitem, User, Restaurant } = require("../models");
 const { v1 } = require("uuid")
 const Razorpay = require("razorpay")
 const request = require('request');
+const crypto = require("crypto");
 
 // Function to store the rder details
 const placeOrder = async (req, res) => {
@@ -96,7 +97,7 @@ const getOrdersByUserId = async (req, res) => {
 }
 
 // Function for payment gateway integration
-const orderPayment = (req, res) => {
+const orderPayment = async(req, res) => {
     // let { totalPrice } = req.body;
     // console.log("TotalPrice: ", totalPrice);
     const instance = new Razorpay({
@@ -123,4 +124,67 @@ const orderPayment = (req, res) => {
 const checkoutPayment = async(req,res) => {
     res.render('paymentCheckout.hbs');
 }
-module.exports = { placeOrder, getOrderByOrderId, getOrdersByUserId, orderPayment, checkoutPayment }
+
+const checkSuccessOrFailure = (req,res)=> {
+    const instance = new Razorpay({
+        key_id: process.env.RAZORPAY_KEYID, 
+        key_secret: process.env.RAZORPAY_KEYSECRET,
+    })
+    console.log(req.body)
+    instance.payments.fetch(req.body.razorpay_payment_id).then((paymentDocument)=>{
+        console.log(paymentDocument)
+        if(paymentDocument.status === 'captured'){
+            res.status(201).json({
+                    message: "Payment Successful",
+                    redirectUrl: "http://localhost:8080/api/v1/paymentsuccess"
+                    })
+        }else{
+            res.status(201).json({
+                    message: "Payment Failed",
+                    redirectUrl: "http://localhost:8080/api/v1/paymentfailure"
+                    })
+        }
+    })
+
+//     let body=req.body.razorpay_order_id + "|" + req.body.razorpay_payment_id;
+
+//     var expectedSignature = crypto.createHmac('sha256', 'Wok5mJv2F0pa5HKLeXZfUr9r')
+//                                   .update(body.toString())
+//                                   .digest('hex');
+//                                   console.log("sig received " ,req.body.razorpay_signature);
+//                                   console.log("sig generated " ,expectedSignature);
+// console.log(expectedSignature === req.body.razorpay_signature);
+
+//         if(expectedSignature === req.body.razorpay_signature){
+//             //res.status(301).redirect('http://localhost:8080/api/v1/paymentsuccess')
+//             res.status(201).json({
+//                 message: "Order registered",
+//                 redirectUrl: "http://localhost:8080/api/v1/paymentsuccess"
+//                })
+//         }else{
+//             //res.status(301).redirect('http://localhost:8080/api/v1/paymentfailure')
+//             res.status(201).json({
+//                 message: "Order registered",
+//                 redirectUrl: "http://localhost:8080/api/v1/paymentfailure"
+//                })
+//         }
+
+
+}
+const paymentSuccess = async(req,res) => {
+        res.render('paymentSuccess.hbs')
+}
+
+const paymentFailure = async(req,res) => {
+    res.render('paymentFailure.hbs')
+}
+
+module.exports = { placeOrder,
+     getOrderByOrderId,
+     getOrdersByUserId, 
+     orderPayment, 
+     checkoutPayment, 
+     checkSuccessOrFailure,
+     paymentSuccess,
+     paymentFailure
+    }

@@ -37,18 +37,24 @@
         <script>
             axios.post('http://localhost:8080/api/v1/payment/order').then((data)=>{
                 console.log(data)
+                console.log(data.data.data.id)
                 var options = {
             "key": "rzp_test_uYURsxfax869Qb", // Enter the Key ID generated from the Dashboard
-            "amount": data.data.amount, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
-            "currency": "INR",
+            "amount": data.data.data.amount, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+            "currency": data.data.data.currency,
             "name": "Acme Corp",
             "description": "Test Transaction",
             "image": "https://example.com/your_logo",
-            "order_id": data.data.id, //This is a sample Order ID. Pass the `id` obtained in the previous step
+            "order_id": data.data.data.id, //This is a sample Order ID. Pass the `id` obtained in the previous step
+            //"callback_url":"http://localhost:8080/api/v1/isordercomplete",
             "handler": function (response){
-                console.log(response.razorpay_payment_id);
-                console.log(response.razorpay_order_id);
-                console.log(response.razorpay_signature);
+              axios.post('http://localhost:8080/api/v1/isordercomplete',response).then(res=>{
+                console.log(res.data.redirectUrl);
+                window.location = res.data.redirectUrl
+              })
+               console.log("payment_id:",response.razorpay_payment_id);
+                console.log("order_id:",response.razorpay_order_id);
+               console.log("signature:",response.razorpay_signature);
             },
             // "prefill": {
             //     "name": "Gaurav Kumar",
@@ -64,13 +70,14 @@
         };
         var rzp1 = new Razorpay(options);
         rzp1.on('payment.failed', function (response){
-                alert(response.error.code);
-                alert(response.error.description);
-                alert(response.error.source);
-                alert(response.error.step);
-                alert(response.error.reason);
-                alert(response.error.metadata.order_id);
-                alert(response.error.metadata.payment_id);
+                window.location = "http://localhost:8080/api/v1/paymentfailure";
+                //alert(response.error.code);
+                //alert(response.error.description);
+                //alert(response.error.source);
+                //alert(response.error.step);
+                //alert(response.error.reason);
+                //alert(response.error.metadata.order_id);
+                //alert(response.error.metadata.payment_id);
         });
         document.getElementById('rzp-button1').onclick = function(e){
             rzp1.open();

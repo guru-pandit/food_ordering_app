@@ -11,5 +11,10 @@ module.exports = (app) => {
     app.post("/api/v1/payment/order", orderController.orderPayment);
     //checkout
      app.get("/api/v1/payment/checkout", orderController.checkoutPayment)
-
+    //callback
+    app.post("/api/v1/isordercomplete",orderController.checkSuccessOrFailure)
+    //success
+    app.get("/api/v1/paymentsuccess", orderController.paymentSuccess);
+    //failure
+    app.get("/api/v1/paymentfailure", orderController.paymentFailure);
 }
