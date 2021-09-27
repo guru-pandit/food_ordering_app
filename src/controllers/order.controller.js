@@ -8,12 +8,13 @@ const crypto = require("crypto");
 const placeOrder = async (req, res) => {
     try {
         let totalPrice = 0;
-        let deliveryCharge = 60;
+        let deliveryCharge = 40;
 
         let orderBody = {
             orderId: v1(),
             items: req.body.items,
             total: 0,
+            gst: 0,
             userId: req.query.userId,
             restaurantId: req.query.restaurantId,
             transactionId: null,
@@ -26,9 +27,16 @@ const placeOrder = async (req, res) => {
             let menu = await Menuitem.findOne({ where: { id: menuitemId } });
             totalPrice += menu.price * quantity;
         }))
+        
+        let GST = totalPrice * 5 / 100;
+    
+        let finalPrize = totalPrice + GST;
+
+        //assigning GST to the orderBody.gst
+        orderBody.gst = GST;
 
         // Assigning total price to the orderBody.total
-        orderBody.total = totalPrice < 1000 ? totalPrice + deliveryCharge : totalPrice;
+        orderBody.total = finalPrize < 1000 ? finalPrize + deliveryCharge : finalPrize;
         // console.log("OrderBody:",orderBody);
 
 

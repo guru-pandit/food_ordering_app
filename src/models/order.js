@@ -21,6 +21,7 @@ module.exports = (sequelize, DataTypes) => {
     userId: DataTypes.INTEGER,
     restaurantId: DataTypes.INTEGER,
     total: DataTypes.INTEGER,
+    gst: DataTypes.FLOAT,
     transactionId: DataTypes.STRING,
     orderedAt: DataTypes.DATE,
     isDelivered: DataTypes.BOOLEAN
