@@ -17,7 +17,6 @@ let corsOptions = {
 app.use(cors(corsOptions));
 app.use(cookieParser());
 app.use(express.json());
-app.set('view engine', 'hbs');
 //app.use(session({ secret: process.env.SESSION_SECRET_KEY, resave: false, saveUninitialized: true }));
 //app.use(express.static('public'));
 
