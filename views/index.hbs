@@ -4,17 +4,35 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="/css/style.css" />
     <title>Food</title>
   </head>
   <body>
     <div class="restaurants">
+      <div class="search-box">
+        <div class="input-container">
+          <div class="locality">
+            <i class="fa fa-map-marker"></i>
+            <select class="location" name="location" id="location">
+              <option value="" >Ratnagiri</option>
+              <option value="">Mumbai</option>
+            </select>
+            </div>
+            <div class="divider"></div>
+            <div class="search-bar">
+              <i class="fa fa-search"></i>
+              <input type="text" class="search" placeholder="Search restaurant or dish">
+            </div>
+        </div>
+      </div>
       <div class="cards">
           {{#each restaurants}}
               <div class="rest-card">
                   <img src="/food.jpg" alt="" class="rest-img" />
                   <h4 class="rest-heading">{{this.name}}</h4>
                   <p class="rest-address">{{this.Location.landmark}}, {{this.Location.city}}</p>
+                  <p class="rest-time">09:00AM - 11:00PM</p>
               </div>
           {{/each}}
       </div>

@@ -10,10 +10,11 @@
 body{
     height: 100vh;
     width: 100%;
-    background: linear-gradient(rgba(0,0,0,0.2),rgba(0,0,0,0.2)), url("../images/bg/bg.jpg");
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
+    background-color: #eee;
+    /* background: linear-gradient(rgba(0,0,0,0.2),rgba(0,0,0,0.2)), url("../images/bg/bg.jpg"); */
+    /* background-position: center; */
+    /* background-repeat: no-repeat; */
+    /* background-size: cover; */
     /* padding-top: 2.5rem; */
 }
 
@@ -88,8 +89,71 @@ body{
   letter-spacing: 1px;
 }
 
-.restaurants{
+/* Search Bar CSS */
+.search-box{
+  width: 70%;
+  max-width: 700px;
+  margin: 0 auto;
+  border-radius: 10px;
+  background-color: #fff;
+  box-shadow: 0px 1px 4px rgba(28, 28, 28, .2);
+  padding: 1rem .5rem;
+}
+
+.input-container{
   display: flex;
+  align-items: center;
+}
+
+.fa-map-marker,
+.fa-search{
+  font-size: 1.5rem;
+  margin: .5rem;
+  color: #757575;
+}
+
+.fa-search{
+  font-size: 1.2rem;
+  margin-top: .7rem;
+}
+
+.locality{
+  flex: 1;
+  display: flex;
+}
+
+.location{
+  width: 100%;
+  border: none;
+  outline: none;
+  font-size: 1rem;
+}
+
+.search-bar{
+  flex: 2;
+  display: flex;
+}
+
+.divider{
+  width: 0;
+  height: 40px;
+  border: 1px solid #757575;
+  margin: 0 .5rem;
+}
+
+.search{
+  width: 100%;
+  border: none;
+  outline: none;
+  font-size: 1rem;
+}
+
+.search::placeholder{
+  color: #696969;
+}
+
+.restaurants{
+  padding-top: .5rem;
 }
 
 .cards{
@@ -124,12 +188,19 @@ body{
 
 .rest-heading{
   margin: .5rem 0 0;
+  font-size: 1.2rem;
   font-weight: 500;
   color: #1c1c1c;
 }
 
 .rest-address{
   color: #696969;
+  font-size: .9rem;
+  line-height: 1.5;
+}
+
+.rest-time{
+  color: #9c9c9c;
   font-size: .8rem;
   line-height: 1.5;
 }
@@ -194,3 +265,4 @@ body{
     grid-template-columns: 1fr; 
   }
 }
+
