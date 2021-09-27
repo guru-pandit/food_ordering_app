@@ -22,7 +22,9 @@ module.exports = (sequelize, DataTypes) => {
     address: DataTypes.STRING,
     contact: DataTypes.STRING,
     locationId: DataTypes.INTEGER,
-    avgRatings: DataTypes.FLOAT
+    avgRatings: DataTypes.FLOAT,
+    openingTime: DataTypes.STRING,
+    closingTime: DataTypes.STRING,
   }, {
     sequelize,
     modelName: 'Restaurant',
