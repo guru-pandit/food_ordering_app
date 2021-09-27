@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/css/style.css" />
+    <title>Food</title>
+  </head>
+  <body>
+    <div class="restaurants">
+      <div class="cards">
+          {{#each restaurants}}
+              <div class="rest-card">
+                  <img src="/food.jpg" alt="" class="rest-img" />
+                  <h4 class="rest-heading">{{this.name}}</h4>
+                  <p class="rest-address">{{this.Location.landmark}}, {{this.Location.city}}</p>
+              </div>
+          {{/each}}
+      </div>
+    </div>
+  </body>
+</html>
