@@ -45,10 +45,9 @@
           {{#each restaurants}}
               <div class="rest-card" data-restaurantid={{this.id}} onclick="showRestaurant(this.dataset.restaurantid)">
               <div class="rest-img">
-                <img src="/food.jpg" alt=""/>
+                <img src={{this.image}} alt=""/>
                 <div class="rating">4 <i class="fa fa-star"></i></div>
               </div>
-                  {{!-- <img src="/food.jpg" alt="" class="rest-img"/> --}}
                   <h4 class="rest-heading">{{this.name}}</h4>
                   <p class="rest-address">{{this.Location.landmark}}, {{this.Location.city}}</p>
                   <p class="rest-time">{{this.openingTime}} - {{this.closingTime}}</p>

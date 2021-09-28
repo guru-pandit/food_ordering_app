@@ -25,6 +25,7 @@ module.exports = (sequelize, DataTypes) => {
     avgRatings: DataTypes.FLOAT,
     openingTime: DataTypes.STRING,
     closingTime: DataTypes.STRING,
+    image: DataTypes.STRING
   }, {
     sequelize,
     modelName: 'Restaurant',

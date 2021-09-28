@@ -1,11 +1,7 @@
 {
     "development": {
         "username": "root",
-<<<<<<< HEAD
         "password": "Guru@280295",
-=======
-        "password": "gaurav@18",
->>>>>>> fbbf2073f70f30cdc1924304350525a067eb032b
         "database": "food_ordering_development",
         "host": "127.0.0.1",
         "dialect": "mysql"

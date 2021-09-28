@@ -1,6 +1,8 @@
 const { Restaurant, Location, Review, Menuitem } = require("../models");
 const db = require("../models");
 const Op = db.Sequelize.Op;
+const fs = require("fs")
+const path = require("path")
 
 //to get all restaurants
 const getAllRestaurants = async (req, res) => {
@@ -17,7 +19,15 @@ const getAllRestaurants = async (req, res) => {
         //to check whether we get response or not
         if (response.length > 0) {
             // return res.status(200).json({message : "Restaurants Fetched Successfully",restaurants : response})
-            res.render("index", { restaurants: response })
+            let restaurants = []
+            response.forEach((rest) => {
+                rest.image = `/images/restaurants/${rest.id}/${rest.image}`
+                restaurants.push(rest)
+            })
+
+            // console.log(restaurants);
+
+            res.render("index", { restaurants: restaurants })
         } else {
             return res.status(500).json({ error: "Restaurants NOT Fetched Successfully" })
         }
@@ -305,4 +315,44 @@ const addTime = async (req, res) => {
     }
 }
 
-module.exports = { getAllRestaurants, getRestaurantsByLocation, addReview, filterRestaurant, searchRestaurant, getRestaurantsDetails, addTime }
+// function to add image in restaurnt
+const addImage = async (req, res) => {
+    try {
+        let { restaurantId } = req.params;
+        let { filename, originalname } = req.file
+        // console.log(req.file);
+
+        let restaurant = await Restaurant.findOne({ where: { id: restaurantId } })
+        // console.log(restaurant);
+
+        if (restaurant !== null) {
+            //to update image field in restaurant model
+            restaurant.image = req.file.originalname;
+            await restaurant.save();
+
+            //to check whether folder is exist or not
+            let isFolderExist = fs.existsSync(path.join(__basedir, `public/images/restaurants/${restaurantId}`));
+            console.log(isFolderExist)
+            //if folder exists
+            if (!isFolderExist) {
+                //to create new directory
+                fs.mkdirSync(path.join(__basedir, `public/images/restaurants/${restaurantId}`));
+                //to copy images from tmp folder to images folder
+                fs.copyFileSync(path.join(__basedir, `public/tmp/${filename}`), path.join(__basedir, `public/images/restaurnts/${restaurantId}/${originalname}`));
+                fs.unlinkSync(path.join(__basedir, `public/tmp/${filename}`))
+            } else {
+                //to copy images from tmp folder to images folder
+                fs.copyFileSync(path.join(__basedir, `public/tmp/${filename}`), path.join(__basedir, `public/images/restaurants/${restaurantId}/${originalname}`));
+                fs.unlinkSync(path.join(__basedir, `public/tmp/${filename}`))
+
+            }
+            return res.status(200).json({ message: "Image uploaded" })
+        } else {
+            return res.status(400).json({ message: "No restaurant found" })
+        }
+    } catch (err) {
+        res.status(500).json({ error: err.message || "something went wrong" })
+    }
+}
+
+module.exports = { getAllRestaurants, getRestaurantsByLocation, addReview, filterRestaurant, searchRestaurant, getRestaurantsDetails, addTime, addImage }
