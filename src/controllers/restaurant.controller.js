@@ -69,8 +69,8 @@ const getRestaurantsDetails = async (req, res) => {
             ]
         })
         if (restaurantDetails !== null) {
-            // res.status(200).json({ message: "Restaurant Details Fetched Successfully", restaurants: restaurantDetails })
-            res.render("details")
+            //res.status(200).json({message : "Restaurant Details Fetched Successfully",restaurants : restaurantDetails})
+            res.render('details', { restaurant: restaurantDetails })
         } else {
             res.status(500).json({ message: "Restaurants Details NOT Fetched Successfully" })
         }
