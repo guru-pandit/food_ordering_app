@@ -14,10 +14,7 @@
         <div class="input-container">
           <div class="locality">
             <i class="fa fa-map-marker"></i>
-            <select class="location" name="location" id="location">
-              <option value="" >Ratnagiri</option>
-              <option value="">Mumbai</option>
-            </select>
+            <select class="location" name="location" id="location"></select>
             </div>
             <div class="divider"></div>
             <div class="search-bar">
@@ -58,7 +55,20 @@
 
     <script src="https://cdn.jsdelivr.net/npm/axios@0.21.4/dist/axios.min.js"></script>
     <script>
-      axios.get()
+
+      let locationElem = document.getElementById("location")
+
+      axios.get("/api/v1/locations").then(({data})=>{
+        return data.locations
+      }).then((locations)=>{
+        // console.log(locations)
+        locations.forEach((loc)=>{
+          let optionElem = document.createElement("option");
+          optionElem.text=loc.city;
+          optionElem.value=loc.id;
+          locationElem.appendChild(optionElem)
+        })
+      })
 
       function showRestaurant(restaurantid){
         // console.log(restaurantid)
