@@ -27,31 +27,31 @@
         </div>
       </div>
 
-<div class="filters">
-  <div class="filter-container">
-    <i class="fa fa-filter"></i>
-    Filters
-  </div>
-  <div class="filter-container">
-    Great offers
-  </div>
-  <div class="filter-container">
-    Rating
-    <i class="fa fa-angle-down"></i>
-  </div>
-</div>
+      <div class="filters">
+        <div class="filter-container">
+          <i class="fa fa-filter"></i>
+          Filters
+        </div>
+        <div class="filter-container">
+          Great offers
+        </div>
+        <div class="filter-container">
+          Rating
+          <i class="fa fa-angle-down"></i>
+        </div>
+      </div>
 
       <div class="cards">
           {{#each restaurants}}
               <div class="rest-card" data-restaurantid={{this.id}} onclick="showRestaurant(this.dataset.restaurantid)">
-<div class="rest-img">
-  <img src="/food.jpg" alt=""/>
-  <div class="rating">4 <i class="fa fa-star"></i></div>
-</div>
+              <div class="rest-img">
+                <img src="/food.jpg" alt=""/>
+                <div class="rating">4 <i class="fa fa-star"></i></div>
+              </div>
                   {{!-- <img src="/food.jpg" alt="" class="rest-img"/> --}}
                   <h4 class="rest-heading">{{this.name}}</h4>
                   <p class="rest-address">{{this.Location.landmark}}, {{this.Location.city}}</p>
-                  <p class="rest-time">09:00AM - 11:00PM</p>
+                  <p class="rest-time">{{this.openingTime}} - {{this.closingTime}}</p>
               </div>
           {{/each}}
       </div>
@@ -59,6 +59,8 @@
 
     <script src="https://cdn.jsdelivr.net/npm/axios@0.21.4/dist/axios.min.js"></script>
     <script>
+      axios.get()
+
       function showRestaurant(restaurantid){
         // console.log(restaurantid)
         let url = `${window.location.protocol}//${window.location.hostname}:${window.location.port}/api/v1/retaurantsdetails/${restaurantid}`
