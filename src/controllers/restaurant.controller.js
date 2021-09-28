@@ -33,22 +33,22 @@ const getRestaurantsByLocation = async (req, res) => {
         const locationId = req.params.locationId;
         //to find Restaurants Based on the locationId which is passed in url 
         const response = await Restaurant.findAll({
-            where : {
-                locationId : locationId
-        },
-        //to include location,Menuitem,Review model in restaurant
-        include : [
-            {model : Location ,attributes : ["name","landmark","city","state","country"]},
-            {model : Menuitem },
-            {model : Review },
-    ]
-    })
-    //to check whether we get response or not
-    if(response.length>0){
-        res.status(200).json({message : "Restaurants Fetched Successfully",restaurants : response})
-    }else{
-        res.status(500).json({message: "Restaurants NOT Fetched Successfully"})
-    }
+            where: {
+                locationId: locationId
+            },
+            //to include location,Menuitem,Review model in restaurant
+            include: [
+                { model: Location, attributes: ["name", "landmark", "city", "state", "country"] },
+                { model: Menuitem },
+                { model: Review },
+            ]
+        })
+        //to check whether we get response or not
+        if (response.length > 0) {
+            res.status(200).json({ message: "Restaurants Fetched Successfully", restaurants: response })
+        } else {
+            res.status(500).json({ message: "Restaurants NOT Fetched Successfully" })
+        }
 
     } catch (err) {
         res.status(500).json({ error: err.message || "something went wrong" })
@@ -56,26 +56,27 @@ const getRestaurantsByLocation = async (req, res) => {
 }
 
 //to get restaurants details by restaurantId
-const getRestaurantsDetails = async(req,res) => {
-try{
-    const {restaurantId} = req.params;
-    const restaurantDetails = await Restaurant.findOne({
-        where : {id : restaurantId},
-        //to include location,Menuitem,Review model in restaurant
-        include : [
-            {model : Location ,attributes : ["name","landmark","city","state","country"]},
-            {model : Menuitem },
-            {model : Review },
-    ]
-    })
-    if(restaurantDetails !== null){
-        res.status(200).json({message : "Restaurant Details Fetched Successfully",restaurants : restaurantDetails})
-    }else{
-        res.status(500).json({message: "Restaurants Details NOT Fetched Successfully"})
+const getRestaurantsDetails = async (req, res) => {
+    try {
+        const { restaurantId } = req.params;
+        const restaurantDetails = await Restaurant.findOne({
+            where: { id: restaurantId },
+            //to include location,Menuitem,Review model in restaurant
+            include: [
+                { model: Location, attributes: ["name", "landmark", "city", "state", "country"] },
+                { model: Menuitem },
+                { model: Review },
+            ]
+        })
+        if (restaurantDetails !== null) {
+            // res.status(200).json({ message: "Restaurant Details Fetched Successfully", restaurants: restaurantDetails })
+            res.render("details")
+        } else {
+            res.status(500).json({ message: "Restaurants Details NOT Fetched Successfully" })
+        }
+    } catch (err) {
+        res.status(500).json({ error: err.message || "something went wrong" })
     }
-}catch(err){
-    res.status(500).json({error : err.message || "something went wrong"})
-}
 }
 
 //to add new review
@@ -282,24 +283,26 @@ const searchRestaurant = async (req, res) => {
     }
 }
 
-const addTime = async(req,res) => {
-    try{
-        const {restaurantId} = req.params;
-        const {ot , ct} = req.body;
-        const restaurant = await Restaurant.findOne({where :{
-            id : restaurantId
-        }})
-        if(restaurant !== null){
+const addTime = async (req, res) => {
+    try {
+        const { restaurantId } = req.params;
+        const { ot, ct } = req.body;
+        const restaurant = await Restaurant.findOne({
+            where: {
+                id: restaurantId
+            }
+        })
+        if (restaurant !== null) {
             restaurant.openingTime = ot;
             restaurant.closingTime = ct;
             restaurant.save();
-            return res.status(200).json({message : "Restaurants Updated", restaurant : restaurant})
-        }else{
-            return res.status(500).json({message : "Restaurants not found..."})
+            return res.status(200).json({ message: "Restaurants Updated", restaurant: restaurant })
+        } else {
+            return res.status(500).json({ message: "Restaurants not found..." })
         }
-    }catch(err){
-        res.status(500).json({error : err.message || "something went wrong"})
+    } catch (err) {
+        res.status(500).json({ error: err.message || "something went wrong" })
     }
 }
 
-module.exports = {getAllRestaurants, getRestaurantsByLocation, addReview, filterRestaurant, searchRestaurant,getRestaurantsDetails, addTime}
+module.exports = { getAllRestaurants, getRestaurantsByLocation, addReview, filterRestaurant, searchRestaurant, getRestaurantsDetails, addTime }
