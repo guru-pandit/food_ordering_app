@@ -154,7 +154,7 @@ const searchMenuitems = async (req, res) => {
 
         if (search) {
             payload = {
-                [Op.or] : [
+                [Op.or]: [
                     { name: { [Op.like]: '%' + search + '%' } },
                     { description: { [Op.like]: '%' + search + '%' } }
                 ]
@@ -181,8 +181,8 @@ const searchMenuitems = async (req, res) => {
 }
 
 //to filter menuitems
-const filterMenuitems = async(req,res)=> {
-    try{
+const filterMenuitems = async (req, res) => {
+    try {
         let { hcost, lcost } = req.body;
         const mealtype = req.body.mealtype;
 
@@ -191,7 +191,7 @@ const filterMenuitems = async(req,res)=> {
         if (hcost && lcost) {
             payload = {
                 price: {
-                        [Op.between]: [lcost, hcost],
+                    [Op.between]: [lcost, hcost],
                 }
             }
         }
@@ -202,33 +202,33 @@ const filterMenuitems = async(req,res)=> {
                 { model: Cuisine, attributes: ["name"] },
                 { model: Restaurant, attributes: ["name", "address", "contact", "locationId"] }
             ]
-        }).sort((a,b) => a-b )
-        if(allMenuitems.length > 0){
-        if(hcost && lcost){
-            const costWiseMenuitems = await Menuitem.findAll({where : payload})
-            if(costWiseMenuitems.length>0){
-                res.status(200).json({message : "Menuitems Fetched successfully",menuitems : costWiseMenuitems})
-            }else{
-                res.status(500).json({error : "Menuitems NOT Fetched successfully"})
-            }
+        }).sort((a, b) => a - b)
+        if (allMenuitems.length > 0) {
+            if (hcost && lcost) {
+                const costWiseMenuitems = await Menuitem.findAll({ where: payload })
+                if (costWiseMenuitems.length > 0) {
+                    res.status(200).json({ message: "Menuitems Fetched successfully", menuitems: costWiseMenuitems })
+                } else {
+                    res.status(500).json({ error: "Menuitems NOT Fetched successfully" })
+                }
 
-        }else{
-            const mealtypeWiseMenuitems = allMenuitems.filter((menuitem) => {
-                return menuitem.Mealtype.name.toLowerCase() === req.body.mealtype.toLowerCase()
-             })
-             console.log(mealtypeWiseMenuitems.length)
-     
-             if(mealtypeWiseMenuitems.length > 0){
-                 res.status(200).json({message : "Menuitems Fetched successfully",menuitems : mealtypeWiseMenuitems})
-             }else{
-                 res.status(500).json({error : "Menuitems NOT Fetched successfully"})
-             }
-        } 
-    }else{
-        res.status(200).json({error : "Menuitems NOT Fetched successfully"})
-    }
-    }catch(err){
-        res.status(500).json({error : err.message || "something went wrong"})
+            } else {
+                const mealtypeWiseMenuitems = allMenuitems.filter((menuitem) => {
+                    return menuitem.Mealtype.name.toLowerCase() === req.body.mealtype.toLowerCase()
+                })
+                console.log(mealtypeWiseMenuitems.length)
+
+                if (mealtypeWiseMenuitems.length > 0) {
+                    res.status(200).json({ message: "Menuitems Fetched successfully", menuitems: mealtypeWiseMenuitems })
+                } else {
+                    res.status(500).json({ error: "Menuitems NOT Fetched successfully" })
+                }
+            }
+        } else {
+            res.status(200).json({ error: "Menuitems NOT Fetched successfully" })
+        }
+    } catch (err) {
+        res.status(500).json({ error: err.message || "something went wrong" })
     }
 }
 
