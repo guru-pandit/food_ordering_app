@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios@0.21.4/dist/axios.min.js"></script>
 </head>
      <link rel="stylesheet" href="/css/style1.css">
 
@@ -116,7 +117,8 @@ North Indian, Chinese, South Indian, Street Food, Ice Cream, Beverages</p>
 
       <!-- Modal Header -->
       <div class="modal-header">
-        <h4 class="modal-title">Modal Heading</h4>
+        <h4 class="modal-title" style="margin-left: 235px;
+    font-size: 25px;">Review</h4>
         <button type="button" class="close" data-dismiss="modal">&times;</button>
       </div>
 
@@ -126,44 +128,15 @@ North Indian, Chinese, South Indian, Street Food, Ice Cream, Beverages</p>
 <h6 id="fh6">Your review will help us to improve our web hosting quality products, and customer services.</h6>
 
 
-<form id="feedback" action="">
-  <div class="pinfo">Your personal info</div>
-  
-<div class="form-group">
-  <div class="col-md-4 inputGroupContainer">
-  <div class="input-group">
-  <span class="input-group-addon"><i class="fa fa-user"></i></span>
-  <input  name="name" placeholder="John Doe" class="form-control"  type="text">
-    </div>
-  </div>
-</div>
-
-<div class="form-group">
-  <div class="col-md-4 inputGroupContainer">
-  <div class="input-group">
-  <span class="input-group-addon"><i class="fa fa-envelope"></i></span>
-    <input name="email" type="email" class="form-control" placeholder="john.doe@yahoo.com">
-     </div>
-  </div>
-</div>
-
-<div class="form-group">
-  <div class="col-md-4 inputGroupContainer">
-  <div class="input-group">
-  <span class="input-group-addon"><i class="fa fa-globe"></i></span>
-  <input  name="URL" placeholder="https://google.com" class="form-control"  type="url">
-    </div>
-  </div>
-</div>
+<form id="feedback"  action="">
 
  <div class="pinfo">Rate our overall services.</div>
   
-
 <div class="form-group">
-  <div class="col-md-4 inputGroupContainer">
+  <div class="col-md-4 inputGroupContainer" style="width: 100%;">
   <div class="input-group">
-  <span class="input-group-addon"><i class="fa fa-heart"></i></span>
-   <select class="form-control" id="rate">
+  <span class="input-group-addon" style="font-size : 14px"><i class="fa fa-heart"></i></span>
+   <select class="form-control" id="rate" name="stars">
       <option value="1star">1</option>
       <option value="2stars">2</option>
       <option value="3stars">3</option>
@@ -174,21 +147,23 @@ North Indian, Chinese, South Indian, Street Food, Ice Cream, Beverages</p>
   </div>
 </div>
 
- <div class="pinfo">Write your feedback.</div>
+ <div class="pinfo" style="margin-top: 60px;">Write your feedback.</div>
   
-
 <div class="form-group">
-  <div class="col-md-4 inputGroupContainer">
+  <div class="col-md-4 inputGroupContainer" style="width: 100%;">
   <div class="input-group">
-  <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
-  <textarea class="form-control" id="review" rows="3"></textarea>
+  <span class="input-group-addon" style="height: 70px; font-size : 14px"><i class="fa fa-pencil"></i></span>
+  <textarea class="form-control" style="height: 70px;" id="review" rows="3" name="comment"></textarea>
  
     </div>
   </div>
 </div>
 
- <button type="submit" class="btn btn-primary">Submit</button>
-
+ <button type="submit" class="btn btn-primary" id="btn-submit" style="margin-top: 60px;
+    margin-left: 15px;
+    width: 80px;
+    height: 30px;
+    font-size: 12px;">Submit</button>
 
 </form>
       </div>
@@ -203,6 +178,31 @@ North Indian, Chinese, South Indian, Street Food, Ice Cream, Beverages</p>
 </div>
 
 <script>
+
+  document.getElementById('btn-submit').onclick = function(e){
+                e.preventDefault();
+                const form = document.getElementById('feedback');
+                
+                // getting the element's value
+                const stars = form.elements['rate'].value;
+                const comment = form.elements['review'].value;
+
+                const data = {
+                  stars : parseInt(stars),
+                  comment : comment
+                }
+
+                axios.post(
+                  'http://localhost:8080/api/v1/addnewreview?userId=1&restaurantId=2',
+                   data,
+                ).then(res => {
+                  console.log(res)
+                })
+                .catch(err => {
+                  console.log(err.response.data)
+                })
+              }
+
 function openCity(evt, cityName) {
   var i, tabcontent, tablinks;
   tabcontent = document.getElementsByClassName("tabcontent");
