@@ -13,4 +13,6 @@ module.exports = (app) => {
     app.post("/api/v1/search", menuitemController.searchMenuitems);
     //to filter menuitems
     app.post("/api/v1/filter", menuitemController.filterMenuitems)
+    //to add images
+    app.post("/api/v1/menuitemimages/:menuitemid", uploadImage.array('images', 5), menuitemController.addImage)
 }

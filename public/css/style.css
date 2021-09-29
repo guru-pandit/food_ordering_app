@@ -10,11 +10,12 @@
 body{
     height: 100vh;
     width: 100%;
-    background-color: #eee;
-    /* background: linear-gradient(rgba(0,0,0,0.2),rgba(0,0,0,0.2)), url("../images/bg/bg.jpg"); */
-    /* background-position: center; */
-    /* background-repeat: no-repeat; */
-    /* background-size: cover; */
+    /* background-color: #eee; */
+    background: linear-gradient(rgba(0,0,0,0.2),rgba(0,0,0,0.2)), url("../images/bg/bg.jpg");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-attachment: fixed;
     /* padding-top: 2.5rem; */
 }
 
@@ -134,6 +135,10 @@ body{
   display: flex;
 }
 
+.search-bar input[type="submit"]{
+  display: none;
+}
+
 .divider{
   width: 0;
   height: 40px;
@@ -156,6 +161,19 @@ body{
   padding-top: .5rem;
 }
 
+/* Headings */
+.main-heading{
+  max-width: 1140px;
+  width: 95%;
+  margin: 1rem auto 0;
+}
+
+.heading{
+  font-size: 1.8rem;
+  color: #1c1c1c;
+}
+
+/* Reataurants css */
 .cards{
   max-width: 1140px;
   width: 95%;
@@ -198,9 +216,9 @@ body{
   position: absolute;
   top: 130px;
   right: 3px;
-  border: 1px solid #ff9f1a;
+  border: 1px solid #0C9463;
   border-radius: 5px;
-  color: #ff9f1a;
+  color: #0C9463;
   font-size: .8rem;
   padding: .1rem .4rem;
 }
@@ -227,10 +245,6 @@ body{
   color: #9c9c9c;
   font-size: .8rem;
   line-height: 1.5;
-}
-
-.btn-prod{
-  margin-left: .5rem;
 }
 
 .cart{
@@ -295,6 +309,9 @@ body{
   display: flex;
   align-items: center;
   justify-content: flex-start;
+  max-width: 1140px;
+  width: 95%;
+  margin: 0 auto;
 }
 
 .filter-container{
@@ -318,4 +335,71 @@ body{
   margin: 0 0 0 .25rem;
 }
 
+/* menu card css */
+.menu-card{
+  width: 100%;
+  background-color: #fff;
+  padding: .5rem;
+  margin: 1rem 0;
+  border-radius: 10px;
+  transition: all .3s ease;
+}
 
+.menu-img{
+  width: 100%;
+  height: 160px;
+  border-radius: 10px;
+}
+
+.menu-img img{
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.menu-details{
+  margin-top: .5rem;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.menu-heading{
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: #1c1c1c;
+}
+
+.menu-desc{
+ color: #9c9c9c;
+  font-size: .8rem;
+  line-height: 1.5;
+}
+
+.menu-price{
+  color: #0C9463;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.add-menu{
+  width: 35px;
+  height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: .25rem;
+  background: #ff9f1a;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.add-menu .fa-plus{
+  font-size: 1.2rem;
+  color: #fff;
+  margin: 0;
+}
+/*  */

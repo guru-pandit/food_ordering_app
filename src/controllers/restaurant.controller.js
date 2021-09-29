@@ -18,7 +18,7 @@ const getAllRestaurants = async (req, res) => {
         })
         //to check whether we get response or not
         if (response.length > 0) {
-            // return res.status(200).json({message : "Restaurants Fetched Successfully",restaurants : response})
+            // return res.status(200).json({ message: "Restaurants Fetched Successfully", restaurants: response })
             let restaurants = []
             response.forEach((rest) => {
                 rest.image = `/images/restaurants/${rest.id}/${rest.image}`
@@ -55,7 +55,28 @@ const getRestaurantsByLocation = async (req, res) => {
         })
         //to check whether we get response or not
         if (response.length > 0) {
-            res.status(200).json({ message: "Restaurants Fetched Successfully", restaurants: response })
+
+            let restaurants = []
+            response.forEach((rest) => {
+                rest.image = `/images/restaurants/${rest.id}/${rest.image}`
+                restaurants.push(rest)
+            })
+
+            let menuitemsByLocation = []
+
+            response.forEach((rest) => {
+                // console.log(rest.Menuitems.length);
+                if (rest.Menuitems.length > 0) {
+                    rest.Menuitems.forEach((menu) => {
+                        menu.image = `/images/menuitems/${menu.id}/${menu.image.images[0]}`
+                        menuitemsByLocation.push(menu)
+                    })
+                }
+            })
+
+            // res.status(200).json({ message: "Restaurants Fetched Successfully", restaurants: response, menuitems: menuitemsByLocation })
+
+            res.status(200).render("index", { restaurants: restaurants, menuitems: menuitemsByLocation })
         } else {
             res.status(500).json({ message: "Restaurants NOT Fetched Successfully" })
         }
@@ -261,7 +282,9 @@ const filterRestaurant = async (req, res) => {
 // }
 const searchRestaurant = async (req, res) => {
     try {
-        const { search } = req.body;
+        // const { search } = req.body;
+        const { search } = req.query
+        console.log(search)
         // var payload = {}
         // if (search) {
         //     payload = {
@@ -332,21 +355,25 @@ const addImage = async (req, res) => {
 
             //to check whether folder is exist or not
             let isFolderExist = fs.existsSync(path.join(__basedir, `public/images/restaurants/${restaurantId}`));
-            console.log(isFolderExist)
-            //if folder exists
-            if (!isFolderExist) {
-                //to create new directory
-                fs.mkdirSync(path.join(__basedir, `public/images/restaurants/${restaurantId}`));
-                //to copy images from tmp folder to images folder
-                fs.copyFileSync(path.join(__basedir, `public/tmp/${filename}`), path.join(__basedir, `public/images/restaurnts/${restaurantId}/${originalname}`));
-                fs.unlinkSync(path.join(__basedir, `public/tmp/${filename}`))
-            } else {
-                //to copy images from tmp folder to images folder
-                fs.copyFileSync(path.join(__basedir, `public/tmp/${filename}`), path.join(__basedir, `public/images/restaurants/${restaurantId}/${originalname}`));
-                fs.unlinkSync(path.join(__basedir, `public/tmp/${filename}`))
 
+            if (isFolderExist) {
+                fs.copyFile(path.join(__basedir, `public/tmp/${filename}`), path.join(__basedir, `public/images/restaurants/${restaurantId}/${originalname}`), (err) => {
+                    if (err) throw err;
+                    fs.unlinkSync(path.join(__basedir, `public/tmp/${filename}`));
+                    return res.status(200).json({ message: "File uploaded" });
+                })
+            } else {
+                fs.mkdir(path.join(__basedir, `public/images/restaurants/${restaurantId}`), { recursive: true }, (err) => {
+                    if (err) throw err;
+
+                    // console.log(__basedir);
+                    fs.copyFile(path.join(__basedir, `public/tmp/${filename}`), path.join(__basedir, `public/images/restaurants/${restaurantId}/${originalname}`), (err) => {
+                        if (err) throw err;
+                        fs.unlinkSync(path.join(__basedir, `public/tmp/${filename}`));
+                        return res.status(200).json({ message: "image uploaded" });
+                    })
+                })
             }
-            return res.status(200).json({ message: "Image uploaded" })
         } else {
             return res.status(400).json({ message: "No restaurant found" })
         }
