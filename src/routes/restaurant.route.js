@@ -13,7 +13,8 @@ module.exports = (app) => {
    //to filter restaurant
    app.post("/api/v1/filterrestaurants", restaurantController.filterRestaurant)
    //to search restaurant
-   app.post("/api/v1/searchrestaurants", restaurantController.searchRestaurant)
+   // app.post("/api/v1/searchrestaurants", restaurantController.searchRestaurant)
+   app.get("/api/v1/searchrestaurants", restaurantController.searchRestaurant)
    //to add opening and closing time
    app.post("/api/v1/addtime/:restaurantId", restaurantController.addTime);
    //to add iamge

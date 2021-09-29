@@ -14,13 +14,14 @@
         <div class="input-container">
           <div class="locality">
             <i class="fa fa-map-marker"></i>
-            <select class="location" name="location" id="location"></select>
+            <select class="location" name="location" id="location" onchange="getRestaurants()"></select>
             </div>
             <div class="divider"></div>
-            <div class="search-bar">
-              <i class="fa fa-search"></i>
-              <input type="text" class="search" placeholder="Search restaurant or dish">
-            </div>
+              <form action="#" class="search-bar" onsubmit="searchRestaurants()">
+                <i class="fa fa-search"></i>
+                <input type="text" class="search" placeholder="Search restaurant or dish">
+                <input type="submit">
+              </form>
         </div>
       </div>
 
@@ -38,6 +39,10 @@
         </div>
       </div>
 
+      <div class="main-heading">
+        <h2 class="heading">Popular restaurants near you</h2>
+      </div>
+
       <div class="cards">
           {{#each restaurants}}
               <div class="rest-card" data-restaurantid={{this.id}} onclick="showRestaurant(this.dataset.restaurantid)">
@@ -51,6 +56,30 @@
               </div>
           {{/each}}
       </div>
+
+      <div class="main-heading">
+        <h2 class="heading">Our picks for you</h2>
+      </div>
+
+      <div class="cards">
+          {{#each menuitems}}
+              <div class="menu-card">
+                  <div class="menu-img">
+                    <img src={{this.image}} alt=""/>
+                  </div>
+                  <div class="menu-details">
+                    <div class="details-left">
+                      <h4 class="menu-heading">{{this.name}}</h4>
+                      <p class="menu-desc">{{this.description}}</p>
+                    </div>
+                    <div class="details-right">
+                      <p class="menu-price">&#8377; {{this.price}}</p>
+                      <div class="add-menu"><i class="fa fa-plus"></i></div>
+                    </div>
+                  </div>
+              </div>
+          {{/each}}
+      </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/axios@0.21.4/dist/axios.min.js"></script>
@@ -58,25 +87,39 @@
 
       let locationElem = document.getElementById("location")
 
-      axios.get("/api/v1/locations").then(({data})=>{
+      window.addEventListener("load",()=>{
+        axios.get("/api/v1/locations").then(({data})=>{
         return data.locations
-      }).then((locations)=>{
-        // console.log(locations)
-        locations.forEach((loc)=>{
-          let optionElem = document.createElement("option");
-          optionElem.text=loc.city;
-          optionElem.value=loc.id;
-          locationElem.appendChild(optionElem)
+        }).then((locations)=>{
+          // console.log(locations)
+          locations.forEach((loc)=>{
+              let optionElem = document.createElement("option");
+              optionElem.className = "locationOptions";
+              optionElem.text=loc.city;
+              optionElem.value=loc.id;
+              locationElem.appendChild(optionElem)
+          })
+        }).then(()=>{
+          // Setting a value of select element to the location
+          locationElem.value = window.location.pathname.split("/")[4]
         })
       })
 
+      function getRestaurants(){
+        let locationId = locationElem.value
+        let url = `${window.location.protocol}//${window.location.hostname}:${window.location.port}/api/v1/restaurantsbylocation/${locationId}`
+        window.location = url
+      }
+
       function showRestaurant(restaurantid){
         // console.log(restaurantid)
-        let url = `${window.location.protocol}//${window.location.hostname}:${window.location.port}/api/v1/retaurantsdetails/${restaurantid}`
-        
+        let url = `${window.location.protocol}//${window.location.hostname}:${window.location.port}/api/v1/retaurantsdetails/${restaurantid}`     
         window.location=url;
       }
-    </script>
 
+      function searchRestaurants(){
+        console.log("Search query");
+      }
+    </script>
   </body>
 </html>
