@@ -164,6 +164,12 @@
           showFetchedMenuitems()
         })
       }
+
+      // Rediredirect to detail page
+      function showRestaurant(restaurantId){
+        let url = `${baseUrl}/api/v1/retaurantsdetails/${restaurantId}`;
+        window.location = url;
+      }
     </script>
   </body>
 </html>
