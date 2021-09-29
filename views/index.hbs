@@ -10,20 +10,28 @@
   </head>
   <body>
     <div class="restaurants">
-      <div class="search-box">
-        <div class="input-container">
-          <div class="locality">
-            <i class="fa fa-map-marker"></i>
-            <select class="location" name="location" id="location" onchange="getRestaurants()"></select>
-            </div>
-            <div class="divider"></div>
-              <form action="#" class="search-bar" onsubmit="searchRestaurants()">
-                <i class="fa fa-search"></i>
-                <input type="text" class="search" placeholder="Search restaurant or dish">
-                <input type="submit">
-              </form>
-        </div>
+      <div class="top-bar">
+          <div class="search-box">
+              <div class="input-container">
+                  <div class="locality">
+                      <i class="fa fa-map-marker"></i>
+                      <select class="location" name="location" id="location" onchange="getRestaurants(this.value)"></select>
+                  </div>
+                  <div class="divider"></div>
+                  <div class="search-bar" >
+                      <i class="fa fa-search"></i>
+                      <input type="text" class="search" onkeyup="searchRestaurants(this.value)" placeholder="Search restaurant or dish">
+                      <input type="submit">
+                  </div>
+              </div>
+          </div>
+
+          <div class="top-bar-right">
+            <a class="login-btn" href="#">Login</a>
+            <a class="register-btn" href="#">Register</a>
+          </div>
       </div>
+      
 
       <div class="filters">
         <div class="filter-container">
@@ -43,82 +51,118 @@
         <h2 class="heading">Popular restaurants near you</h2>
       </div>
 
-      <div class="cards">
-          {{#each restaurants}}
-              <div class="rest-card" data-restaurantid={{this.id}} onclick="showRestaurant(this.dataset.restaurantid)">
-              <div class="rest-img">
-                <img src={{this.image}} alt=""/>
-                <div class="rating">4 <i class="fa fa-star"></i></div>
-              </div>
-                  <h4 class="rest-heading">{{this.name}}</h4>
-                  <p class="rest-address">{{this.Location.landmark}}, {{this.Location.city}}</p>
-                  <p class="rest-time">{{this.openingTime}} - {{this.closingTime}}</p>
-              </div>
-          {{/each}}
-      </div>
+      <div class="cards" id="rest-card"></div>
 
       <div class="main-heading">
         <h2 class="heading">Our picks for you</h2>
       </div>
 
-      <div class="cards">
-          {{#each menuitems}}
-              <div class="menu-card">
-                  <div class="menu-img">
-                    <img src={{this.image}} alt=""/>
-                  </div>
-                  <div class="menu-details">
-                    <div class="details-left">
-                      <h4 class="menu-heading">{{this.name}}</h4>
-                      <p class="menu-desc">{{this.description}}</p>
-                    </div>
-                    <div class="details-right">
-                      <p class="menu-price">&#8377; {{this.price}}</p>
-                      <div class="add-menu"><i class="fa fa-plus"></i></div>
-                    </div>
-                  </div>
-              </div>
-          {{/each}}
-      </div>
+      <div class="cards" id="menu-cards"></div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/axios@0.21.4/dist/axios.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script>
+      let locationElem = document.getElementById("location");
+      let baseUrl = `${window.location.protocol}//${window.location.hostname}:${window.location.port}`;
 
-      let locationElem = document.getElementById("location")
+      let restaurants=[]
+      let menuitems=[]
 
+      // Setting menu items array
+      function setMenuitems(){
+          menuitems=[]
+          restaurants.forEach((data)=>{
+              if(data.Menuitems.length>0){
+                  data.Menuitems.forEach((menu)=>{
+                      menuitems.push(menu)
+                  })
+              }
+          })
+      }
+
+      // Function to show restaurants
+      function showFetchedRestaurants(){
+        $("#rest-card").empty()
+        restaurants.forEach((rest)=>{
+          let templateString = `<div class="rest-card" data-restaurantid=${rest.id} onclick="showRestaurant(this.dataset.restaurantid)">
+                                    <div class="rest-img">
+                                        <img src=${rest.image} alt=""/>
+                                        <div class="rating">4 <i class="fa fa-star"></i></div>
+                                    </div>
+                                    <h4 class="rest-heading">${rest.name}</h4>
+                                    <p class="rest-address">${rest.Location.landmark}, ${rest.Location.city}</p>
+                                    <p class="rest-time">${rest.openingTime} - ${rest.closingTime}</p>
+                                </div>`
+          $("#rest-card").append(templateString)
+        })
+      }
+
+      // Function to show menuitems
+      function showFetchedMenuitems(){
+          $("#menu-cards").empty()
+          menuitems.forEach((menu)=>{
+              let templateString =  `<div class="menu-card">
+                                        <div class="menu-img">
+                                            <img src="/images/menuitems/${menu.id}/${menu.image.images[0]}" alt=""/>
+                                        </div>
+                                        <div class="menu-details">
+                                            <div class="details-left">
+                                                  <h4 class="menu-heading">${menu.name}</h4>
+                                                  <p class="menu-desc">${menu.description}</p>
+                                            </div>
+                                            <div class="details-right">
+                                                  <p class="menu-price">&#8377; ${menu.price}</p>
+                                                  <div class="add-menu"><i class="fa fa-plus"></i></div>
+                                            </div>
+                                        </div>
+                                    </div>`
+              $("#menu-cards").append(templateString)
+          })
+      }
+        
+      // Adding event listener on widnow to
+      // get restaurants for default location on load
       window.addEventListener("load",()=>{
-        axios.get("/api/v1/locations").then(({data})=>{
+        let url = `${baseUrl}/api/v1/locations`;
+        axios.get(url).then(({data})=>{
         return data.locations
         }).then((locations)=>{
           // console.log(locations)
-          locations.forEach((loc)=>{
-              let optionElem = document.createElement("option");
-              optionElem.className = "locationOptions";
-              optionElem.text=loc.city;
-              optionElem.value=loc.id;
-              locationElem.appendChild(optionElem)
-          })
+
+          locations.forEach((loc=>{
+              let templateString = `<option class="locationOptions" value=${loc.id}>${loc.city}</option>`
+              $("#location").append(templateString)
+          }))
+
         }).then(()=>{
-          // Setting a value of select element to the location
-          locationElem.value = window.location.pathname.split("/")[4]
+          let defaultLocation = $("#location").val()
+          getRestaurants(defaultLocation)
         })
       })
 
-      function getRestaurants(){
-        let locationId = locationElem.value
-        let url = `${window.location.protocol}//${window.location.hostname}:${window.location.port}/api/v1/restaurantsbylocation/${locationId}`
-        window.location = url
+      // Get restuarants of selected location
+      function getRestaurants(locationId){
+        let url = `${baseUrl}/api/v1/restaurantsbylocation/${locationId}`;
+
+        axios.get(url).then((data)=>{
+          restaurants = [...data.data.restaurants]
+          setMenuitems()
+          showFetchedRestaurants()
+          showFetchedMenuitems()
+        })
       }
 
-      function showRestaurant(restaurantid){
-        // console.log(restaurantid)
-        let url = `${window.location.protocol}//${window.location.hostname}:${window.location.port}/api/v1/retaurantsdetails/${restaurantid}`     
-        window.location=url;
-      }
-
-      function searchRestaurants(){
-        console.log("Search query");
+      // Function to call search api
+      function searchRestaurants(value){
+        let url = `${baseUrl}/api/v1/searchrestaurants`;
+        let body = { locationId: $("#location").val(), search: value}
+        axios.post(url,body).then((data)=>{
+          restaurants = [...data.data.restaurants[0].restaurantList]
+          menuitems = [...data.data.restaurants[1].menuitemList]
+          showFetchedRestaurants()
+          showFetchedMenuitems()
+        })
       }
     </script>
   </body>
