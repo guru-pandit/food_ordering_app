@@ -100,8 +100,9 @@ const getRestaurantsDetails = async (req, res) => {
             ]
         })
         if (restaurantDetails !== null) {
+            console.log(restaurantDetails.Reviews)
             //res.status(200).json({message : "Restaurant Details Fetched Successfully",restaurants : restaurantDetails})
-            res.render('details', { restaurant: restaurantDetails })
+            res.render('details', { restaurant: restaurantDetails, reviews : restaurantDetails.Reviews })
         } else {
             res.status(500).json({ message: "Restaurants Details NOT Fetched Successfully" })
         }
@@ -197,6 +198,7 @@ const searchRestaurant = async (req, res) => {
         const { search, locationId } = req.body;
         //to create empty array variable
         var searchArray = []
+        
         //to get all restaurants based on search keyword
         const searchResult = await Restaurant.findAll({
             where: {
