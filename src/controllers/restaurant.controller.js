@@ -4,6 +4,11 @@ const Op = db.Sequelize.Op;
 const fs = require("fs")
 const path = require("path")
 
+// function to render homepage
+const home = async (req, res) => {
+    res.status(200).render("index");
+}
+
 //to get all restaurants
 const getAllRestaurants = async (req, res) => {
     try {
@@ -26,8 +31,8 @@ const getAllRestaurants = async (req, res) => {
             })
 
             // console.log(restaurants);
-
-            res.render("index", { restaurants: restaurants })
+            res.status(200).json({ restaurants: restaurants })
+            // res.render("index", { restaurants: restaurants })
         } else {
             return res.status(500).json({ error: "Restaurants NOT Fetched Successfully" })
         }
@@ -58,25 +63,27 @@ const getRestaurantsByLocation = async (req, res) => {
 
             let restaurants = []
             response.forEach((rest) => {
+                // rest.image = `${req.protocol}://${req.headers.host}/images/restaurants/${rest.id}/${rest.image}`
                 rest.image = `/images/restaurants/${rest.id}/${rest.image}`
                 restaurants.push(rest)
             })
 
-            let menuitemsByLocation = []
+            // let menuitemsByLocation = []
 
-            response.forEach((rest) => {
-                // console.log(rest.Menuitems.length);
-                if (rest.Menuitems.length > 0) {
-                    rest.Menuitems.forEach((menu) => {
-                        menu.image = `/images/menuitems/${menu.id}/${menu.image.images[0]}`
-                        menuitemsByLocation.push(menu)
-                    })
-                }
-            })
+            // response.forEach((rest) => {
+            //     // console.log(rest.Menuitems.length);
+            //     if (rest.Menuitems.length > 0) {
+            //         rest.Menuitems.forEach((menu) => {
+            //             menu.image = `/images/menuitems/${menu.id}/${menu.image.images[0]}`
+            //             menuitemsByLocation.push(menu)
+            //         })
+            //     }
+            // })
 
-            // res.status(200).json({ message: "Restaurants Fetched Successfully", restaurants: response, menuitems: menuitemsByLocation })
 
-            res.status(200).render("index", { restaurants: restaurants, menuitems: menuitemsByLocation })
+            res.status(200).json({ restaurants: response })
+            // res.status(200).json({ message: "Restaurants Fetched Successfully", restaurants: response })
+            // res.status(200).render("index", { restaurants: restaurants, menuitems: menuitemsByLocation })
         } else {
             res.status(500).json({ message: "Restaurants NOT Fetched Successfully" })
         }
@@ -205,12 +212,20 @@ const searchRestaurant = async (req, res) => {
                 name: { [Op.like]: '%' + search + '%' },
                 locationId: locationId
             },
+            include: [{ model: Location, attributes: ["name", "landmark", "city", "state", "country"] }]
         })
 
         //to check whether searchResult is empty or not
         if (searchResult) {
             //to push searchResult into searchArray
-            searchArray.push({ restaurantList: searchResult })
+            let restArray = []
+            searchResult.forEach((rest) => {
+                // rest.image = `${req.protocol}://${req.headers.host}/images/restaurants/${rest.id}/${rest.image}`
+                rest.image = `/images/restaurants/${rest.id}/${rest.image}`
+                restArray.push(rest)
+            })
+
+            searchArray.push({ restaurantList: restArray })
         } else {
             searchArray.push({ restaurantList: [] })
         }
@@ -231,7 +246,7 @@ const searchRestaurant = async (req, res) => {
         }
         //to set result array(result of getRestaurantIds(locationId)) into restaurantIds
         let restaurantIds = await getRestaurantIds(locationId);
-        console.log(restaurantIds);
+        // console.log(restaurantIds);
         //to get all menuitems based on search keyword and location
         const menuitems = await Menuitem.findAll({
             where: {
@@ -324,4 +339,4 @@ const addImage = async (req, res) => {
     }
 }
 
-module.exports = { getAllRestaurants, getRestaurantsByLocation, addReview, filterRestaurant, searchRestaurant, getRestaurantsDetails, addTime, addImage }
+module.exports = { home, getAllRestaurants, getRestaurantsByLocation, addReview, filterRestaurant, searchRestaurant, getRestaurantsDetails, addTime, addImage }

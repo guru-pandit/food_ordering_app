@@ -2,6 +2,8 @@ const restaurantController = require("../controllers").restaurant;
 const { uploadImage } = require("../services/upload.service");
 
 module.exports = (app) => {
+   // Home page
+   app.get("/api/v1", restaurantController.home)
    //to get all restaurant
    app.get("/api/v1/restaurants", restaurantController.getAllRestaurants)
    //to get restaurants by location

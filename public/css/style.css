@@ -7,6 +7,10 @@
   font-family: 'Open Sans', sans-serif;
 }
 
+a{
+  text-decoration: none;
+}
+
 body{
     height: 100vh;
     width: 100%;
@@ -90,11 +94,57 @@ body{
   letter-spacing: 1px;
 }
 
+.top-bar{
+  width: 97%;
+  display: grid; 
+  margin:0 auto;
+  grid-template-columns: 320px 1fr 320px; 
+  gap: 0px 20px; 
+}
+
+.top-bar-right{
+  grid-column: 3 / 4;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.login-btn,
+.register-btn{
+  display: inline-block;
+  border: 2px solid #0C9463;
+  border-radius: 5px;
+  font-size: 1rem;
+  font-weight: 500;
+  padding: .5rem 1rem;
+  margin: 0 .5rem;
+  letter-spacing: 1px;
+  transition: all .3s ease;
+}
+
+.login-btn{
+  color: #fff;
+  background: #0C9463;
+}
+
+.login-btn:hover{
+  filter: brightness(.9);
+}
+
+.register-btn{
+  color: #0C9463;
+}
+
+.register-btn:hover{
+  color: #fff;
+  background-color: #0C9463;
+}
+
 /* Search Bar CSS */
 .search-box{
-  width: 70%;
-  max-width: 700px;
-  margin: 0 auto;
+  /* width: 70%; */
+  /* max-width: 700px; */
+  grid-column: 2 / 3;
   border-radius: 10px;
   background-color: #fff;
   box-shadow: 0px 1px 4px rgba(28, 28, 28, .2);
