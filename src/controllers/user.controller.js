@@ -7,6 +7,10 @@ const { sendVerificationMail } = require("../services/mail.service");//import se
 const jwt = require('jsonwebtoken');//
 const Op = db.Sequelize.Op;
 
+const getRegisterPage = async(req,res)=>{
+    res.render('register')
+}
+
 //create user
 const createUser = async (req, res) => {
     try {
@@ -88,6 +92,9 @@ const verifyUser = async (req, res) => {
     }
 }
 
+const getLoginPage = async(req,res)=>{
+    res.render('login')
+}
 // for login user
 //var sessionArray = []
 const loginUser = async (req, res) => {
@@ -289,4 +296,4 @@ const userPartialUpdate = async (req, res) => {
     }
 };
 
-module.exports = { createUser, verifyUser, loginUser, dashboard, getUsersById, deleteUser, UpdateUser, getUsersByAddress, userPartialUpdate }
+module.exports = { createUser, verifyUser, loginUser, dashboard, getUsersById, deleteUser, UpdateUser, getUsersByAddress, userPartialUpdate, getLoginPage, getRegisterPage }
