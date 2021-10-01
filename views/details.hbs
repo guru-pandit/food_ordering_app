@@ -14,7 +14,8 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/axios@0.21.4/dist/axios.min.js"></script>
-</head>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <script src="https://unpkg.com/cart-localstorage@1.1.4/dist/cart-localstorage.min.js" type="text/javascript"></script>
      <link rel="stylesheet" href="/css/style1.css">
 
   </head>
@@ -48,14 +49,14 @@
 					<div class="details col-md-6">
 						<h3 class="product-title">{{restaurant.name}}</h3>
 						<div class="rating">
-							<div class="stars">
-								<span class="fa fa-star checked"></span>
-								<span class="fa fa-star checked"></span>
-								<span class="fa fa-star checked"></span>
-								<span class="fa fa-star"></span>
-								<span class="fa fa-star"></span>
-							</div>
-							<span class="review-no">41 reviews</span>
+							<ul class="list-inline stars" rating={{avgRatings}}>
+								<li><i class="fa fa-star"></i></li>
+                <li><i class="fa fa-star"></i></li>
+                <li><i class="fa fa-star"></i></li>
+                <li><i class="fa fa-star"></i></li>
+                <li><i class="fa fa-star"></i></li>
+							</ul>
+							<span class="review-no">{{reviewsCount}} reviews </span>
 						</div>
 						<p class="product-description">
 North Indian, Chinese, South Indian, Street Food, Ice Cream, Beverages</p>
@@ -91,8 +92,50 @@ North Indian, Chinese, South Indian, Street Food, Ice Cream, Beverages</p>
 
 
 <div id="Online Order" class="tabcontent">
-  <h3></h3>
-  <p></p>
+<div class="container">
+<h2>Products</h2>
+
+ <div class="row mt-4 mb-4 text-center">
+{{#each menuitems}}
+<div class="card mb-4 shadow-sm col-12">
+<div class="card-body">
+<div class="row " >
+<div class="col-3">
+<div class="img w-75"><img src="https://cdn.pixabay.com/photo/2014/11/05/15/57/salmon-518032__480.jpg" class="img-fluid" alt="..."></div>
+</div>
+<div class="col-9">
+<h4 class="card-title pricing-card-title text-left" >{{this.name}}</h4>
+<h5 class="card-title pricing-card-title text-left" >&#8377; {{this.price}}</h5>
+<button type="button" class="btn btn-primary btn-sm float-right"
+onClick="cartLS.add({id: {{this.id}}, name: '{{this.name}}', price:{{this.price}},})">Add to
+Cart</button>
+</div>
+</div>
+</div>
+</div>
+{{/each}}
+</div>
+ <div class="card mb-4 shadow-sm">
+<div class="card-header">
+<h2>Cart</h2>
+</div>
+<div class="card-body">
+<table class="table">
+<tbody class="cart">
+</tbody>
+<tfoot>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td class="text-right">Total: <strong class="total"></strong></td>
+<td></td>
+</tfoot>
+</table>
+</div>
+</div>
+</div>
 </div>
 
 <div id="Review" class="tabcontent">
@@ -113,13 +156,13 @@ North Indian, Chinese, South Indian, Street Food, Ice Cream, Beverages</p>
                             <strong>John Cena</strong>
                         </div>
                     </div>
-                    <div class="reviews">
-                        <i class="fa fa-star"></i>
-                        <i class="fa fa-star"></i>
-                        <i class="fa fa-star"></i>
-                        <i class="fa fa-star"></i>
-                        <i class="fa fa-star"></i>
-                    </div>
+                    <ul class="list-inline reviews" rating={{this.stars}}>
+                        <li><i class="fa fa-star"></i></li>
+                        <li><i class="fa fa-star"></i></li>
+                        <li><i class="fa fa-star"></i></li>
+                        <li><i class="fa fa-star"></i></li>
+                        <li><i class="fa fa-star"></i></li>
+                    </ul>
                 </div>
                 <div class="client-comment">
                     <p>{{this.comment}}</p>
@@ -208,6 +251,32 @@ North Indian, Chinese, South Indian, Street Food, Ice Cream, Beverages</p>
 </div>
 
 <script>
+
+  function renderCart(items) {
+const $cart = document.querySelector(".cart")
+const $total = document.querySelector(".total")
+
+ $cart.innerHTML = items.map((item) => `
+<tr>
+<td>#${item.id}</td>
+<td>${item.name}</td>
+<td>${item.quantity}</td>
+<td style="width: 60px;">
+<button type="button" class="btn btn-block btn-sm btn-outline-primary"
+onClick="cartLS.quantity(${item.id},1)">+</button>
+</td>
+<td style="width: 60px;">
+<button type="button" class="btn btn-block btn-sm btn-outline-primary"
+onClick="cartLS.quantity(${item.id},-1)">-</button>
+</td>
+<td class="text-right">&#8377; ${item.price}</td>
+<td class="text-right"><Button class="btn btn-primary" onClick="cartLS.remove(${item.id})">Delete</Button></td>
+</tr>`).join("")
+
+ $total.innerHTML = "&#8377; " + cartLS.total()
+}
+renderCart(cartLS.list())
+cartLS.onChange(renderCart)
 
   document.getElementById('btn-submit').onclick = function(e){
                 e.preventDefault();
