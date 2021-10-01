@@ -1,4 +1,4 @@
-const { Menuitem, Restaurant, Mealtype, Cuisine } = require("../models");
+const { Menuitem, Restaurant, Mealtype, Cuisine, Location } = require("../models");
 const db = require("../models");
 const Op = db.Sequelize.Op;
 const path = require("path");
@@ -185,10 +185,59 @@ const searchMenuitems = async (req, res) => {
 
 //to filter menuitems
 const filterMenuitems = async (req, res) => {
-    try {
-        let { hcost, lcost } = req.body;
-        const mealtype = req.body.mealtype;
+    // try {
+    //     let { hcost, lcost } = req.body;
+    //     const mealtype = req.body.mealtype;
+    //     const cuisineId = req.body.cuisineId
 
+    //     var payload = {}
+
+    //     if (hcost && lcost) {
+    //         payload = {
+    //             price: {
+    //                 [Op.between]: [lcost, hcost],
+    //             }
+    //         }
+    //     }
+
+    //     const allMenuitems = await Menuitem.findAll({
+    //         include: [
+    //             { model: Mealtype, attributes: ["name", "content"] },
+    //             { model: Cuisine, attributes: ["name"] },
+    //             { model: Restaurant, attributes: ["name", "address", "contact", "locationId"] }
+    //         ]
+    //     })
+    //     if (allMenuitems.length > 0) {
+    //         if (hcost && lcost) {
+    //             const costWiseMenuitems = await Menuitem.findAll({ where: payload })
+    //             if (costWiseMenuitems.length > 0) {
+    //                 res.status(200).json({ message: "Menuitems Fetched successfully", menuitems: costWiseMenuitems })
+    //             } else {
+    //                 res.status(500).json({ error: "Menuitems NOT Fetched successfully" })
+    //             }
+
+    //         } else {
+    //             const mealtypeWiseMenuitems = allMenuitems.filter((menuitem) => {
+    //                 return menuitem.Mealtype.name.toLowerCase() === req.body.mealtype.toLowerCase()
+    //             })
+    //             console.log(mealtypeWiseMenuitems.length)
+
+    //             if (mealtypeWiseMenuitems.length > 0) {
+    //                 res.status(200).json({ message: "Menuitems Fetched successfully", menuitems: mealtypeWiseMenuitems })
+    //             } else {
+    //                 res.status(500).json({ error: "Menuitems NOT Fetched successfully" })
+    //             }
+    //         }
+    //     } else {
+    //         res.status(200).json({ error: "Menuitems NOT Fetched successfully" })
+    //     }
+    // } catch (err) {
+    //     res.status(500).json({ error: err.message || "something went wrong" })
+    // }
+    try{
+        let { hcost, lcost, mealtypeId, cuisineId } = req.body;
+        let sort = req.body.sort ? req.body.sort : 1;
+       
         var payload = {}
 
         if (hcost && lcost) {
@@ -198,40 +247,102 @@ const filterMenuitems = async (req, res) => {
                 }
             }
         }
-
-        const allMenuitems = await Menuitem.findAll({
+        if(mealtypeId){
+            payload = {
+                mealtypeId : mealtypeId
+            }
+        }
+        if(cuisineId){
+            payload = {
+                cuisineId : cuisineId
+            }
+        }
+        if(hcost && lcost && mealtypeId){
+            payload = {
+                [Op.and]: [
+                    {price: {
+                        [Op.between]: [lcost, hcost],
+                    }},
+                    {mealtypeId : mealtypeId}
+                ]
+            }
+        }
+        if(hcost && lcost && cuisineId){
+            payload = {
+                [Op.and]: [
+                    {price: {
+                        [Op.between]: [lcost, hcost],
+                    }},
+                    {cuisineId : cuisineId}
+                ]
+            }
+        }
+        if(mealtypeId && cuisineId){
+            payload = {
+                [Op.and]: [
+                    {mealtypeId : mealtypeId},
+                    {cuisineId : cuisineId}
+                ]
+            }
+        }
+        if(hcost && lcost && mealtypeId && cuisineId ){
+            payload = {
+                [Op.and]: [
+                    {price: {
+                        [Op.between]: [lcost, hcost],
+                    }},
+                    {mealtypeId : mealtypeId},
+                    {cuisineId : cuisineId}
+                ]
+            }
+        }
+        if(sort === 1){
+            let allMenuitems = await Menuitem.findAll({
+                where : payload,
+                order:[
+                    ['price','ASC']
+                ],
+                include: [
+                    { model: Mealtype, attributes: ["name", "content"] },
+                    { model: Cuisine, attributes: ["name"] },
+                    { 
+                        model: Restaurant, 
+                        attributes: ["name", "address", "contact", "locationId"],
+                        include : [{model : Location}] 
+                    }
+                ]
+            })
+    if(allMenuitems.length > 0){
+        return res.status(200).json({message : "Menuitems fetched successfully" , menuitems : allMenuitems});
+    }else{
+        return res.status(500).json({error : "Menuitems not found"})
+    }
+    }else{
+        let allMenuitems = await Menuitem.findAll({
+            where : payload,
+            order:[
+                ['price','DESC']
+            ],
             include: [
                 { model: Mealtype, attributes: ["name", "content"] },
                 { model: Cuisine, attributes: ["name"] },
-                { model: Restaurant, attributes: ["name", "address", "contact", "locationId"] }
+                { 
+                    model: Restaurant, 
+                    attributes: ["name", "address", "contact", "locationId"],
+                    include : [{model : Location}] 
+                }
             ]
-        }).sort((a, b) => a - b)
-        if (allMenuitems.length > 0) {
-            if (hcost && lcost) {
-                const costWiseMenuitems = await Menuitem.findAll({ where: payload })
-                if (costWiseMenuitems.length > 0) {
-                    res.status(200).json({ message: "Menuitems Fetched successfully", menuitems: costWiseMenuitems })
-                } else {
-                    res.status(500).json({ error: "Menuitems NOT Fetched successfully" })
-                }
+        })
+    if(allMenuitems.length > 0){
+        return res.status(200).json({message : "Menuitems fetched successfully" , menuitems : allMenuitems});
+    }else{
+        return res.status(500).json({error : "Menuitems not found"})
+    }
+    }
+        
 
-            } else {
-                const mealtypeWiseMenuitems = allMenuitems.filter((menuitem) => {
-                    return menuitem.Mealtype.name.toLowerCase() === req.body.mealtype.toLowerCase()
-                })
-                console.log(mealtypeWiseMenuitems.length)
-
-                if (mealtypeWiseMenuitems.length > 0) {
-                    res.status(200).json({ message: "Menuitems Fetched successfully", menuitems: mealtypeWiseMenuitems })
-                } else {
-                    res.status(500).json({ error: "Menuitems NOT Fetched successfully" })
-                }
-            }
-        } else {
-            res.status(200).json({ error: "Menuitems NOT Fetched successfully" })
-        }
-    } catch (err) {
-        res.status(500).json({ error: err.message || "something went wrong" })
+    }catch(err){
+        res.status(500).json({ error: err.message || "Something went wrong" });
     }
 }
 
