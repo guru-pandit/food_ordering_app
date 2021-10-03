@@ -7,7 +7,8 @@ const { sendVerificationMail } = require("../services/mail.service");//import se
 const jwt = require('jsonwebtoken');//
 const Op = db.Sequelize.Op;
 
-const getRegisterPage = async(req,res)=>{
+// Function to render register page
+const getRegisterPage = async (req, res) => {
     res.render('register')
 }
 
@@ -92,7 +93,8 @@ const verifyUser = async (req, res) => {
     }
 }
 
-const getLoginPage = async(req,res)=>{
+// Function to render login page
+const getLoginPage = async (req, res) => {
     res.render('login')
 }
 // for login user
@@ -132,10 +134,12 @@ const loginUser = async (req, res) => {
                 // console.log(req.session.user)
                 // //req.session.save();
                 // return res.send("user logged in");
-                res.cookie(`access-token`, token).send({ message: " user login successfull" });
+
+                // console.log("Login successful")
+                res.cookie(`access-token`, token).json({ message: "Login successful" });
 
             } else {
-                return res.status(500).json({ error: "user login unsuccesfull" });
+                return res.status(400).json({ error: "Login failed" });
             }
         }
     } catch (err) {
