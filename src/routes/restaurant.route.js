@@ -9,7 +9,7 @@ module.exports = (app) => {
    //to get restaurants by location
    app.get("/api/v1/restaurantsbylocation/:locationId", restaurantController.getRestaurantsByLocation)
    //to get restaurants details by restaurantId
-   app.get("/api/v1/retaurantsdetails/:restaurantId", restaurantController.getRestaurantsDetails)
+   app.get("/api/v1/retaurantsdetails", restaurantController.getRestaurantsDetails)
    //to add review
    app.post("/api/v1/addnewreview", restaurantController.addReview)
    //to filter restaurant

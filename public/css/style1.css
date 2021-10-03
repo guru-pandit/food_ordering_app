@@ -2,7 +2,27 @@
 /*****************globals*************/
 body {
   font-family: 'open sans';
-  overflow-x: hidden; }
+  overflow-x: hidden; 
+  /* background-color: #d2d2d2; */
+  background: linear-gradient(rgba(0,0,0,0.2),rgba(0,0,0,0.2)),url('../images/bg/bg.jpg');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-attachment: fixed;
+}
+
+.details .review-no, 
+.details .product-description,
+.tablinks {
+font-size: 1.3rem;
+}
+ul.list-inline.stars i {
+  font-size: 18px;
+}
+.cart-table td{
+font-size: 1.5rem;
+}
+
 
 img {
   max-width: 100%; }
@@ -68,10 +88,12 @@ img {
     margin-right: 2.5%; }
     .preview-thumbnail.nav-tabs li img {
       max-width: 100%;
+      height: 100%;
       display: block; }
     .preview-thumbnail.nav-tabs li a {
       padding: 0;
-      margin: 0; }
+      margin: 0; 
+    height: 100%;}
     .preview-thumbnail.nav-tabs li:last-of-type {
       margin-right: 0; }
 
@@ -263,13 +285,13 @@ img {
   color: #ff4d4d;
   text-align: center;
   margin-top: 5px;
-  font-size: 25px;
+  font-size: 20px;
  
 }
 
 @media (max-width: 400px) {
   #fh2{
-    font-size: 20px;
+    font-size: 16px;
   }
 }
 
@@ -289,8 +311,6 @@ img {
 
 .pinfo {
   margin: 8px auto;
-  margin-left: 15px;
-  margin-top: 0px;
   font-weight: bold;
   line-height: 1.5;
   color: #0d0d0d;
@@ -610,7 +630,7 @@ fieldset[disabled] a.btn {
   width: 100%;
 }
 .testimonial-box{
-  width: 400px;
+  width: 45%;
   box-shadow: 2px 2px 30px rgba(0,0,0,0.1);
   background-color: #ffffff;
   padding: 20px;
@@ -682,3 +702,4 @@ fieldset[disabled] a.btn {
   transform: translateY(-10px);
   transition: all ease 0.3s;
 }
+@media screen and (max-width:767px){.testimonial-box{width:100%}}

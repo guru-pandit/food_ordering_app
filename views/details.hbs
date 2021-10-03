@@ -22,7 +22,7 @@
 
   <body>
 	
-	<div class="container">
+	<div class="container-fluid">
 		<div class="card">
 			<div class="container-fliud">
 				<div class="wrapper row">
@@ -47,9 +47,9 @@
 						
 					</div>
 					<div class="details col-md-6">
-						<h3 class="product-title">{{restaurant.name}}</h3>
+						<h2 class="product-title">{{restaurant.name}}</h2>
 						<div class="rating">
-							<ul class="list-inline stars" rating={{avgRatings}}>
+							<ul class="list-inline stars pl-2" rating={{avgRatings}}>
 								<li><i class="fa fa-star"></i></li>
                 <li><i class="fa fa-star"></i></li>
                 <li><i class="fa fa-star"></i></li>
@@ -93,34 +93,37 @@ North Indian, Chinese, South Indian, Street Food, Ice Cream, Beverages</p>
 
 <div id="Online Order" class="tabcontent">
 <div class="container">
-<h2>Products</h2>
+<h2 class="my-5 text-center" style="font-size: 2.5rem; font-weight: 600;">Menuitems</h2>
 
  <div class="row mt-4 mb-4 text-center">
 {{#each menuitems}}
-<div class="card mb-4 shadow-sm col-12">
-<div class="card-body">
-<div class="row " >
-<div class="col-3">
-<div class="img w-75"><img src="https://cdn.pixabay.com/photo/2014/11/05/15/57/salmon-518032__480.jpg" class="img-fluid" alt="..."></div>
-</div>
-<div class="col-9">
-<h4 class="card-title pricing-card-title text-left" >{{this.name}}</h4>
-<h5 class="card-title pricing-card-title text-left" >&#8377; {{this.price}}</h5>
-<button type="button" class="btn btn-primary btn-sm float-right"
-onClick="cartLS.add({id: {{this.id}}, name: '{{this.name}}', price:{{this.price}},})">Add to
-Cart</button>
-</div>
-</div>
-</div>
+<div class="mb-4 shadow col-12 bg-white" style="border-radius: 10px; padding: 15px;">
+  <div class="card-body">
+    <div class="row " >
+      <div class="col-2">
+        <div class="img"><img src="https://cdn.pixabay.com/photo/2014/11/05/15/57/salmon-518032__480.jpg" class="img-fluid border-secondary" alt="..."></div>
+      </div>
+      <div class="col-8">
+        <h4 class="card-title pricing-card-title text-left" style="font-size: 2rem; font-weight: 600;" >{{this.name}}</h4>
+        <h5 class="card-title pricing-card-title text-left" style="font-size: 1.5rem;" >&#8377; {{this.price}}</h5>
+        <p class="text-left" style="font-size: 1.2rem;">{{this.description}}</p>
+      </div>
+      <div class="col-2 d-flex align-items-center justify-content-end">
+        <button type="button" class="btn btn-primary p-3"
+        onClick="cartLS.add({id: {{this.id}}, name: '{{this.name}}', price:{{this.price}},})">Add to
+        Cart</button>
+      </div>
+    </div>
+  </div>
 </div>
 {{/each}}
 </div>
  <div class="card mb-4 shadow-sm">
 <div class="card-header">
-<h2>Cart</h2>
+<h2 style="font-size: 2rem; font-weight: 600;">Cart</h2>
 </div>
 <div class="card-body">
-<table class="table">
+<table class="table cart-table">
 <tbody class="cart">
 </tbody>
 <tfoot>
@@ -130,7 +133,7 @@ Cart</button>
 <td></td>
 <td></td>
 <td class="text-right">Total: <strong class="total"></strong></td>
-<td></td>
+<td class="text-right"><button class="btn btn-primary" id="order-btn">Order</button></td>
 </tfoot>
 </table>
 </div>
@@ -190,9 +193,7 @@ Cart</button>
 
       <!-- Modal Header -->
       <div class="modal-header">
-        <h4 class="modal-title" style="margin-left: 235px;
-    font-size: 25px;">Review</h4>
-
+        <h4 class="modal-title" style="font-size: 2.5rem;">Review</h4>
       </div>
 
       <!-- Modal body -->
@@ -206,9 +207,9 @@ Cart</button>
  <div class="pinfo">Rate our overall services.</div>
   
 <div class="form-group">
-  <div class="col-md-4 inputGroupContainer" style="width: 100%;">
+  <div class="inputGroupContainer" style="width: 100%;">
   <div class="input-group">
-  <span class="input-group-addon" style="font-size : 14px"><i class="fa fa-heart"></i></span>
+  <span class="input-group-addon" style="font-size : 14px"><i class="fa fa-star"></i></span>
    <select class="form-control" id="rate" name="stars">
       <option value="1star">1</option>
       <option value="2stars">2</option>
@@ -220,10 +221,10 @@ Cart</button>
   </div>
 </div>
 
- <div class="pinfo" style="margin-top: 60px;">Write your feedback.</div>
+ <div class="pinfo" style="margin-top: 20px;">Write your feedback.</div>
   
 <div class="form-group">
-  <div class="col-md-4 inputGroupContainer" style="width: 100%;">
+  <div class="inputGroupContainer" style="width: 100%;">
   <div class="input-group">
   <span class="input-group-addon" style="height: 70px; font-size : 14px"><i class="fa fa-pencil"></i></span>
   <textarea class="form-control" style="height: 70px;" id="review" rows="3" name="comment"></textarea>
@@ -232,11 +233,12 @@ Cart</button>
   </div>
 </div>
 
- <button type="submit" class="btn btn-primary" id="btn-submit" style="margin-top: 60px;
-    margin-left: 15px;
+ <div class="w-100 text-center mt-5">
+   <button type="submit" class="btn btn-primary" id="btn-submit" data-dismiss="modal" style="margin:10px auto;margin-top: 30px;
     width: 80px;
     height: 30px;
     font-size: 12px;">Submit</button>
+ </div>
 
 </form>
       </div>
@@ -251,6 +253,13 @@ Cart</button>
 </div>
 
 <script>
+
+  const queryString = window.location.search;
+  console.log(queryString);
+  const urlParams = new URLSearchParams(queryString);
+  console.log(urlParams);
+  const restaurantId = urlParams.get('restaurantId');
+  console.log(restaurantId);
 
   function renderCart(items) {
 const $cart = document.querySelector(".cart")
@@ -278,6 +287,7 @@ onClick="cartLS.quantity(${item.id},-1)">-</button>
 renderCart(cartLS.list())
 cartLS.onChange(renderCart)
 
+
   document.getElementById('btn-submit').onclick = function(e){
                 e.preventDefault();
                 const form = document.getElementById('feedback');
@@ -292,8 +302,33 @@ cartLS.onChange(renderCart)
                 }
 
                 axios.post(
-                  'http://localhost:8080/api/v1/addnewreview?userId=1&restaurantId=2',
+                  `http://localhost:8080/api/v1/addnewreview?userId=1&restaurantId=${restaurantId}`,
                    data,
+                ).then(res => {
+                  console.log(res)
+                })
+                .catch(err => {
+                  console.log(err.response.data)
+                })
+              }
+
+document.getElementById('order-btn').onclick = function(e){
+                e.preventDefault();
+                
+                let data = JSON.parse(localStorage.getItem('__cart'))
+                console.log(data)
+
+                let items = []
+            
+                data.map(item => {
+                  let itm = {menuitemId:item.id,quantity:item.quantity}
+                  items.push(itm)
+                })
+                console.log(items)
+   
+              axios.post(
+                  `http://localhost:8080/api/v1/order?userId=1&restaurantId=${restaurantId}`,
+                   {items},
                 ).then(res => {
                   console.log(res)
                 })

@@ -96,7 +96,7 @@ const getRestaurantsByLocation = async (req, res) => {
 //to get restaurants details by restaurantId
 const getRestaurantsDetails = async (req, res) => {
     try {
-        const { restaurantId } = req.params;
+        const { restaurantId } = req.query;
         const restaurantDetails = await Restaurant.findOne({
             where: { id: restaurantId },
             //to include location,Menuitem,Review model in restaurant
@@ -110,7 +110,7 @@ const getRestaurantsDetails = async (req, res) => {
             let reviewsCount = restaurantDetails.Reviews.length;
             let avgRatings = restaurantDetails.avgRatings.toFixed()
             //res.status(200).json({message : "Restaurant Details Fetched Successfully",restaurants : restaurantDetails})
-            res.render('details', { restaurant: restaurantDetails, reviews : restaurantDetails.Reviews, reviewsCount : reviewsCount,avgRatings : avgRatings,menuitems : restaurantDetails.Menuitems  })
+            res.render('details', { restaurant: restaurantDetails, reviews : restaurantDetails.Reviews, reviewsCount : reviewsCount,avgRatings : avgRatings,menuitems : restaurantDetails.Menuitems })
         } else {
             res.status(500).json({ message: "Restaurants Details NOT Fetched Successfully" })
         }
@@ -149,12 +149,12 @@ const addReview = async (req, res) => {
             //to calculate total ratings of restaurant
             restaurant.Reviews.map((item) => {
                 totalrating += item.stars
-                console.log(totalrating)
+                //console.log(totalrating)
             })
 
             //to calculate average rating of restaurant
             restaurant.avgRatings = totalrating / totallen;
-            console.log(restaurant.avgRatings)
+            //console.log(restaurant.avgRatings)
 
             //to update "avgRatings" with calculated average ratings in restaurant table
             restaurant.save()

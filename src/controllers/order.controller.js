@@ -9,7 +9,7 @@ const placeOrder = async (req, res) => {
     try {
         let totalPrice = 0;
         let deliveryCharge = 40;
-
+console.log(req.body)
         let orderBody = {
             orderId: v1(),
             items: req.body.items,

@@ -167,7 +167,7 @@
 
       // Rediredirect to detail page
       function showRestaurant(restaurantId){
-        let url = `${baseUrl}/api/v1/retaurantsdetails/${restaurantId}`;
+        let url = `${baseUrl}/api/v1/retaurantsdetails?restaurantId=${restaurantId}`;
         window.location = url;
       }
     </script>
