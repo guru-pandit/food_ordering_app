@@ -235,7 +235,7 @@ const filterMenuitems = async (req, res) => {
     //     res.status(500).json({ error: err.message || "something went wrong" })
     // }
     try {
-        let { hcost, lcost, mealtypeId, cuisineId } = req.body;
+        let { hcost, lcost, mealtypeIds, cuisineIds } = req.body;
         let sort = req.body.sort ? req.body.sort : 1;
 
         var payload = {}
@@ -247,17 +247,17 @@ const filterMenuitems = async (req, res) => {
                 }
             }
         }
-        if (mealtypeId) {
+        if (mealtypeIds.length > 0) {
             payload = {
-                mealtypeId: mealtypeId
+                mealtypeId: { [Op.in]: mealtypeIds }
             }
         }
-        if (cuisineId) {
+        if (cuisineIds.length > 0) {
             payload = {
-                cuisineId: cuisineId
+                cuisineId: { [Op.in]: cuisineIds }
             }
         }
-        if (hcost && lcost && mealtypeId) {
+        if (hcost && lcost && mealtypeIds.length > 0) {
             payload = {
                 [Op.and]: [
                     {
@@ -265,11 +265,11 @@ const filterMenuitems = async (req, res) => {
                             [Op.between]: [lcost, hcost],
                         }
                     },
-                    { mealtypeId: mealtypeId }
+                    { mealtypeId: { [Op.in]: mealtypeIds } }
                 ]
             }
         }
-        if (hcost && lcost && cuisineId) {
+        if (hcost && lcost && cuisineIds.length > 0) {
             payload = {
                 [Op.and]: [
                     {
@@ -277,19 +277,19 @@ const filterMenuitems = async (req, res) => {
                             [Op.between]: [lcost, hcost],
                         }
                     },
-                    { cuisineId: cuisineId }
+                    { cuisineId: { [Op.in]: cuisineIds } }
                 ]
             }
         }
-        if (mealtypeId && cuisineId) {
+        if (mealtypeIds.length > 0 && cuisineIds.length > 0) {
             payload = {
                 [Op.and]: [
-                    { mealtypeId: mealtypeId },
-                    { cuisineId: cuisineId }
+                    { mealtypeId: { [Op.in]: mealtypeIds } },
+                    { cuisineId: { [Op.in]: cuisineIds } }
                 ]
             }
         }
-        if (hcost && lcost && mealtypeId && cuisineId) {
+        if (hcost && lcost && mealtypeIds.length > 0 && cuisineIds.length > 0) {
             payload = {
                 [Op.and]: [
                     {
@@ -297,8 +297,8 @@ const filterMenuitems = async (req, res) => {
                             [Op.between]: [lcost, hcost],
                         }
                     },
-                    { mealtypeId: mealtypeId },
-                    { cuisineId: cuisineId }
+                    { mealtypeId: { [Op.in]: mealtypeIds } },
+                    { cuisineId: { [Op.in]: cuisineIds } }
                 ]
             }
         }
