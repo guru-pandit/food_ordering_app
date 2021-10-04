@@ -16,5 +16,13 @@ const getAllMealtypes = async (req, res) => {
     }
 }
 
+// Funtion to search mealtypes
+const searchMealtypes = async (req, res) => {
+    try {
 
-module.exports = { getAllMealtypes }
+    } catch (err) {
+        res.status(500).json({ error: err.message || "Something went wrong" })
+    }
+}
+
+module.exports = { getAllMealtypes, searchMealtypes }
