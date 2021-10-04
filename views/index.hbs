@@ -34,7 +34,7 @@
       
 
       <div class="filters">
-        <div class="filter-container">
+        <div class="filter-container" id="open-modal">
           <i class="fa fa-filter"></i>
           Filters
         </div>
@@ -60,14 +60,134 @@
       <div class="cards" id="menu-cards"></div>
     </div>
 
+    <div class="filter-modal" id="filter-overlay">
+      <div class="filter-inner">
+          <div class="filter-header">
+            <h3>Filters</h3>
+            <i id="close-modal" class="fa fa-close"></i>
+          </div>
+
+          <div class="tabs">
+            <ul class="tabs-list">
+              <li class="active"><a href="#tab1">Sort by</a></li>
+              <li><a href="#tab2">Price range</a></li>
+              <li><a href="#tab3">Mealtypes</a></li>
+              <li><a href="#tab4">Cuisines</a></li>
+            </ul>
+
+            <div class="tabs-content">
+              <div class="tab active" id="tab1">
+                <div class="sort-options">
+                      <div class="radio-item">
+                          <input type="radio" id="low-to-high" name="sort_by_cost" value="">
+                          <label for="low-to-high">Cost: Low to High</label>
+                      </div>
+
+                      <div class="radio-item">
+                          <input type="radio" id="high-to-low" name="sort_by_cost" value="">
+                          <label for="high-to-low">Cost: High to Low</label>
+                      </div>
+                </div>
+              </div>
+
+              <div class="tab" id="tab2">
+                  <div class="slider-wrapper">
+                      <div class="slider-values">
+                        <span id="price-range-1">&#8377; 0</span>
+                        <span id="price-range-2">&#8377; 1000</span>
+                      </div>
+                      <div class="slider-container">
+                        <div class="slider-track"></div>
+                        <input
+                          type="range"
+                          min="0"
+                          max="100"
+                          value="0"
+                          id="price-slider-1"
+                          oninput="slideOne()"
+                        />
+                        <input
+                          type="range"
+                          min="0"
+                          max="1000"
+                          value="1000"
+                          id="price-slider-2"
+                          oninput="slideTwo()"
+                        />
+                      </div>
+                  </div>
+              </div>
+
+              <div class="tab" id="tab3">
+                <div class="mealtype-options">
+                  {{!-- <div class="search-mealtype">
+                    <i class="fa fa-search"></i>
+                    <input type="text" placeholder="Search mealtypes">
+                  </div> --}}
+                  <div class="mealtype-checkboxes" id="mealtypes-checkboxes"></div>
+                </div>
+              </div>
+
+              <div class="tab" id="tab4">
+                <div class="cuisine-options">
+                  {{!-- <div class="search-cuisine">
+                    <i class="fa fa-search"></i>
+                    <input type="text" placeholder="Search cuisines">
+                  </div> --}}
+                  <div class="cuisine-checkboxes" id="cuisine-checkboxes"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="filter-footer">
+            <button class="btn btn-apply">Apply</button>
+          </div>
+      </div>
+    </div>
+
+    <script src="/js/slider.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios@0.21.4/dist/axios.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.0/jquery-ui.min.js"></script>
+    
     <script>
       let locationElem = document.getElementById("location");
       let baseUrl = `${window.location.protocol}//${window.location.hostname}:${window.location.port}`;
 
+      $(document).ready(function(){
+          $(".tabs-list li a").click(function(e){
+            e.preventDefault();
+          });
+
+          $(".tabs-list li").click(function(){
+            var tabid = $(this).find("a").attr("href");
+            $(".tabs-list li,.tabs div.tab").removeClass("active");   // removing active class from tab
+            $(".tab").hide();   // hiding open tab
+            $(tabid).show();    // show tab
+            $(this).addClass("active"); //  adding active class to clicked tab
+          });
+
+          // open modal
+          $("#open-modal").on("click", function() {
+              $(".filter-modal").addClass("modal-active");
+          })
+
+          // close modal
+          $("#close-modal").on("click", function() {
+              $(".filter-modal").removeClass("modal-active");
+          })
+          $(this).on("click", function(e) {
+              if(e.target.id === "filter-overlay"){
+                  $(".filter-modal").removeClass("modal-active");
+              }
+          })
+      });
+
       let restaurants=[]
       let menuitems=[]
+      let mealtypes=[]
+      let cuisines=[]
 
       // Setting menu items array
       function setMenuitems(){
@@ -120,27 +240,32 @@
               $("#menu-cards").append(templateString)
           })
       }
+
+      // Function to show mealtypes
+      function showFetchedMealtypes(){
+          $("#mealtypes-checkboxes").empty()
+          mealtypes.forEach((meal)=>{
+              let templateString =  `<div class="mealtype">
+                                          <input class="styled-checkbox" id="meal-checkbox-${meal.id}" type="checkbox" value="${meal.id}">
+                                          <label for="meal-checkbox-${meal.id}">${meal.name}</label>
+                                    </div>`
+              $("#mealtypes-checkboxes").append(templateString)
+          })
+      }
         
-      // Adding event listener on widnow to
-      // get restaurants for default location on load
-      window.addEventListener("load",()=>{
-        let url = `${baseUrl}/api/v1/locations`;
-        axios.get(url).then(({data})=>{
-        return data.locations
-        }).then((locations)=>{
-          // console.log(locations)
 
-          locations.forEach((loc=>{
-              let templateString = `<option class="locationOptions" value=${loc.id}>${loc.city}</option>`
-              $("#location").append(templateString)
-          }))
-
-        }).then(()=>{
-          let defaultLocation = $("#location").val()
-          getRestaurants(defaultLocation)
-        })
-      })
-
+      // Function to show cuisines
+      function showFetchedCuisines(){
+          $("#cuisine-checkboxes").empty()
+          cuisines.forEach((cuisine)=>{
+              let templateString =  `<div class="mealtype">
+                                          <input class="styled-checkbox" id="cuisine-checkbox-${cuisine.id}" type="checkbox" value="${cuisine.id}">
+                                          <label for="cuisine-checkbox-${cuisine.id}">${cuisine.name}</label>
+                                    </div>`
+              $("#cuisine-checkboxes").append(templateString)
+          })
+      }
+        
       // Get restuarants of selected location
       function getRestaurants(locationId){
         let url = `${baseUrl}/api/v1/restaurantsbylocation/${locationId}`;
@@ -165,11 +290,77 @@
         })
       }
 
+      // Get mealtypes
+      function getMealtypes(){
+        let url = `${baseUrl}/api/v1/mealtypes`;
+
+        axios.get(url).then((data)=>{
+          // console.log(data.data.mealtypes)
+          mealtypes = [...data.data.mealtypes]
+          // console.log(mealtypes)
+          showFetchedMealtypes()
+        })
+      }
+
+      // Search mealtypes
+      // Get cuisines
+      function getCuisines(){
+        let url = `${baseUrl}/api/v1/cuisines`;
+
+        axios.get(url).then((data)=>{
+          // console.log(data.data.cuisines)
+          cuisines = [...data.data.cuisines]
+          // console.log(cuisines)
+          showFetchedCuisines()
+        })
+      }
+
+      // Search cuisines
+
       // Rediredirect to detail page
       function showRestaurant(restaurantId){
         let url = `${baseUrl}/api/v1/retaurantsdetails?restaurantId=${restaurantId}`;
         window.location = url;
       }
+
+      // Adding event listener on widnow to
+      // get restaurants for default location on load
+      window.addEventListener("load",()=>{
+        let url = `${baseUrl}/api/v1/locations`;
+
+        // Adding locations in dropdown
+        axios.get(url).then(({data})=>{
+        // console.log(data)
+        return data.locations
+        }).then((locations)=>{
+          // console.log(locations)
+          locations.forEach((loc=>{
+              let templateString = `<option class="locationOptions" value=${loc.id}>${loc.city}</option>`
+              $("#location").append(templateString)
+          }))
+        }).then(()=>{
+          let defaultLocation = $("#location").val()
+          getRestaurants(defaultLocation)
+          getMealtypes()
+          getCuisines()
+        })
+        })
+
+        //-----JS for Price Range slider-----
+        $(function() {
+          $( "#slider-range" ).slider({
+            range: true,
+            min: 130,
+            max: 500,
+            values: [ 130, 250 ],
+            slide: function( event, ui ) {
+            $( "#amount" ).val( "$" + ui.values[ 0 ] + " - $" + ui.values[ 1 ] );
+            }
+          });
+          $( "#amount" ).val( "$" + $( "#slider-range" ).slider( "values", 0 ) +
+            " - $" + $( "#slider-range" ).slider( "values", 1 ) );
+        });
+
     </script>
   </body>
 </html>

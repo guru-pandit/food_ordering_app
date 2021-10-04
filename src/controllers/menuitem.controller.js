@@ -234,10 +234,10 @@ const filterMenuitems = async (req, res) => {
     // } catch (err) {
     //     res.status(500).json({ error: err.message || "something went wrong" })
     // }
-    try{
+    try {
         let { hcost, lcost, mealtypeId, cuisineId } = req.body;
         let sort = req.body.sort ? req.body.sort : 1;
-       
+
         var payload = {}
 
         if (hcost && lcost) {
@@ -247,101 +247,107 @@ const filterMenuitems = async (req, res) => {
                 }
             }
         }
-        if(mealtypeId){
+        if (mealtypeId) {
             payload = {
-                mealtypeId : mealtypeId
+                mealtypeId: mealtypeId
             }
         }
-        if(cuisineId){
+        if (cuisineId) {
             payload = {
-                cuisineId : cuisineId
+                cuisineId: cuisineId
             }
         }
-        if(hcost && lcost && mealtypeId){
+        if (hcost && lcost && mealtypeId) {
             payload = {
                 [Op.and]: [
-                    {price: {
-                        [Op.between]: [lcost, hcost],
-                    }},
-                    {mealtypeId : mealtypeId}
+                    {
+                        price: {
+                            [Op.between]: [lcost, hcost],
+                        }
+                    },
+                    { mealtypeId: mealtypeId }
                 ]
             }
         }
-        if(hcost && lcost && cuisineId){
+        if (hcost && lcost && cuisineId) {
             payload = {
                 [Op.and]: [
-                    {price: {
-                        [Op.between]: [lcost, hcost],
-                    }},
-                    {cuisineId : cuisineId}
+                    {
+                        price: {
+                            [Op.between]: [lcost, hcost],
+                        }
+                    },
+                    { cuisineId: cuisineId }
                 ]
             }
         }
-        if(mealtypeId && cuisineId){
+        if (mealtypeId && cuisineId) {
             payload = {
                 [Op.and]: [
-                    {mealtypeId : mealtypeId},
-                    {cuisineId : cuisineId}
+                    { mealtypeId: mealtypeId },
+                    { cuisineId: cuisineId }
                 ]
             }
         }
-        if(hcost && lcost && mealtypeId && cuisineId ){
+        if (hcost && lcost && mealtypeId && cuisineId) {
             payload = {
                 [Op.and]: [
-                    {price: {
-                        [Op.between]: [lcost, hcost],
-                    }},
-                    {mealtypeId : mealtypeId},
-                    {cuisineId : cuisineId}
+                    {
+                        price: {
+                            [Op.between]: [lcost, hcost],
+                        }
+                    },
+                    { mealtypeId: mealtypeId },
+                    { cuisineId: cuisineId }
                 ]
             }
         }
-        if(sort === 1){
+        if (sort === 1) {
             let allMenuitems = await Menuitem.findAll({
-                where : payload,
-                order:[
-                    ['price','ASC']
+                where: payload,
+                order: [
+                    ['price', 'ASC']
                 ],
                 include: [
                     { model: Mealtype, attributes: ["name", "content"] },
                     { model: Cuisine, attributes: ["name"] },
-                    { 
-                        model: Restaurant, 
+                    {
+                        model: Restaurant,
                         attributes: ["name", "address", "contact", "locationId"],
-                        include : [{model : Location}] 
+                        include: [{ model: Location }]
                     }
                 ]
             })
-    if(allMenuitems.length > 0){
-        return res.status(200).json({message : "Menuitems fetched successfully" , menuitems : allMenuitems});
-    }else{
-        return res.status(500).json({error : "Menuitems not found"})
-    }
-    }else{
-        let allMenuitems = await Menuitem.findAll({
-            where : payload,
-            order:[
-                ['price','DESC']
-            ],
-            include: [
-                { model: Mealtype, attributes: ["name", "content"] },
-                { model: Cuisine, attributes: ["name"] },
-                { 
-                    model: Restaurant, 
-                    attributes: ["name", "address", "contact", "locationId"],
-                    include : [{model : Location}] 
-                }
-            ]
-        })
-    if(allMenuitems.length > 0){
-        return res.status(200).json({message : "Menuitems fetched successfully" , menuitems : allMenuitems});
-    }else{
-        return res.status(500).json({error : "Menuitems not found"})
-    }
-    }
-        
+            if (allMenuitems.length > 0) {
+                return res.status(200).json({ message: "Menuitems fetched successfully", menuitems: allMenuitems });
+            } else {
+                return res.status(500).json({ error: "Menuitems not found" })
+            }
+        } else {
+            let allMenuitems = await Menuitem.findAll({
+                where: payload,
+                order: [
+                    ['price', 'DESC']
+                ],
+                include: [
+                    { model: Mealtype, attributes: ["name", "content"] },
+                    { model: Cuisine, attributes: ["name"] },
+                    {
+                        model: Restaurant,
+                        attributes: ["name", "address", "contact", "locationId"],
+                        include: [{ model: Location }]
+                    }
+                ]
+            })
+            if (allMenuitems.length > 0) {
+                return res.status(200).json({ message: "Menuitems fetched successfully", menuitems: allMenuitems });
+            } else {
+                return res.status(500).json({ error: "Menuitems not found" })
+            }
+        }
 
-    }catch(err){
+
+    } catch (err) {
         res.status(500).json({ error: err.message || "Something went wrong" });
     }
 }
