@@ -313,7 +313,7 @@ const filterMenuitems = async (req, res) => {
                     { model: Cuisine, attributes: ["name"] },
                     {
                         model: Restaurant,
-                        attributes: ["name", "address", "contact", "locationId"],
+                        attributes: ["name", "address", "contact", "locationId", "image", "avgRatings", "openingTime", "closingTime"],
                         include: [{ model: Location }]
                     }
                 ]
@@ -334,7 +334,7 @@ const filterMenuitems = async (req, res) => {
                     { model: Cuisine, attributes: ["name"] },
                     {
                         model: Restaurant,
-                        attributes: ["name", "address", "contact", "locationId"],
+                        attributes: ["name", "address", "contact", "locationId", "image", "avgRatings", "openingTime", "closingTime"],
                         include: [{ model: Location }]
                     }
                 ]

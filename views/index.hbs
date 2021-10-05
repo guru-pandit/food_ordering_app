@@ -11,18 +11,28 @@
   <body>
     <div class="restaurants">
       <div class="top-bar">
-          <div class="search-box">
-              <div class="input-container">
-                  <div class="locality">
-                      <i class="fa fa-map-marker"></i>
-                      <select class="location" name="location" id="location" onchange="getRestaurants(this.value)"></select>
+          <div class="top-bar-left">
+            <h1 class="logo">Go<span>Food</span></h1>
+          </div>
+
+          <div class="top-bar-mid">
+              <div class="search-box">
+                  <div class="input-container">
+                      <div class="locality">
+                          <i class="fa fa-map-marker"></i>
+                          <select class="location" name="location" id="location" onchange="getRestaurants(this.value)"></select>
+                      </div>
+                      <div class="divider"></div>
+                      <div class="search-bar" >
+                          <i class="fa fa-search"></i>
+                          <input type="text" class="search" onkeyup="searchRestaurants(this.value)" placeholder="Search restaurant or dish">
+                          <input type="submit">
+                      </div>
                   </div>
-                  <div class="divider"></div>
-                  <div class="search-bar" >
-                      <i class="fa fa-search"></i>
-                      <input type="text" class="search" onkeyup="searchRestaurants(this.value)" placeholder="Search restaurant or dish">
-                      <input type="submit">
-                  </div>
+              </div>
+              <div class="filter-container" id="open-modal">
+                <i class="fa fa-filter"></i>
+                Filters
               </div>
           </div>
 
@@ -33,11 +43,11 @@
       </div>
       
 
-      <div class="filters">
-        <div class="filter-container" id="open-modal">
+      {{!-- <div class="filters"> --}}
+        {{!-- <div class="filter-container" id="open-modal">
           <i class="fa fa-filter"></i>
           Filters
-        </div>
+        </div> --}}
         {{!-- <div class="filter-container">
           Great offers
         </div>
@@ -45,15 +55,15 @@
           Rating
           <i class="fa fa-angle-down"></i>
         </div> --}}
-      </div>
+      {{!-- </div> --}}
 
-      <div class="main-heading">
-        <h2 class="heading">Popular restaurants near you</h2>
+      <div class="main-heading" id="rest-heading">
+        <h2 class="heading">Popular restaurants</h2>
       </div>
 
       <div class="cards" id="rest-card"></div>
 
-      <div class="main-heading">
+      <div class="main-heading" id="menu-heading">
         <h2 class="heading">Our picks for you</h2>
       </div>
 
@@ -79,12 +89,12 @@
               <div class="tab active" id="tab1">
                 <div class="sort-options">
                       <div class="radio-item">
-                          <input type="radio" id="low-to-high" name="sort_by_cost" value="">
+                          <input type="radio" id="low-to-high" name="sort_by_cost" value="1">
                           <label for="low-to-high">Cost: Low to High</label>
                       </div>
 
                       <div class="radio-item">
-                          <input type="radio" id="high-to-low" name="sort_by_cost" value="">
+                          <input type="radio" id="high-to-low" name="sort_by_cost" value="-1">
                           <label for="high-to-low">Cost: High to Low</label>
                       </div>
                 </div>
@@ -120,20 +130,20 @@
 
               <div class="tab" id="tab3">
                 <div class="mealtype-options">
-                  {{!-- <div class="search-mealtype">
+                  <div class="search-mealtype">
                     <i class="fa fa-search"></i>
-                    <input type="text" placeholder="Search mealtypes">
-                  </div> --}}
+                    <input type="text" placeholder="Search mealtypes" onkeyup="searchMealtypes(this.value)">
+                  </div>
                   <div class="mealtype-checkboxes" id="mealtypes-checkboxes"></div>
                 </div>
               </div>
 
               <div class="tab" id="tab4">
                 <div class="cuisine-options">
-                  {{!-- <div class="search-cuisine">
+                  <div class="search-cuisine">
                     <i class="fa fa-search"></i>
-                    <input type="text" placeholder="Search cuisines">
-                  </div> --}}
+                    <input type="text" placeholder="Search cuisines" onkeyup="searchCuisines(this.value)">
+                  </div>
                   <div class="cuisine-checkboxes" id="cuisine-checkboxes"></div>
                 </div>
               </div>
@@ -141,10 +151,11 @@
           </div>
 
           <div class="filter-footer">
-            <button class="btn btn-apply">Apply</button>
+            <button id="apply" class="btn btn-apply">Apply</button>
           </div>
       </div>
     </div>
+    {{!-- <div class="add-menu"><i class="fa fa-plus"></i></div> --}}
 
     <script src="/js/slider.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios@0.21.4/dist/axios.min.js"></script>
@@ -154,35 +165,6 @@
     <script>
       let locationElem = document.getElementById("location");
       let baseUrl = `${window.location.protocol}//${window.location.hostname}:${window.location.port}`;
-
-      $(document).ready(function(){
-          $(".tabs-list li a").click(function(e){
-            e.preventDefault();
-          });
-
-          $(".tabs-list li").click(function(){
-            var tabid = $(this).find("a").attr("href");
-            $(".tabs-list li,.tabs div.tab").removeClass("active");   // removing active class from tab
-            $(".tab").hide();   // hiding open tab
-            $(tabid).show();    // show tab
-            $(this).addClass("active"); //  adding active class to clicked tab
-          });
-
-          // open modal
-          $("#open-modal").on("click", function() {
-              $(".filter-modal").addClass("modal-active");
-          })
-
-          // close modal
-          $("#close-modal").on("click", function() {
-              $(".filter-modal").removeClass("modal-active");
-          })
-          $(this).on("click", function(e) {
-              if(e.target.id === "filter-overlay"){
-                  $(".filter-modal").removeClass("modal-active");
-              }
-          })
-      });
 
       let restaurants=[]
       let menuitems=[]
@@ -233,7 +215,7 @@
                                             </div>
                                             <div class="details-right">
                                                   <p class="menu-price">&#8377; ${menu.price}</p>
-                                                  <div class="add-menu"><i class="fa fa-plus"></i></div>
+                                                  
                                             </div>
                                         </div>
                                     </div>`
@@ -246,7 +228,7 @@
           $("#mealtypes-checkboxes").empty()
           mealtypes.forEach((meal)=>{
               let templateString =  `<div class="mealtype">
-                                          <input class="styled-checkbox" id="meal-checkbox-${meal.id}" type="checkbox" value="${meal.id}">
+                                          <input class="styled-checkbox meal-checkbox" id="meal-checkbox-${meal.id}" type="checkbox" value="${meal.id}">
                                           <label for="meal-checkbox-${meal.id}">${meal.name}</label>
                                     </div>`
               $("#mealtypes-checkboxes").append(templateString)
@@ -258,8 +240,8 @@
       function showFetchedCuisines(){
           $("#cuisine-checkboxes").empty()
           cuisines.forEach((cuisine)=>{
-              let templateString =  `<div class="mealtype">
-                                          <input class="styled-checkbox" id="cuisine-checkbox-${cuisine.id}" type="checkbox" value="${cuisine.id}">
+              let templateString =  `<div class="cuisine">
+                                          <input class="styled-checkbox cuisine-checkbox" id="cuisine-checkbox-${cuisine.id}" type="checkbox" value="${cuisine.id}">
                                           <label for="cuisine-checkbox-${cuisine.id}">${cuisine.name}</label>
                                     </div>`
               $("#cuisine-checkboxes").append(templateString)
@@ -303,6 +285,16 @@
       }
 
       // Search mealtypes
+      function searchMealtypes(value){
+        let url = `${baseUrl}/api/v1/searchmealtypes?search=${value}`;
+
+        axios.get(url).then((data)=>{
+          // console.log(data.data.mealtypes)
+          mealtypes = [...data.data.mealtypes]
+          showFetchedMealtypes()
+        })
+      }
+
       // Get cuisines
       function getCuisines(){
         let url = `${baseUrl}/api/v1/cuisines`;
@@ -316,6 +308,17 @@
       }
 
       // Search cuisines
+      function searchCuisines(value){
+        let url = `${baseUrl}/api/v1/searchcuisines?search=${value}`;
+
+        axios.get(url).then((data)=>{
+          // console.log(data.data.cuisines)
+          cuisines = [...data.data.cuisines]
+          showFetchedCuisines()
+
+        })
+      }
+
 
       // Rediredirect to detail page
       function showRestaurant(restaurantId){
@@ -344,22 +347,74 @@
           getMealtypes()
           getCuisines()
         })
-        })
+      })
 
-        //-----JS for Price Range slider-----
-        $(function() {
-          $( "#slider-range" ).slider({
-            range: true,
-            min: 130,
-            max: 500,
-            values: [ 130, 250 ],
-            slide: function( event, ui ) {
-            $( "#amount" ).val( "$" + ui.values[ 0 ] + " - $" + ui.values[ 1 ] );
-            }
+      $(document).ready(function(){
+          $(".tabs-list li a").click(function(e){
+            e.preventDefault();
           });
-          $( "#amount" ).val( "$" + $( "#slider-range" ).slider( "values", 0 ) +
-            " - $" + $( "#slider-range" ).slider( "values", 1 ) );
-        });
+
+          $(".tabs-list li").click(function(){
+            var tabid = $(this).find("a").attr("href");
+            $(".tabs-list li,.tabs div.tab").removeClass("active");   // removing active class from tab
+            $(".tab").hide();   // hiding open tab
+            $(tabid).show();    // show tab
+            $(this).addClass("active"); //  adding active class to clicked tab
+          });
+
+          // open modal
+          $("#open-modal").on("click", function() {
+              $(".filter-modal").addClass("modal-active");
+          })
+
+          // close modal
+          $("#close-modal").on("click", function() {
+              $(".filter-modal").removeClass("modal-active");
+          })
+          $(this).on("click", function(e) {
+              if(e.target.id === "filter-overlay"){
+                  $(".filter-modal").removeClass("modal-active");
+              }
+          })
+
+          // Apply filter
+          $("#apply").on("click", function(e){
+              let selectedSortOption = $("input[name='sort_by_cost']:checked").val()
+
+              let selectedMealtypes=[]
+              selectedMealtypes = $(".meal-checkbox:checked").map(function(){
+                  return this.value
+              }).get()
+
+              let selectedCuisines=[]
+              selectedCuisines = $(".cuisine-checkbox:checked").map(function(){
+                  return this.value
+              }).get()
+
+              let selectedLowCost = $("#price-slider-1").val()
+
+              let selectedHighCost = $("#price-slider-2").val()
+
+              // console.log(selectedMealtypes, selectedCuisines, selectedSortOption, selectedLowCost, selectedHighCost)
+
+              let url = `${baseUrl}/api/v1/filter`;
+              let data = {
+                sort: selectedSortOption,
+                lcost: selectedLowCost,
+                hcost: selectedHighCost,
+                mealtypeIds:selectedMealtypes, 
+                cuisineIds: selectedCuisines
+              }
+              // console.log(data)
+              axios.post(url, data).then((data)=>{
+                // console.log(data.data.menuitems)
+                menuitems = [...data.data.menuitems]
+                // console.log(menuitems)
+                $(".filter-modal").removeClass("modal-active");
+                showFetchedMenuitems();
+              })
+          })
+      });
 
     </script>
   </body>
