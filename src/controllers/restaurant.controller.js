@@ -110,7 +110,7 @@ const getRestaurantsDetails = async (req, res) => {
             let reviewsCount = restaurantDetails.Reviews.length;
             let avgRatings = restaurantDetails.avgRatings.toFixed()
             //res.status(200).json({message : "Restaurant Details Fetched Successfully",restaurants : restaurantDetails})
-            res.render('details', { restaurant: restaurantDetails, reviews : restaurantDetails.Reviews, reviewsCount : reviewsCount,avgRatings : avgRatings,menuitems : restaurantDetails.Menuitems })
+            res.render('details', { restaurant: restaurantDetails, reviews : restaurantDetails.Reviews, reviewsCount : reviewsCount,avgRatings : avgRatings,menuitems : restaurantDetails.Menuitems})
         } else {
             res.status(500).json({ message: "Restaurants Details NOT Fetched Successfully" })
         }

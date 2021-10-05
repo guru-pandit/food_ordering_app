@@ -49,19 +49,19 @@ img {
             color: #ddd;
           }
           .stars[rating="1"] li:nth-child(-n+1) i {
-            color: #fab63f;
+            color: #ff9f1a;
           }
           .stars[rating="2"] li:nth-child(-n+2) i {
-            color: #fab63f;
+            color: #ff9f1a;
           }
           .stars[rating="3"] li:nth-child(-n+3) i {
-            color: #fab63f;
+            color: #ff9f1a;
           }
           .stars[rating="4"] li:nth-child(-n+4) i {
-            color: #fab63f;
+            color: #ff9f1a;
           }
           .stars[rating="5"] li:nth-child(-n+5) i {
-            color: #fab63f;
+            color: #ff9f1a;
           }
           
   @media screen and (max-width: 996px) {
@@ -165,7 +165,7 @@ img {
     margin-left: 20px; }
 
 .add-to-cart, .like {
-  background: #ff9f1a;
+  background: #0C9463;
   padding: 1.2em 1.5em;
   border: none;
   text-transform: UPPERCASE;
@@ -173,8 +173,8 @@ img {
   color: #fff;
   -webkit-transition: background .3s ease;
           transition: background .3s ease; }
-  .add-to-cart:hover, .like:hover {
-    background: #b36800;
+  .add-to-cart:hover, .like:hover,.add-to-cart:active,.add-to-cart:visited{
+    background: #0C9463;
     color: #fff; }
 
 .not-available {
@@ -591,6 +591,12 @@ fieldset[disabled] a.btn {
   border-color: #01549b;
 }
 
+.btn-green,.btn-green:hover,.btn-green:visited{
+  background-color: #0C9463;
+  border-color: #0C9463;
+  color: white;
+}
+
 /*review tab css*/
 #testimonials{
   display: flex;
@@ -674,19 +680,19 @@ fieldset[disabled] a.btn {
   color: #ddd;
 }
 .reviews[rating="1"] li:nth-child(-n+1) i {
-  color: #fab63f;
+  color: #ff9f1a;
 }
 .reviews[rating="2"] li:nth-child(-n+2) i {
-  color: #fab63f;
+  color: #ff9f1a;
 }
 .reviews[rating="3"] li:nth-child(-n+3) i {
-  color: #fab63f;
+  color: #ff9f1a;
 }
 .reviews[rating="4"] li:nth-child(-n+4) i {
-  color: #fab63f;
+  color: #ff9f1a;
 }
 .reviews[rating="5"] li:nth-child(-n+5) i {
-  color: #fab63f;
+  color: #ff9f1a;
 }
 .box-top{
   display: flex;
@@ -703,3 +709,10 @@ fieldset[disabled] a.btn {
   transition: all ease 0.3s;
 }
 @media screen and (max-width:767px){.testimonial-box{width:100%}}
+
+.btn-outline-success{
+    color: #0C9463;
+}
+.btn-outline-success:hover{
+  background-color: #0C9463;
+}

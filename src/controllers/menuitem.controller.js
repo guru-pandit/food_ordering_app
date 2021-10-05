@@ -406,4 +406,6 @@ const addImage = async (req, res) => {
     }
 }
 
-module.exports = { addNewMenuitem, getMenuitems, getMenuitemsByRestaurant, getMenuitemsByMealtype, searchMenuitems, filterMenuitems, addImage }
+
+
+module.exports = { addNewMenuitem, getMenuitems, getMenuitemsByRestaurant, getMenuitemsByMealtype, searchMenuitems, filterMenuitems, addImage,}

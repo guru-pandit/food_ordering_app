@@ -18,6 +18,9 @@ const getDateTimeString = () => {
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         let storagePath = path.join(__basedir, "public/tmp")
+        if (!fs.existsSync(storagePath)) {
+            fs.mkdirSync(storagePath);
+        }
         cb(null, storagePath);
     },
     filename: function (req, file, cb) {
