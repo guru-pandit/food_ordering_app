@@ -25,6 +25,7 @@ module.exports = (sequelize, DataTypes) => {
     razorpay_order_id: DataTypes.STRING,
     razorpay_signature: DataTypes.STRING,
     gst: DataTypes.FLOAT,
+    deliveryCharges : DataTypes.INTEGER,
     orderedAt: DataTypes.DATE,
     isDelivered: DataTypes.BOOLEAN
   }, {

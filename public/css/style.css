@@ -238,9 +238,6 @@ body{
   color: #696969;
 }
 
-.restaurants{
-  /* padding-top: .5rem; */
-}
 
 /* Headings */
 .main-heading{
@@ -877,3 +874,58 @@ input[type="range"]:active::-webkit-slider-thumb{
     align-items: center;
     justify-content: space-between;
 }
+
+/* biil start */
+
+.payment-page-content{
+  background:#fff;
+  width:40%;
+  margin:30px auto;
+  padding:30px;
+}
+.payment-page-content h2,
+.payment-page-content h3{
+  margin:0;
+}
+.payment-page-content h2{
+  text-align:center;
+}
+.payment-list-wrapper{
+  padding:0;
+  margin:40px 0;
+}
+.payment-list-item{
+  margin-top:10px;
+  list-style-type:none;
+  display:flex;
+  justify-content:space-between;
+  border-bottom:1px solid #808080;
+  padding:5px 0;
+}
+.payment-total-wrapper{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.payment-confirmation-wrapper{
+  margin:20px 0;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  text-align:center;
+}
+.payment-button{
+  margin:10px 0;
+  padding:10px 0;
+  background:#0C9463;
+  color:#fff;
+  font-weight:500;
+  border:none;
+}
+
+@media screen and (max-width:767px){
+  .payment-page-content{
+    width:100%;
+  }
+}
+/* bill end */

@@ -164,7 +164,8 @@
     
     <script>
       let locationElem = document.getElementById("location");
-      let baseUrl = `${window.location.protocol}//${window.location.hostname}:${window.location.port}`;
+      let port = window.location.port ? ':'+window.location.port: '';
+      let baseUrl = `${window.location.protocol}//${window.location.hostname}${port}`;
 
       let restaurants=[]
       let menuitems=[]

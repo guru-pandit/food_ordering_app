@@ -15,6 +15,7 @@ const placeOrder = async (req, res) => {
             items: req.body.items,
             total: 0,
             gst: 0,
+            deliveryCharges: 0,
             userId: req.query.userId,
             restaurantId: req.query.restaurantId,
             transactionId: null,
@@ -36,7 +37,13 @@ const placeOrder = async (req, res) => {
         orderBody.gst = GST;
 
         // Assigning total price to the orderBody.total
-        orderBody.total = finalPrize < 1000 ? finalPrize + deliveryCharge : finalPrize;
+        if(finalPrize < 1000){
+            orderBody.total = finalPrize + deliveryCharge;
+            orderBody.deliveryCharges = deliveryCharge
+        }else{
+            orderBody.total = finalPrize;
+        }
+        //orderBody.total = finalPrize < 1000 ? finalPrize + deliveryCharge : finalPrize;
         // console.log("OrderBody:",orderBody);
 
 
