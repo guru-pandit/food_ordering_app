@@ -26,7 +26,16 @@
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
     <script>
-            axios.post('http://localhost:8080/api/v1/payment/order').then((data)=>{
+
+      const queryString = window.location.search;
+      //console.log(queryString);
+      const urlParams = new URLSearchParams(queryString);
+      //console.log(urlParams);
+      const totalPrice = urlParams.get('totalPrice');
+      //console.log(totalPrice);
+      const orderId = urlParams.get('orderId');
+
+            axios.post(`http://localhost:8080/api/v1/payment/order?totalPrice=${totalPrice}`).then((data)=>{
                 console.log(data)
                 console.log(data.data.data.id)
                 var options = {
@@ -38,7 +47,7 @@
                       "image": "https://example.com/your_logo",
                       "order_id": data.data.data.id,
                       "handler": function (response){
-                              axios.post('http://localhost:8080/api/v1/isordercomplete',response).then(res=>{
+                              axios.post(`http://localhost:8080/api/v1/isordercomplete?orderId=${orderId}`,response).then(res=>{
                                 console.log(res.data.redirectUrl);
                                 window.location = res.data.redirectUrl
                               })

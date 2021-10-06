@@ -110,7 +110,7 @@ const getRestaurantsDetails = async (req, res) => {
             let reviewsCount = restaurantDetails.Reviews.length;
             let avgRatings = restaurantDetails.avgRatings.toFixed()
             //res.status(200).json({message : "Restaurant Details Fetched Successfully",restaurants : restaurantDetails})
-            res.render('details', { restaurant: restaurantDetails, reviews : restaurantDetails.Reviews, reviewsCount : reviewsCount,avgRatings : avgRatings,menuitems : restaurantDetails.Menuitems })
+            res.render('details', { restaurant: restaurantDetails, reviews : restaurantDetails.Reviews, reviewsCount : reviewsCount,avgRatings : avgRatings,menuitems : restaurantDetails.Menuitems})
         } else {
             res.status(500).json({ message: "Restaurants Details NOT Fetched Successfully" })
         }
@@ -206,7 +206,7 @@ const searchRestaurant = async (req, res) => {
         const { search, locationId } = req.body;
         //to create empty array variable
         var searchArray = []
-        
+
         //to get all restaurants based on search keyword
         const searchResult = await Restaurant.findAll({
             where: {
@@ -267,7 +267,7 @@ const searchRestaurant = async (req, res) => {
         if (searchArray.length > 0) {
             return res.status(200).json({ message: "Restaurants Fetched successfully", restaurants: searchArray })
         } else {
-            return res.status(500).json({ message: "Restaurants not found...", restaurants: searchArray })
+            return res.status(400).json({ message: "Restaurants not found...", restaurants: searchArray })
         }
     } catch (err) {
         res.status(500).json({ error: err.message || "something went wrong" })
