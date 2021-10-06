@@ -84,11 +84,10 @@ North Indian, Chinese, South Indian, Street Food, Ice Cream, Beverages</p>
 
 <div id="Overview" class="tabcontent">
   <h3>About this place</h3>
-  <p><h4>Know For</h4></p>
-   <p><h5> serving a combo of unlimited pizzas, desserts and a beverage</h5></p>
+  <p><h4>Name : {{restaurant.name}}</h4></p>
+  <p><h5>Address : {{restaurant.address}}, {{restaurant.Location.landmark}}, {{restaurant.Location.city}}, {{restaurant.Location.state}}, {{restaurant.Location.country}}, </h5></p>
 
-  <h3>Popular Dishes</h3>
-   <p><h5>Herbed Potato Wedges, Chicken Stuffed Pizza, Wasabi Chicken, Sweet Pizza, Coconut Choux, Thiramisu</h5></p>
+   <p><h5>Contact : {{restaurant.contact}}</h5></p>
 </div>
 
 
@@ -110,7 +109,7 @@ North Indian, Chinese, South Indian, Street Food, Ice Cream, Beverages</p>
         <p class="text-left" style="font-size: 1.2rem;">{{this.description}}</p>
       </div>
       <div class="col-2 d-flex align-items-center justify-content-end">
-        <button type="button" class="btn btn-primary p-3"
+        <button type="button" class="btn p-3 btn-green"
         onClick="cartLS.add({id: {{this.id}}, name: '{{this.name}}', price:{{this.price}},})">Add to
         Cart</button>
       </div>
@@ -134,7 +133,7 @@ North Indian, Chinese, South Indian, Street Food, Ice Cream, Beverages</p>
 <td></td>
 <td></td>
 <td class="text-right">Total: <strong class="total"></strong></td>
-<td class="text-right"><button class="btn btn-primary" id="order-btn">Order</button></td>
+<td class="text-right"><button class="btn btn-green" id="order-btn">Order</button></td>
 </tfoot>
 </table>
 </div>
@@ -235,7 +234,7 @@ North Indian, Chinese, South Indian, Street Food, Ice Cream, Beverages</p>
 </div>
 
  <div class="w-100 text-center mt-5">
-   <button type="submit" class="btn btn-primary" id="btn-submit" data-dismiss="modal" style="margin:10px auto;margin-top: 30px;
+   <button type="submit" class="btn btn-green" id="btn-submit" data-dismiss="modal" style="margin:10px auto;margin-top: 30px;
     width: 80px;
     height: 30px;
     font-size: 12px;">Submit</button>
@@ -272,15 +271,15 @@ const $total = document.querySelector(".total")
 <td>${item.name}</td>
 <td>${item.quantity}</td>
 <td style="width: 60px;">
-<button type="button" class="btn btn-block btn-sm btn-outline-primary"
+<button type="button" class="btn btn-block btn-sm btn-outline-success" style="font-size:14px; font-weight:600;"
 onClick="cartLS.quantity(${item.id},1)">+</button>
 </td>
 <td style="width: 60px;">
-<button type="button" class="btn btn-block btn-sm btn-outline-primary"
+<button type="button" class="btn btn-block btn-sm btn-outline-success" style="font-size:14px; font-weight:600;"
 onClick="cartLS.quantity(${item.id},-1)">-</button>
 </td>
 <td class="text-right">&#8377; ${item.price}</td>
-<td class="text-right"><Button class="btn btn-primary" onClick="cartLS.remove(${item.id})">Delete</Button></td>
+<td class="text-right"><Button class="btn btn-outline-danger" onClick="cartLS.remove(${item.id})">Delete</Button></td>
 </tr>`).join("")
 
  $total.innerHTML = "&#8377; " + cartLS.total()
@@ -332,9 +331,17 @@ document.getElementById('order-btn').onclick = function(e){
                    {items},
                 ).then(res => {
                   console.log(res)
+                  let totalPrice = res.data.orderDetails.total;
+                  console.log(totalPrice)
+                  let orderId = res.data.orderDetails.orderId
+                  console.log(orderId)
+                  if(res){
+                    let url = `http://localhost:8080/api/v1/payment/checkout?orderId=${orderId}&totalPrice=${totalPrice}`;
+                    window.location = url;
+                  }
                 })
                 .catch(err => {
-                  console.log(err.response.data)
+                  console.log(err.response.data);
                 })
               }
 

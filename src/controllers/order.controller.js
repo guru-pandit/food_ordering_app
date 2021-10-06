@@ -9,7 +9,7 @@ const placeOrder = async (req, res) => {
     try {
         let totalPrice = 0;
         let deliveryCharge = 40;
-console.log(req.body)
+        console.log(req.body)
         let orderBody = {
             orderId: v1(),
             items: req.body.items,
@@ -106,7 +106,8 @@ const getOrdersByUserId = async (req, res) => {
 
 // Function for payment gateway integration
 const orderPayment = async(req, res) => {
-    // let { totalPrice } = req.body;
+    let { totalPrice } = req.query;
+    console.log(totalPrice)
     // console.log("TotalPrice: ", totalPrice);
     const instance = new Razorpay({
         key_id: process.env.RAZORPAY_KEYID, 
@@ -114,14 +115,14 @@ const orderPayment = async(req, res) => {
     })
     // console.log("RazorpayInstance: ", instance);
     let options = {
-        amount: "50000",
+        amount: totalPrice * 100, 
         currency: "INR"
     }
 
     instance.orders
         .create(options)
         .then((data) => {
-             res.status(200).json({ data });
+             res.status(200).json({ data }); 
             //  console.log("Data: ",data); 
             
         }).catch((err) => {
@@ -133,12 +134,24 @@ const checkoutPayment = async(req,res) => {
     res.render('paymentCheckout.hbs');
 }
 
-const checkSuccessOrFailure = (req,res)=> {
+const checkSuccessOrFailure = async(req,res)=> {
+    const {orderId} = req.query;
     const instance = new Razorpay({
         key_id: process.env.RAZORPAY_KEYID, 
         key_secret: process.env.RAZORPAY_KEYSECRET,
     })
     console.log(req.body)
+    if(req.body.razorpay_payment_id && req.body.razorpay_order_id && req.body.razorpay_signature){
+            let order = await Order.findOne({where:{orderId : orderId}})
+            if(order !== null){
+                order.razorpay_payment_id = req.body.razorpay_payment_id;
+                order.razorpay_order_id = req.body.razorpay_order_id;
+                order.razorpay_signature = req.body.razorpay_signature;
+
+                await order.save();
+            }
+
+    }
     instance.payments.fetch(req.body.razorpay_payment_id).then((paymentDocument)=>{
         console.log(paymentDocument)
         if(paymentDocument.status === 'captured'){
