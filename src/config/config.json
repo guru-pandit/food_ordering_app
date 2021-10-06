@@ -1,17 +1,17 @@
 {
     "development": {
         "username": "root",
-        "password": "",
+        "password": "Guru@280295",
         "database": "food_ordering_development",
         "host": "127.0.0.1",
         "dialect": "mysql"
     },
     "test": {
-        "username": "root",
-        "password": null,
-        "database": "database_test",
+        "username": "postgres",
+        "password": "Guru@280295",
+        "database": "food_ordering_test",
         "host": "127.0.0.1",
-        "dialect": "mysql"
+        "dialect": "postgres"
     },
     "production": {
         "username": "root",
