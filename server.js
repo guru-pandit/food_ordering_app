@@ -1,5 +1,6 @@
 // Importing required packages
 const express = require("express");
+const jwt = require('jsonwebtoken')
 const path = require("path");
 const cors = require("cors");
 const db = require("./src/models");

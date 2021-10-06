@@ -22,7 +22,7 @@
 			<span>or use your account</span>
 			<input type="email" placeholder="Email" id="email" />
 			<input type="password" placeholder="Password" id="password" />
-			<a href="#">Forgot your password?</a>
+			<a href="#" id="pass"> Forgot your password?</a>
 			<button type="submit" id="login" class="btn btn-login" >Sign In</input>
 		</form>
 	</div>
@@ -42,7 +42,9 @@
 
 	<script src="https://cdn.jsdelivr.net/npm/axios@0.21.4/dist/axios.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
 	<script>
+		
 		 let baseUrl = `${window.location.protocol}//${window.location.hostname}:${window.location.port}`;
 
 		 $("#signin-form").submit(function(e){
@@ -59,6 +61,32 @@
 				alert(err)
 			})
 		 })
+
+
+		  document.getElementById('pass').onclick = function(e){
+                e.preventDefault();
+                const form = document.getElementById('signin-form');
+                
+                // getting the element's value
+                const email = form.elements['email'].value;
+                
+                const data = {
+                  email :email ,
+     
+                }
+				console.log(data)
+                axios.post(
+                  `${baseUrl}/api/v1/forgetPassword`,
+                   data,
+                ).then(res => {
+                  console.log(res)
+				  alert(`Password reset link has been sent to ${email}`)
+                  
+                })
+                .catch(err => {
+                  console.log(err.response.data)
+                })
+              }
 	</script>
 
 </body>

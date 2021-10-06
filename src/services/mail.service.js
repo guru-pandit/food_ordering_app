@@ -24,4 +24,16 @@ const sendVerificationMail = (req, user, token) => {
 
 }
 
-module.exports = { sendVerificationMail };
+const passwordResetMail = (req, user, passToken) => {
+    let userFullName = user.firstName + " " + user.lastName
+    let mailOptions = {
+        from: `Verify your email address ${process.env.EMAIL}`,
+        to: user.email,
+        subject: "change your password",
+        html: `<h2>${userFullName} change your password here ...<h2>
+        <a href="${req.protocol}://${req.headers.host}/api/v1/verifyUserToken?passToken=${passToken.token}&userId=${user.id}">Click Here </a>`
+    };
+    transporter.sendMail(mailOptions)
+}
+
+module.exports = { sendVerificationMail, passwordResetMail };

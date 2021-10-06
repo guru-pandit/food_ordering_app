@@ -18,7 +18,13 @@ module.exports = (app) => {
     // app.post("/api/v1/resetPassword/:userId", userController.sendPasswordResetLink);
     // password reset
     // app.post("/api/v1/resetPassword", userController.resetPassword);
-    app.get("/api/v1/register",userController.getRegisterPage)
-    app.get("/api/v1/login",userController.getLoginPage)
+    app.get("/api/v1/register", userController.getRegisterPage)
+    app.get("/api/v1/login", userController.getLoginPage)
+    app.post("/api/v1/forgetPassword", userController.forgetPassword);
+    app.post("/api/v1/resetPassword/:userId", userController.resetPassword);
+
+
+    // app.post("/api/v1/resetPassword/:id", userController.resetPassword);
+    app.get("/api/v1/verifyUserToken", userController.verifyUserToken);
 };
 
