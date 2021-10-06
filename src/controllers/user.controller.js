@@ -1,10 +1,11 @@
 const db = require("../models");
-const { User, Token } = require("../models");//models destructure 
+const { User, Token, passwordToken } = require("../models");//models destructure 
 const bcrypt = require("bcryptjs"); //bcrypt password
 const { validationResult } = require("express-validator");//for validations
 const crypto = require("crypto");//convert token into hexabytes
-const { sendVerificationMail } = require("../services/mail.service");//import service file
+const { sendVerificationMail, passwordResetMail } = require("../services/mail.service");//import service file
 const jwt = require('jsonwebtoken');//
+const user = require("../models/user");
 const Op = db.Sequelize.Op;
 
 // Function to render register page
@@ -300,4 +301,97 @@ const userPartialUpdate = async (req, res) => {
     }
 };
 
-module.exports = { createUser, verifyUser, loginUser, dashboard, getUsersById, deleteUser, UpdateUser, getUsersByAddress, userPartialUpdate, getLoginPage, getRegisterPage }
+const forgetPassword = async (req, res) => {
+    try {
+        const { email } = req.body;
+        // res.send(email);
+        const user = await User.findOne({ where: { email } });
+        if (!user) {
+
+            //if not data found then return user does not exist
+            return res.status(400).json({ error: "user does not exist" });
+
+            //if user there then convert there password into hashed
+        } else {
+            let currentDate = new Date()
+            console.log(currentDate)
+            const passToken = {
+                token: crypto.randomBytes(64).toString("hex"),
+                userId: user.id,
+                isUsed: false,
+                expiredAt: new Date(currentDate.getTime() + 15 * 60000)
+
+            }
+
+            const tokenData = await passwordToken.create(passToken)
+            console.log(tokenData)//save in database
+            passwordResetMail(req, user, passToken);
+
+
+            //console.log(req.protocol)
+            res.send('Password reset link has been sent to your email address...')
+
+        }
+    } catch (err) {
+        // console.log(err);
+        res.status(500).json({ error: err.message || "Something went wrong" });
+    }
+
+}
+
+const verifyUserToken = async (req, res) => {
+    //to take query parameter from url
+    let { passToken } = req.query;
+    console.log("passToken" + passToken)
+    let tokenData = await passwordToken.findOne({ where: { token: passToken } })
+    let currentDate = new Date()
+    console.log(tokenData)
+    if (tokenData !== null) {
+        // to check token expired or not
+        //if token expired is less than current date then it will expired
+        if (tokenData.expiredAt < currentDate && tokenData.isUsed) {
+
+            res.status(400).json({ error: "Token expired or link already used" })
+        } else {
+            tokenData.isUsed = true;
+            tokenData.save()
+            res.render("password")
+        }
+
+    } else {
+        res.status(400).json({ error: "token not found" })
+    }
+
+}
+
+const resetPassword = async (req, res) => {
+    const { userId } = req.params
+    const { password, confirmPassword } = req.body
+    //check if this id exist in database
+    console.log("userId :-" + userId);
+    const data = await User.findOne({ where: { id: userId } });
+    if (!data) {
+        //if not data found then return user does not exist
+        return res.status(400).json({ error: "Invalid id..." });
+    } else {
+        let isPasswordMatched = password === confirmPassword;
+
+        if (!isPasswordMatched) {
+            return res.status(400).json({ error: "Password and Confirm password are not match please try again" });
+        } else {
+            let hashedPassword = await bcrypt.hashSync(password, 10);
+            data.password = hashedPassword
+            data.save()
+        }
+        res.status(200).json({ message: "password change " });
+
+    }
+
+
+
+
+
+
+};
+
+module.exports = { createUser, verifyUser, loginUser, dashboard, getUsersById, deleteUser, UpdateUser, getUsersByAddress, userPartialUpdate, getLoginPage, getRegisterPage, forgetPassword, resetPassword, verifyUserToken }
