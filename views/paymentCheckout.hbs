@@ -5,27 +5,58 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Checkout</title>
-
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-    <div class='card'>
-        <div class='upper-side'>
-            <i class="fa fa-check-circle-o checkmark"></i>
-            <h3 class='status'>Success</h3>
-        </div>
-        <div class='lower-side'>
-            <p class='message'>Congratulations, your order is placed !</p>
-            <a class="btn" id="rzp-button1">Pay to Proceed </a>
-        </div>
-    </div>
+      <div class="payment-page">
+  <div class="payment-page-content">
+      <h2>
+      Thanks for Order
+      </h2>
+      <ul class="payment-list-wrapper">
+        <li class="payment-list-item">
+          <span>Subtotal </span>
+          <span id="subtotal"></span>
+        </li>
+        <li class="payment-list-item">
+          <span>Discount </span>
+          <span>- &#8377; 0</span>
+        </li>
+        <li class="payment-list-item">
+          <span>GST </span>
+          <span id="gst"></span>
+        </li>
+        <li class="payment-list-item">
+          <span>Delivery Charges</span>
+          <span id="delivery"></span>
+        </li>
+      </ul>
+      <div class="payment-total-wrapper">
+      <h3>Total</h3> <b id="totalprice"></b>
+      </div>
+      <div class="payment-confirmation-wrapper">
+      <button class="payment-button" id="rzp-button1">
+        Pay Online
+      </button>
+      <span>Or</span>
+       <button class="payment-button">
+        Cash on Delivery
+      </button>
+      </div>
+  </div>
+</div>
 
 
     <script src="https://cdn.jsdelivr.net/npm/axios@0.21.4/dist/axios.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.0/jquery-ui.min.js"></script>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
     <script>
+      let port = window.location.port ? ':'+window.location.port: '';
+      let baseUrl = `${window.location.protocol}//${window.location.hostname}${port}`;
 
       const queryString = window.location.search;
       //console.log(queryString);
@@ -34,8 +65,11 @@
       const totalPrice = urlParams.get('totalPrice');
       //console.log(totalPrice);
       const orderId = urlParams.get('orderId');
+      const gst = urlParams.get('gst');
+      const subtotal = urlParams.get('subtotal');
+      const deliveryCharges = urlParams.get('deliveryCharges');
 
-            axios.post(`http://localhost:8080/api/v1/payment/order?totalPrice=${totalPrice}`).then((data)=>{
+            axios.post(`${baseUrl}/api/v1/payment/order?totalPrice=${totalPrice}`).then((data)=>{
                 console.log(data)
                 console.log(data.data.data.id)
                 var options = {
@@ -47,7 +81,7 @@
                       "image": "https://example.com/your_logo",
                       "order_id": data.data.data.id,
                       "handler": function (response){
-                              axios.post(`http://localhost:8080/api/v1/isordercomplete?orderId=${orderId}`,response).then(res=>{
+                              axios.post(`${baseUrl}/api/v1/isordercomplete?orderId=${orderId}`,response).then(res=>{
                                 console.log(res.data.redirectUrl);
                                 window.location = res.data.redirectUrl
                               })
@@ -62,7 +96,7 @@
 
               var rzp1 = new Razorpay(options);
               rzp1.on('payment.failed', function (response){
-                    window.location = "http://localhost:8080/api/v1/paymentfailure";
+                    window.location = `${baseUrl}/api/v1/paymentfailure`;
                     //alert(response.error.code);
                     //alert(response.error.description);
                     //alert(response.error.source);
@@ -76,6 +110,17 @@
                 e.preventDefault();
               }
             })
+
+            
+              let totalpricestring = `&#8377; ${totalPrice}`
+              $("#totalprice").append(totalpricestring)
+              let gststring = `+ &#8377; ${gst}`
+              $("#gst").append(gststring)
+              let subtotalstring = `&#8377; ${subtotal}`
+              $("#subtotal").append(subtotalstring)
+              let deliverystring = `+ &#8377; ${deliveryCharges}`
+              $("#delivery").append(deliverystring)
+            
     </script>
 </body>
 </html>
