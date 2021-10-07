@@ -349,7 +349,7 @@ const verifyUserToken = async (req, res) => {
     if (tokenData !== null) {
         // to check token expired or not
         //if token expired is less than current date then it will expired
-        if (tokenData.expiredAt < currentDate && tokenData.isUsed) {
+        if (tokenData.expiredAt < currentDate || tokenData.isUsed) {
 
             res.status(400).json({ error: "Token expired or link already used" })
         } else {
