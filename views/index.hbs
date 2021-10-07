@@ -381,6 +381,7 @@
           // Apply filter
           $("#apply").on("click", function(e){
               let selectedSortOption = $("input[name='sort_by_cost']:checked").val()
+              console.log(selectedSortOption)
 
               let selectedMealtypes=[]
               selectedMealtypes = $(".meal-checkbox:checked").map(function(){
