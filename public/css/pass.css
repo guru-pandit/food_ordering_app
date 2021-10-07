@@ -1,0 +1,112 @@
+/* @import url('https://fonts.googleapis.com/css?family=Montserrat:400,800'); */
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&display=swap');
+
+
+* {
+	box-sizing: border-box;
+	font-family: 'Open Sans', sans-serif;
+}
+
+body {
+	background: linear-gradient(rgba(0,0,0,0.2),rgba(0,0,0,0.2)), url("/images/bg/bg.jpg");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-attachment: fixed;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	
+	height: 100vh;
+	/* margin: -20px 0 50px;  */
+}
+
+.btn{
+	display: inline-block;
+	border-radius: 25px;
+	color: #fff;
+	font-size: .85rem;
+	font-weight: 700;
+	padding: .75rem 1.25rem;
+	margin: 0 .5rem;
+	letter-spacing: 1px;
+	text-transform: uppercase;
+	transition: all .3s ease;
+	cursor: pointer;
+}
+
+.btn:hover{
+	filter: brightness(.9);
+}
+
+.btn:focus {
+	outline: none;
+}
+
+.container {
+	background-image: linear-gradient(rgba(0,0,0,0.2),rgba(0,0,0,0.2)), url("https://cdn.pixabay.com/photo/2017/10/09/19/29/eat-2834549__340.jpg");
+	background-repeat: no-repeat;
+	background-size: cover;
+	background-color: #fff;
+	border-radius: 10px;
+  	/* box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22); */
+  	box-shadow: 0 8px 30px rgba(0,0,0,0.30), 0 0px 10px rgba(0,0,0,0.25);
+	position: relative;
+	overflow: hidden;
+	width: 400px;
+	max-width: 45%;
+	min-height: 366px;
+}
+
+.form-container {
+	position: absolute;
+	top: 0;
+	height: 100%;
+	transition: all 0.6s ease-in-out;
+}
+
+.sign-in-container {
+
+	width: 100%;
+
+}
+
+h1 {
+	font-weight: bold;
+	margin: 0;
+	color: #1c1c1c;
+}
+
+
+form {
+	background-color: #FFFFFF;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+	padding: 0 50px;
+	height: 100%;
+	text-align: center;
+}
+
+input {
+	background-color: #eee;
+	border: none;
+	padding: .75rem 1rem;
+	margin: .5rem 0;
+	width: 100%;
+}
+
+a {
+	color: #333;
+	font-size: .75rem;
+	text-decoration: none;
+	margin: 1.25rem 0;
+}
+
+.btn-login{
+	border: 2px solid #0C9463;
+	background-color: #0C9463;
+}
+
+
