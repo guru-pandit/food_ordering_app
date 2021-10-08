@@ -879,9 +879,11 @@ input[type="range"]:active::-webkit-slider-thumb{
 
 .payment-page-content{
   background:#fff;
-  width:40%;
+  width:95%;
+  max-width: 900px;
   margin:30px auto;
   padding:30px;
+  border-radius: 10px;
 }
 .payment-page-content h2,
 .payment-page-content h3{
@@ -929,3 +931,34 @@ input[type="range"]:active::-webkit-slider-thumb{
   }
 }
 /* bill end */
+
+/* cart start */
+.fa-trash-o{
+  font-size: 1.2rem;
+}
+.cart-heading{
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+.edit-btn{
+  height: 24px;
+    width: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all .3s ease;
+}
+.edit-btn:hover{
+  background-color: #0C9463;
+  color: white;
+}
+.subtotal{
+  font-weight: 600;
+    display: flex;
+    justify-content: flex-end;
+    margin-right: 38px;
+    margin-top: 10px;
+}
+/* cart end */

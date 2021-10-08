@@ -114,7 +114,7 @@ const getOrdersByUserId = async (req, res) => {
 // Function for payment gateway integration
 const orderPayment = async(req, res) => {
     let { totalPrice } = req.query;
-    console.log(totalPrice)
+    //console.log(totalPrice)
     // console.log("TotalPrice: ", totalPrice);
     const instance = new Razorpay({
         key_id: process.env.RAZORPAY_KEYID, 
