@@ -308,9 +308,10 @@ cartLS.onChange(renderCart)
                    data,
                 ).then(res => {
                   console.log(res)
+                    alert("Your Review has been successfully submitted.");
                 })
                 .catch(err => {
-                  console.log(err.response.data)
+                  alert(err.response.data.error)
                 })
               }
 
@@ -328,7 +329,8 @@ document.getElementById('order-btn').onclick = function(e){
                 })
                 console.log(items)
    
-              axios.post(
+              if(items.length > 0){
+                axios.post(
                   `${baseUrl}/api/v1/order?userId=1&restaurantId=${restaurantId}`,
                    {items},
                 ).then(res => {
@@ -350,6 +352,9 @@ document.getElementById('order-btn').onclick = function(e){
                 .catch(err => {
                   console.log(err.response.data);
                 })
+              }else{
+                alert('Please Select food items to proceed')
+              }
               }
 
 function openCity(evt, cityName) {

@@ -11,8 +11,17 @@
 </head>
 <body>
       <div class="payment-page">
-  <div class="payment-page-content">
-      <h2>
+  <div class="payment-page-content row">
+      <div class="col-7" style="border-right: 1px solid lightgrey;">
+         <div class="product-details mr-2">
+                <div class="cart-heading">Edit your order</div>
+                <div id="cart-item"></div>
+                <div class="subtotal" id="cart-subtotal"></div>
+                <button>Confirm Order</button>
+            </div>
+      </div>
+      <div class="col-5">
+        <h2>
       Thanks for Order
       </h2>
       <ul class="payment-list-wrapper">
@@ -45,6 +54,7 @@
         Cash on Delivery
       </button>
       </div>
+      </div>
   </div>
 </div>
 
@@ -58,6 +68,8 @@
       let port = window.location.port ? ':'+window.location.port: '';
       let baseUrl = `${window.location.protocol}//${window.location.hostname}${port}`;
 
+      let subtotal = 0
+
       const queryString = window.location.search;
       //console.log(queryString);
       const urlParams = new URLSearchParams(queryString);
@@ -66,7 +78,7 @@
       //console.log(totalPrice);
       const orderId = urlParams.get('orderId');
       const gst = urlParams.get('gst');
-      const subtotal = urlParams.get('subtotal');
+      //const subtotal = urlParams.get('subtotal');
       const deliveryCharges = urlParams.get('deliveryCharges');
 
             axios.post(`${baseUrl}/api/v1/payment/order?totalPrice=${totalPrice}`).then((data)=>{
@@ -116,10 +128,84 @@
               $("#totalprice").append(totalpricestring)
               let gststring = `+ &#8377; ${gst}`
               $("#gst").append(gststring)
-              let subtotalstring = `&#8377; ${subtotal}`
-              $("#subtotal").append(subtotalstring)
+              
               let deliverystring = `+ &#8377; ${deliveryCharges}`
               $("#delivery").append(deliverystring)
+
+              const showSubtotal = () => {
+                subtotal = 0;
+                let data = JSON.parse(localStorage.getItem('__cart'))
+                $('#subtotal').empty()
+
+                data.map(item=>{
+                  subtotal += item.price * item.quantity;
+                })
+                let templateString = `Total : &#8377; ${subtotal}`;
+                $('#cart-subtotal').html(templateString);
+
+                let subtotalstring = `&#8377; ${subtotal}`
+                $("#subtotal").append(subtotalstring)
+              }
+              
+              const showCartItem = () =>{
+                let data = JSON.parse(localStorage.getItem('__cart'))
+                //console.log(data)
+                $("#cart-item").empty()
+        
+                data.map(item =>{
+                  let templateString = `<div class="d-flex justify-content-between align-items-center mt-3 p-2 items rounded">
+                    <div class="d-flex flex-row">
+                        <div class="ml-2"><span class="font-weight-bold d-block">${item.name}</span></div>
+                    </div>
+                    <div class="d-flex flex-row align-items-center"><span class="mr-3 edit-btn" data-id=${item.id} onclick="addItem(this.dataset.id)">+</span><span class="d-block">${item.quantity}</span><span class="ml-3 edit-btn" data-id=${item.id} onclick="minusItem(this.dataset.id)">-</span><span class="d-block ml-5 font-weight-bold">&#8377; ${item.price}</span><i class="fa fa-trash-o ml-3 text-danger" data-id=${item.id} onclick="removeItem(this.dataset.id)"></i></div>
+                </div>`
+
+                  $("#cart-item").append(templateString);
+                })
+                showSubtotal()
+              }
+
+              const removeItem = (id) => {
+                let data = JSON.parse(localStorage.getItem('__cart'))
+                //console.log(data)
+                let remainingItems = data.filter(item=>{
+                  return item.id != id;
+                })
+                console.log(remainingItems)
+                localStorage.setItem('__cart',JSON.stringify(remainingItems));
+                showCartItem();
+              }
+
+              const addItem = (id) =>{
+                let data = JSON.parse(localStorage.getItem('__cart'))
+                let editedItem = []
+                 data.map(item=>{
+                  if(item.id == id){
+                    item.quantity += 1;
+                  }
+                  editedItem.push(item)
+                })  
+                localStorage.setItem('__cart',JSON.stringify(editedItem));
+                showCartItem();
+              }
+
+              const minusItem = (id) =>{
+                let data = JSON.parse(localStorage.getItem('__cart'))
+                let editedItem = []
+                 data.map(item=>{
+                  if(item.id == id){
+                    item.quantity -= 1;
+                  }
+                  editedItem.push(item)
+                })  
+                localStorage.setItem('__cart',JSON.stringify(editedItem));
+                showCartItem();
+              }
+
+              window.addEventListener("load",()=>{
+                showCartItem();
+              })
+
             
     </script>
 </body>
