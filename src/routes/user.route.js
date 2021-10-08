@@ -1,7 +1,7 @@
 // Controller Imports
 const userController = require("../controllers").user;
 //const { body } = require("express-validator");
-const { checkDulicateEmail, checkConfirmPassword } = require("../middelwares/validate")
+const { checkDulicateEmail, checkConfirmPassword } = require("../middlewares/validate")
 module.exports = (app) => {
     app.post("/api/v1/register", [checkDulicateEmail, checkConfirmPassword], userController.createUser);
     app.post("/api/v1/login", userController.loginUser);

@@ -26,7 +26,12 @@ const getAllRestaurants = async (req, res) => {
             // return res.status(200).json({ message: "Restaurants Fetched Successfully", restaurants: response })
             let restaurants = []
             response.forEach((rest) => {
-                rest.image = `/images/restaurants/${rest.id}/${rest.image}`
+                let imgPath = []
+                imgPath = rest.image.map((img) => {
+                    // return `${req.protocol}://${req.headers.host}/images/restaurants/${rest.id}/${img}`
+                    return `/images/restaurants/${rest.id}/${img}`
+                })
+                rest.image = imgPath
                 restaurants.push(rest)
             })
 
@@ -63,8 +68,12 @@ const getRestaurantsByLocation = async (req, res) => {
 
             let restaurants = []
             response.forEach((rest) => {
-                // rest.image = `${req.protocol}://${req.headers.host}/images/restaurants/${rest.id}/${rest.image}`
-                rest.image = `/images/restaurants/${rest.id}/${rest.image}`
+                let imgPath = []
+                imgPath = rest.image.map((img) => {
+                    // return `${req.protocol}://${req.headers.host}/images/restaurants/${rest.id}/${img}`
+                    return `/images/restaurants/${rest.id}/${img}`
+                })
+                rest.image = imgPath
                 restaurants.push(rest)
             })
 
@@ -81,7 +90,7 @@ const getRestaurantsByLocation = async (req, res) => {
             // })
 
 
-            res.status(200).json({ restaurants: response })
+            res.status(200).json({ restaurants: restaurants })
             // res.status(200).json({ message: "Restaurants Fetched Successfully", restaurants: response })
             // res.status(200).render("index", { restaurants: restaurants, menuitems: menuitemsByLocation })
         } else {
@@ -109,8 +118,16 @@ const getRestaurantsDetails = async (req, res) => {
         if (restaurantDetails !== null) {
             let reviewsCount = restaurantDetails.Reviews.length;
             let avgRatings = restaurantDetails.avgRatings.toFixed()
-            //res.status(200).json({message : "Restaurant Details Fetched Successfully",restaurants : restaurantDetails})
-            res.render('details', { restaurant: restaurantDetails, reviews : restaurantDetails.Reviews, reviewsCount : reviewsCount,avgRatings : avgRatings,menuitems : restaurantDetails.Menuitems})
+
+            let imgPath = []
+            imgPath = restaurantDetails.image.map((img) => {
+                // return `${req.protocol}://${req.headers.host}/images/restaurants/${restaurantId}/${img}`
+                return `/images/restaurants/${restaurantId}/${img}`
+            })
+            restaurantDetails.image = imgPath
+
+            // res.status(200).json({ message: "Restaurant Details Fetched Successfully", restaurants: restaurantDetails })
+            res.render('details', { restaurant: restaurantDetails, reviews: restaurantDetails.Reviews, reviewsCount: reviewsCount, avgRatings: avgRatings, menuitems: restaurantDetails.Menuitems })
         } else {
             res.status(500).json({ message: "Restaurants Details NOT Fetched Successfully" })
         }
@@ -221,8 +238,12 @@ const searchRestaurant = async (req, res) => {
             //to push searchResult into searchArray
             let restArray = []
             searchResult.forEach((rest) => {
-                // rest.image = `${req.protocol}://${req.headers.host}/images/restaurants/${rest.id}/${rest.image}`
-                rest.image = `/images/restaurants/${rest.id}/${rest.image}`
+                let imgPath = []
+                imgPath = rest.image.map((img) => {
+                    // return `${req.protocol}://${req.headers.host}/images/restaurants/${rest.id}/${img}`
+                    return `/images/restaurants/${rest.id}/${img}`
+                })
+                rest.image = imgPath
                 restArray.push(rest)
             })
 
@@ -300,38 +321,42 @@ const addTime = async (req, res) => {
 const addImage = async (req, res) => {
     try {
         let { restaurantId } = req.params;
-        let { filename, originalname } = req.file
-        // console.log(req.file);
+        // console.log(req.files);
 
         let restaurant = await Restaurant.findOne({ where: { id: restaurantId } })
         // console.log(restaurant);
 
         if (restaurant !== null) {
+
             //to update image field in restaurant model
-            restaurant.image = req.file.originalname;
+            const result = req.files && req.files.length > 0 ? req.files.map(item => {
+                return item.originalname;
+            }) : null;
+            // console.log(result)
+
+            restaurant.image = result;
             await restaurant.save();
 
             //to check whether folder is exist or not
             let isFolderExist = fs.existsSync(path.join(__basedir, `public/images/restaurants/${restaurantId}`));
 
+            // //if folder exists
             if (isFolderExist) {
-                fs.copyFile(path.join(__basedir, `public/tmp/${filename}`), path.join(__basedir, `public/images/restaurants/${restaurantId}/${originalname}`), (err) => {
-                    if (err) throw err;
+                //to copy images from tmp folder to images folder
+                req.files.forEach(({ filename, originalname }) => {
+                    fs.copyFileSync(path.join(__basedir, `public/tmp/${filename}`), path.join(__basedir, `public/images/restaurants/${restaurantId}/${originalname}`));
                     fs.unlinkSync(path.join(__basedir, `public/tmp/${filename}`));
-                    return res.status(200).json({ message: "File uploaded" });
                 })
             } else {
-                fs.mkdir(path.join(__basedir, `public/images/restaurants/${restaurantId}`), { recursive: true }, (err) => {
-                    if (err) throw err;
-
-                    // console.log(__basedir);
-                    fs.copyFile(path.join(__basedir, `public/tmp/${filename}`), path.join(__basedir, `public/images/restaurants/${restaurantId}/${originalname}`), (err) => {
-                        if (err) throw err;
-                        fs.unlinkSync(path.join(__basedir, `public/tmp/${filename}`));
-                        return res.status(200).json({ message: "image uploaded" });
-                    })
+                //to create new directory
+                fs.mkdirSync(path.join(__basedir, `public/images/restaurants/${restaurantId}`), { recursive: true });
+                //to copy images from tmp folder to images folder
+                req.files.forEach(({ filename, originalname }) => {
+                    fs.copyFileSync(path.join(__basedir, `public/tmp/${filename}`), path.join(__basedir, `public/images/restaurants/${restaurantId}/${originalname}`));
+                    fs.unlinkSync(path.join(__basedir, `public/tmp/${filename}`));
                 })
             }
+            return res.status(200).json({ message: "Images uploaded" })
         } else {
             return res.status(400).json({ message: "No restaurant found" })
         }

@@ -190,7 +190,7 @@
         restaurants.forEach((rest)=>{
           let templateString = `<div class="rest-card" data-restaurantid=${rest.id} onclick="showRestaurant(this.dataset.restaurantid)">
                                     <div class="rest-img">
-                                        <img src=${rest.image} alt=""/>
+                                        <img src=${rest.image[0]} alt=""/>
                                         <div class="rating">${rest.avgRatings} <i class="fa fa-star"></i></div>
                                     </div>
                                     <h4 class="rest-heading">${rest.name}</h4>
@@ -323,7 +323,7 @@
 
       // Rediredirect to detail page
       function showRestaurant(restaurantId){
-        let url = `${baseUrl}/api/v1/retaurantsdetails?restaurantId=${restaurantId}`;
+        let url = `${baseUrl}/api/v1/restaurantsdetails?restaurantId=${restaurantId}`;
         window.location = url;
       }
 
