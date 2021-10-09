@@ -5,6 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link rel="stylesheet" href="/css/style.css" />
     <title>Food</title>
   </head>
@@ -26,7 +27,6 @@
                       <div class="search-bar" >
                           <i class="fa fa-search"></i>
                           <input type="text" class="search" onkeyup="searchRestaurants(this.value)" placeholder="Search restaurant or dish">
-                          <input type="submit">
                       </div>
                   </div>
               </div>
@@ -37,8 +37,8 @@
           </div>
 
           <div class="top-bar-right">
-            <a class="login-btn" href="/api/v1/login">Sign In</a>
-            <a class="register-btn" href="/api/v1/register">Sign Up</a>
+            <a class="btn btn-green mx-2" href="/api/v1/login">Sign In</a>
+            <a class="btn btn-outlined-green mx-2" href="/api/v1/register">Sign Up</a>
           </div>
       </div>
       
