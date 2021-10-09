@@ -18,6 +18,7 @@ body {
 	align-items: center;
 	flex-direction: column;
 	height: 100vh;
+	position: relative;
 	/* margin: -20px 0 50px;  */
 }
 
