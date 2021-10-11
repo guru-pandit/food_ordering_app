@@ -11,6 +11,7 @@
 :root{
   --color-green:#0C9463;
   --color-red: #dc3545;
+  --color-success: #28a745;
   --color-dark: #1c1c1c;
   --color-white: #fff;
   --color-lightgray: #9c9c9c;
@@ -47,11 +48,12 @@ body{
   white-space: nowrap;
   vertical-align: middle;
   user-select: none;
-  border: 1px solid transparent;
+  border: 2px solid transparent;
   padding: .375rem .75rem;
   font-size: 1rem;
   line-height: 1.5;
   border-radius: 3px;
+  transition: all .3s ease;
 }
 
 .btn-green{
@@ -62,6 +64,13 @@ body{
 
 .btn-green:hover{
   filter: brightness(.9);
+}
+
+.btn-rounded{
+  padding: .5rem .8rem;
+  border-radius: 50px;
+  text-transform: uppercase;
+  font-weight: 700;
 }
 
 .btn-outlined-green{
@@ -112,6 +121,15 @@ body{
 .btn-outlined-gray:hover{
   border-color: var(--color-gray);
   color: var(--color-gray);
+}
+
+
+/* -------------- Input -------------- */
+input:-internal-autofill-selected {
+    appearance: menulist-button;
+    background-image: none !important;
+    background-color: var(--color-white) !important;
+    color: var(--color-dark) !important;
 }
 
 

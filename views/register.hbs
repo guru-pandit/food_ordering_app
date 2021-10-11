@@ -5,36 +5,45 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-	<!-- CSS only -->
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
-    <link rel="stylesheet" href="/css/register.css" />
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/forms.css" />
     <link rel="stylesheet" href="/css/modal.css" />
     <title>Register </title>
   </head>
 <body>
  
 	<div class="container" id="container">
-		<div class="form-container sign-in-container">
+		<div class="form-container form-inner-container">
 			<form action="#" id="signup-form">
-				<h1>Sign up</h1>
+				<h1 class="form-heading">Sign up</h1>
 				<div class="social-container">
 					<a href="#" class="social-link"><i class="fa fa-facebook"></i></a>
 					<a href="#" class="social-link"><i class="fa fa-google"></i></a>
 					<a href="#" class="social-link"><i class="fa fa-twitter"></i></a>
 				</div>
-				<span>or use your account</span>
-				<div class="row">
-				<div class="col">
-					<input type="text" id="fname" placeholder="First name" aria-label="First name">
+				<span class="separator">or use your email</span>
+				<div class="name-input">
+					<div class="input-container">
+						<input type="text" id="fname" name="fname" placeholder="First name" aria-label="First name" class="input-inner" onkeyup="validate(event)">
+					</div>
+					<div class="input-container">
+						<input type="text" id="lname" name="lname" placeholder="Last name" aria-label="Last name" class="input-inner" onkeyup="validate(event)">
+					</div>
 				</div>
-				<div class="col">
-					<input type="text" id="lname" placeholder="Last name" aria-label="Last name">
+				<div class="input-container">
+					<i class="fa fa-envelope input-icon"></i>
+					<input type="email" placeholder="Email" id="email" name="email" class="input-inner" onkeyup="validate(event)" />
 				</div>
+				<div class="input-container">
+					<i class="fa fa-lock input-icon"></i>
+					<input type="password" placeholder="Password" id="password" name="password"  class="input-inner" onkeyup="validate(event)"/>
 				</div>
-				<input type="email" placeholder="Email" id="email" />
-				<input type="password" placeholder="Password" id="password" />
-				<input type="password" placeholder="Confirm Password" id="cpassword" />
-				<button type="submit" id="signup" class="btn btn-login" >Sign Up</input>
+				<div class="input-container">
+					<i class="fa fa-lock input-icon"></i>
+					<input type="password" placeholder="Confirm Password" id="cpassword" name="cpassword"  class="input-inner" onkeyup="validate(event)"/>
+				</div>
+				<button type="submit" id="signup" class="btn btn-green btn-rounded" >Sign Up</input>
 			</form>
 		</div>
 
@@ -44,7 +53,7 @@
 				<div class="overlay-panel overlay-right">
 					<h1>Welcome!</h1>
 					<p> to our site </p>
-					<a class="btn btn-register" id="signin" href="/api/v1/login">Sign In</a>
+					<a class="btn btn-outlined-green btn-rounded" id="signin" href="/api/v1/login">Sign In</a>
 				</div>
 			</div>
 		</div>
@@ -62,6 +71,7 @@
 
 	<script src="https://cdn.jsdelivr.net/npm/axios@0.21.4/dist/axios.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="/js/validate.js"></script>
 	<script>
 		let modal = document.getElementById("myModal");
 		let closeIcon = document.getElementById("close");
@@ -89,6 +99,7 @@
 		}
 
 		$("#signup-form").submit(function(e){
+			e.preventDefault()
             let fname = $("#fname").val();
             let lname = $("#lname").val();
 			let email = $("#email").val();
@@ -96,24 +107,28 @@
             let cpassword = $("#cpassword").val();
 
 			let url = `${baseUrl}/api/v1/register`
-			let body = {
-                firstName: fname,
-                lastName: lname,
-                email: email,
-                password: password,
-                confirmPassword:cpassword
-           	}
 
-           	// console.log(body)
-           	axios.post(url,body).then((res)=>{
-				// console.log(res.data)
-				// alert(res.data.message)
-				openModal(res.data.message)
-			}).catch((err)=>{
-				// console.log(err.response.data)
-				// alert(err)
-				openModal(err.response.data.error)
-			})
+			if(fname && lname && email && password && cpassword){
+				let body = {
+					firstName: fname,
+					lastName: lname,
+					email: email,
+					password: password,
+					confirmPassword:cpassword
+           		}
+				// console.log(body)
+				axios.post(url,body).then((res)=>{
+					// console.log(res.data)
+					// alert(res.data.message)
+					openModal(res.data.message)
+				}).catch((err)=>{
+					// console.log(err.response.data)
+					// alert(err)
+					openModal(err.response.data.error)
+				})
+			}else{
+				console.log("Fields should not be empty")
+			}
 		})
 	</script>
 </body>
