@@ -17,7 +17,7 @@
                 <div class="cart-heading">Edit your order</div>
                 <div id="cart-item"></div>
                 <div class="subtotal" id="cart-subtotal"></div>
-                <button>Confirm Order</button>
+                <button class="edit-cart-btn" id="confirm-order">Confirm Order</button>
             </div>
       </div>
       <div class="col-5">
@@ -69,6 +69,7 @@
       let baseUrl = `${window.location.protocol}//${window.location.hostname}${port}`;
 
       let subtotal = 0
+      
 
       const queryString = window.location.search;
       //console.log(queryString);
@@ -122,6 +123,52 @@
                 e.preventDefault();
               }
             })
+            
+
+            //update order api
+            document.getElementById('confirm-order').onclick = function(e){
+                
+                let data = JSON.parse(localStorage.getItem('__cart'))
+                console.log(data)
+
+                let items = []
+            
+                data.map(item => {
+                  let itm = {menuitemId:item.id,quantity:item.quantity}
+                  items.push(itm)
+                })
+                console.log(items)
+
+                const data1 = {
+                  totalPrice : subtotal,
+                  items: items
+                }
+
+                axios.post(
+                  `${baseUrl}/api/v1/updateorder/${orderId}`,
+                   data1,
+                ).then(res => {
+                  console.log(res)
+
+                  let updatedtotal = res.data.order.total;
+                  let updatedgst = res.data.order.gst;
+                  let updateddeliveryCharges = res.data.order.deliveryCharges;
+
+                  $("#totalprice").empty();
+                  $("#gst").empty();
+                  $("#delivery").empty();
+
+                  let totalpricestring = `&#8377; ${updatedtotal}`
+                  $("#totalprice").append(totalpricestring)
+                  let gststring = `+ &#8377; ${updatedgst}`
+                  $("#gst").append(gststring)
+                  let deliverystring = `+ &#8377; ${updateddeliveryCharges}`
+                  $("#delivery").append(deliverystring)
+                })
+                .catch(err => {
+                  alert(err.response.data.error)
+                })
+              }
 
             
               let totalpricestring = `&#8377; ${totalPrice}`
