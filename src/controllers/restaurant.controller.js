@@ -8,7 +8,7 @@ const path = require("path")
 const home = async (req, res) => {
     res.status(200).render("index");
 }
-
+ 
 //to get all restaurants
 const getAllRestaurants = async (req, res) => {
     try {

@@ -20,5 +20,5 @@ module.exports = (app) => {
    //to add opening and closing time
    app.post("/api/v1/addtime/:restaurantId", restaurantController.addTime);
    //to add iamge
-   app.post("/api/v1/restaurantImage/:restaurantId", uploadImage.array('images', 5), restaurantController.addImage);
+   app.post("/api/v1/restaurantImage/:restaurantId", uploadImage.array('images', 15), restaurantController.addImage);
 }
