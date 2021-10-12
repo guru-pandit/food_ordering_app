@@ -70,11 +70,11 @@ const getRestaurantsByLocation = async (req, res) => {
             response.forEach((rest) => {
                 let imgPath = []
                 imgPath = rest.image.map((img) => {
-                    // return `${req.protocol}://${req.headers.host}/images/restaurants/${rest.id}/${img}`
-                    return `/images/restaurants/${rest.id}/${img}`
+                     return `${req.protocol}://${req.headers.host}/images/restaurants/${rest.id}/${img}`
+                    //return `/images/restaurants/${rest.id}/${img}`
                 })
                 rest.image = imgPath
-                restaurants.push(rest)
+                restaurants.push(rest) 
             })
 
             // let menuitemsByLocation = []
