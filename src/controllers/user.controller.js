@@ -342,20 +342,19 @@ const forgetPassword = async (req, res) => {
 const verifyUserToken = async (req, res) => {
     //to take query parameter from url
     let { passToken } = req.query;
-    console.log("passToken" + passToken)
+    // console.log("passToken" + passToken)
     let tokenData = await passwordToken.findOne({ where: { token: passToken } })
     let currentDate = new Date()
-    console.log(tokenData)
+    // console.log(tokenData)
     if (tokenData !== null) {
         // to check token expired or not
         //if token expired is less than current date then it will expired
         if (tokenData.expiredAt < currentDate || tokenData.isUsed) {
-
             res.status(400).json({ error: "Token expired or link already used" })
         } else {
             tokenData.isUsed = true;
             tokenData.save()
-            res.render("password")
+            res.render("resetPass")
         }
 
     } else {

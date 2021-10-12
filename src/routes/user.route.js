@@ -1,7 +1,12 @@
 // Controller Imports
 const userController = require("../controllers").user;
+<<<<<<< HEAD
 const { body } = require("express-validator");
 const { checkDulicateEmail, checkConfirmPassword } = require("../middelwares/validate")
+=======
+//const { body } = require("express-validator");
+const { checkDulicateEmail, checkConfirmPassword } = require("../middlewares/validate")
+>>>>>>> 7b762116ca42de8d5d67a9bef2443becf4b6decb
 module.exports = (app) => {
     app.post("/api/v1/register", [body("firstName").trim().isString().notEmpty().withMessage("Name is required").isLength({ min: 3 })
         .withMessage('wrong firstname length'),

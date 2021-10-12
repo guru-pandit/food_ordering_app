@@ -5,88 +5,111 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="/css/login.css" />
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+	<link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/forms.css" />
+    <link rel="stylesheet" href="/css/modals.css" />
     <title>Login</title>
   </head>
 <body>
  
-<div class="container" id="container">
-	<div class="form-container sign-in-container">
-		<form action="#" id="signin-form">
-			<h1>Sign in</h1>
-			<div class="social-container">
-				<a href="#" class="social-link"><i class="fa fa-facebook"></i></a>
-				<a href="#" class="social-link"><i class="fa fa-google"></i></a>
-				<a href="#" class="social-link"><i class="fa fa-twitter"></i></a>
-			</div>
-			<span>or use your account</span>
-			<input type="email" placeholder="Email" id="email" />
-			<input type="password" placeholder="Password" id="password" />
-			<a href="#" id="pass"> Forgot your password?</a>
-			<button type="submit" id="login" class="btn btn-login" >Sign In</input>
-		</form>
-	</div>
+	<div class="container" id="container">
+		<div class="form-container form-inner-container">
+			<form action="#" id="signin-form">
+				<h1 class="form-heading">Sign in</h1>
+				<div class="social-container">
+					<a href="#" class="social-link"><i class="fa fa-facebook"></i></a>
+					<a href="#" class="social-link"><i class="fa fa-google"></i></a>
+					<a href="#" class="social-link"><i class="fa fa-twitter"></i></a>
+				</div>
+				<span class="separator">or use your email</span>
+				<div class="input-container">
+					<i class="fa fa-envelope input-icon"></i>
+					<input type="email" placeholder="Email" id="email" name="email"  class="input-inner" onkeyup="validate(event)" />
+				</div>
+				<div class="input-container">
+					<i class="fa fa-lock input-icon"></i>
+					<input type="password" placeholder="Password" id="password" name="password" class="input-inner" onkeyup="validate(event)"  />
+				</div>
+				<a href="#" id="forget-password" class="forget-password"> Forgot your password?</a>
+				<button type="submit" id="login" class="btn btn-green btn-rounded" >Sign In</input>
+			</form>
+		</div>
 
-	{{!-- Overlay  --}}
-	<div class="overlay-container">
-		<div class="overlay">
-			<div class="overlay-panel overlay-right">
-				<h1>Welcome!</h1>
-				<p>Enter your personal details and start journey with us</p>
-				<a class="btn btn-register" id="signUp" href="/api/v1/register">Sign Up</a>
+		{{!-- Overlay  --}}
+		<div class="overlay-container">
+			<div class="overlay">
+				<div class="overlay-panel overlay-right">
+					<h1>Welcome!</h1>
+					<p>Enter your personal details and start journey with us</p>
+					<a class="btn btn-outlined-green btn-rounded" id="signUp" href="/api/v1/register">Sign Up</a>
+				</div>
 			</div>
 		</div>
 	</div>
-</div>
+
+	<!-- The Modal -->
+	<div id="myModal" class="modal">
+		<!-- Modal content -->
+		<div class="modal-content">
+			<i class="fa fa-times btn-circular" id="close"></i>
+			<h3 class="modal-text" id="modal-text"></h3>
+		</div>
+	</div>
 
 
 	<script src="https://cdn.jsdelivr.net/npm/axios@0.21.4/dist/axios.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="/js/validate.js"></script>
+    <script src="/js/modal.js"></script>
 
 	<script>
-		
-		 let baseUrl = `${window.location.protocol}//${window.location.hostname}:${window.location.port}`;
+		let baseUrl = `${window.location.protocol}//${window.location.hostname}:${window.location.port}`;
 
-		 $("#signin-form").submit(function(e){
+		$("#signin-form").submit(function(e){
+			e.preventDefault()
 			let email = $("#email").val();
 			let password = $("#password").val() 
 			// console.log(email, password)
 			let url = `${baseUrl}/api/v1/login`
-			let body = {email, password}
-			axios.post(url, body).then((res)=>{
-				console.log(res.status)
+
+			if(email && password){
+				let body = {email, password}
+				axios.post(url, body).then((res)=>{
+				//console.log(res.status)
 				// console.log(res.data.message)
-					alert(res.data.message)
+				alert(res.data.message)
 			}).catch((err)=>{
-				alert(err)
+				// console.log(err.response.data)
+				openModal(err.response.data.error);
 			})
-		 })
+			}else{
+				console.log("Fields should not be empty")
+			}
+			
+		})
 
+		document.getElementById('forget-password').onclick = function(e){
+            e.preventDefault();
+            const form = document.getElementById('signin-form');
+                
+            // getting the element's value
+            const email = form.elements['email'].value;
+                
+            const data = { email : email }
 
-		  document.getElementById('pass').onclick = function(e){
-                e.preventDefault();
-                const form = document.getElementById('signin-form');
-                
-                // getting the element's value
-                const email = form.elements['email'].value;
-                
-                const data = {
-                  email :email ,
-     
-                }
-				console.log(data)
-                axios.post(
-                  `${baseUrl}/api/v1/forgetPassword`,
-                   data,
-                ).then(res => {
-                  console.log(res)
-				  alert(`Password reset link has been sent to ${email}`)
-                  
-                })
-                .catch(err => {
-                  console.log(err.response.data)
-                })
-              }
+			// console.log(data)
+            axios.post(`${baseUrl}/api/v1/forgetPassword`,data,
+            ).then(res => {
+              //console.log(res)
+				openModal(`Link has been sent to ${email}`);
+			  //alert(`Password reset link has been sent to ${email}`)
+            })
+            .catch(err => {
+              // console.log(err.response.data)
+			  openModal(err.response.data.error);
+            })
+        }
 	</script>
 
 </body>

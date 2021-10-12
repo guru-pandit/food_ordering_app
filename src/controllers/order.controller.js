@@ -60,6 +60,42 @@ const placeOrder = async (req, res) => {
     }
 }
 
+//to update order
+const updateOrder = async(req,res)=>{
+    try{
+        const {orderId} = req.params;
+        const {totalPrice ,items} = req.body;
+        const order = await Order.findOne({where :{orderId: orderId}})
+        if(order !== null){
+            let deliveryCharge = 40;
+            let GST = totalPrice * 5 / 100;
+            let finalPrize = totalPrice + GST;
+
+             //to update gst
+            order.gst = GST;
+            order.items = items;
+
+            // to update total price and to update delivery charges.
+            if(finalPrize < 1000){
+                order.total = finalPrize + deliveryCharge;
+                order.deliveryCharges = deliveryCharge
+            }else{
+                order.total = finalPrize;
+            }
+                let updateOrder = await order.save();
+                
+                if(updateOrder !== null){
+                    res.status(200).json({message: "order updated successfully" , order : updateOrder})
+                }else{
+                    res.status(200).json({message: "order NOT updated successfully" })
+                }
+            
+            }
+    }catch(err){
+        res.status(500).json({ error: err.message || "Something went wrong" });
+    }
+}
+
 // Function to get order details by order id
 const getOrderByOrderId = async (req, res) => {
     try {
@@ -214,5 +250,6 @@ module.exports = { placeOrder,
      checkoutPayment, 
      checkSuccessOrFailure,
      paymentSuccess,
-     paymentFailure
+     paymentFailure,
+     updateOrder
     }

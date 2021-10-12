@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/home.css">
 </head>
 <body>
       <div class="payment-page">
@@ -17,7 +18,7 @@
                 <div class="cart-heading">Edit your order</div>
                 <div id="cart-item"></div>
                 <div class="subtotal" id="cart-subtotal"></div>
-                <button>Confirm Order</button>
+                <button class="btn btn-green" id="confirm-order">Confirm Order</button>
             </div>
       </div>
       <div class="col-5">
@@ -69,6 +70,7 @@
       let baseUrl = `${window.location.protocol}//${window.location.hostname}${port}`;
 
       let subtotal = 0
+      //console.log("subtotal : ",subtotal)
 
       const queryString = window.location.search;
       //console.log(queryString);
@@ -79,9 +81,19 @@
       const orderId = urlParams.get('orderId');
       const gst = urlParams.get('gst');
       //const subtotal = urlParams.get('subtotal');
-      const deliveryCharges = urlParams.get('deliveryCharges');
+      const deliveryCharges = urlParams.get('deliveryCharges'); 
 
-            axios.post(`${baseUrl}/api/v1/payment/order?totalPrice=${totalPrice}`).then((data)=>{
+      axios.get(`${baseUrl}/api/v1/order/${orderId}`)
+      .then((order)=>{
+
+      })
+      .catch(err=>{
+        console.log(err)
+      })
+
+            let finalTotal = localStorage.getItem('updatedTotal')
+            console.log(finalTotal)
+            axios.post(`${baseUrl}/api/v1/payment/order?totalPrice=${finalTotal}`).then((data)=>{
                 console.log(data)
                 console.log(data.data.data.id)
                 var options = {
@@ -122,6 +134,54 @@
                 e.preventDefault();
               }
             })
+            
+
+            //update order api
+            document.getElementById('confirm-order').onclick = function(e){
+                
+                let data = JSON.parse(localStorage.getItem('__cart'))
+                console.log(data)
+
+                let items = []
+            
+                data.map(item => {
+                  let itm = {menuitemId:item.id,quantity:item.quantity}
+                  items.push(itm)
+                })
+                console.log(items)
+
+                const data1 = {
+                  totalPrice : subtotal,
+                  items: items
+                }
+
+                axios.post(
+                  `${baseUrl}/api/v1/updateorder/${orderId}`,
+                   data1,
+                ).then(res => {
+                  console.log(res)
+
+                  let updatedtotal = res.data.order.total;
+                  let updatedgst = res.data.order.gst;
+                  let updateddeliveryCharges = res.data.order.deliveryCharges;
+
+                  localStorage.setItem('updatedTotal',updatedtotal)
+
+                  $("#totalprice").empty();
+                  $("#gst").empty();
+                  $("#delivery").empty();
+
+                  let totalpricestring = `&#8377; ${updatedtotal}`
+                  $("#totalprice").append(totalpricestring)
+                  let gststring = `+ &#8377; ${updatedgst}`
+                  $("#gst").append(gststring)
+                  let deliverystring = `+ &#8377; ${updateddeliveryCharges}`
+                  $("#delivery").append(deliverystring)
+                })
+                .catch(err => {
+                  alert(err.response.data.error)
+                })
+              }
 
             
               let totalpricestring = `&#8377; ${totalPrice}`

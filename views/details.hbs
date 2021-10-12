@@ -17,8 +17,9 @@
     <script src="https://cdn.jsdelivr.net/npm/axios@0.21.4/dist/axios.min.js"></script>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <script src="https://unpkg.com/cart-localstorage@1.1.4/dist/cart-localstorage.min.js" type="text/javascript"></script>
+     <link rel="stylesheet" href="https://unpkg.com/swiper@7/swiper-bundle.min.css">
      <link rel="stylesheet" href="/css/style1.css">
-
+     <link rel="stylesheet" href="/css/carousel.css">
   </head>
 
   <body>
@@ -27,24 +28,31 @@
 		<div class="card">
 			<div class="container-fliud">
 				<div class="wrapper row">
-					<div class="preview col-md-6">
-						
-						<div class="preview-pic tab-content">
-               <div class="tab-pane active" id="pic-2"><img src="https://experience-fresh.panasonic.eu/wp-content/uploads/2018/12/Paneer_Tikka_Masala_enjoy_181205.jpg" /></div>
-						  <div class="tab-pane " id="pic-1"><img src="https://i1.wp.com/vegecravings.com/wp-content/uploads/2018/06/Paneer-Tikka-Masala-Recipe-Step-By-Step-Instructions.jpg?fit=3826%2C3036&quality=65&strip=all&ssl=1" /></div>
-						 
-						  <div class="tab-pane" id="pic-3"><img src="https://c.ndtvimg.com/2019-09/tlps304o_paneer_625x300_24_September_19.jpg" /></div>
-						  <div class="tab-pane" id="pic-4"><img src="https://www.cookwithkushi.com/wp-content/uploads/2016/02/IMG_8317_-1.jpg" /></div>
-						  <div class="tab-pane" id="pic-5"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQcCMHw-lFwiJuq1_CyhnFc2OUi7dqPXtfsEg&usqp=CAU" /></div>
-						</div>
-						<ul class="preview-thumbnail nav nav-tabs">
-               <li class="active"><a data-target="#pic-2" data-toggle="tab"><img src="https://experience-fresh.panasonic.eu/wp-content/uploads/2018/12/Paneer_Tikka_Masala_enjoy_181205.jpg" /></a></li>
-						  <li><a data-target="#pic-1" data-toggle="tab"><img src="https://i1.wp.com/vegecravings.com/wp-content/uploads/2018/06/Paneer-Tikka-Masala-Recipe-Step-By-Step-Instructions.jpg?fit=3826%2C3036&quality=65&strip=all&ssl=1" /></a></li>
-						 
-						  <li><a data-target="#pic-3" data-toggle="tab"><img src="https://c.ndtvimg.com/2019-09/tlps304o_paneer_625x300_24_September_19.jpg" /></a></li>
-						  <li><a data-target="#pic-4" data-toggle="tab"><img src="https://www.cookwithkushi.com/wp-content/uploads/2016/02/IMG_8317_-1.jpg" /></a></li>
-						  <li><a data-target="#pic-5" data-toggle="tab"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQcCMHw-lFwiJuq1_CyhnFc2OUi7dqPXtfsEg&usqp=CAU" /></a></li>
-						</ul>
+					<div class="preview col-md-6" style="max-height:450px;">
+
+            <div
+      style="--swiper-navigation-color: #fff; --swiper-pagination-color: #fff"
+      class="swiper mySwiper2"
+    >
+      <div class="swiper-wrapper">
+        {{#each restaurant.image}}
+        <div class="swiper-slide">
+          <img src="{{this}}" />
+        </div>
+        {{/each}}
+      </div>
+      <div class="swiper-button-next"></div>
+      <div class="swiper-button-prev"></div>
+    </div>
+    <div thumbsSlider="" class="swiper mySwiper">
+      <div class="swiper-wrapper">
+        {{#each restaurant.image}}
+        <div class="swiper-slide">
+          <img src={{this}} />
+        </div>
+        {{/each}}
+      </div>
+    </div>
 						
 					</div>
 					<div class="details col-md-6">
@@ -59,96 +67,89 @@
 							</ul>
 							<span class="review-no">{{reviewsCount}} reviews </span>
 						</div>
-						<p class="product-description">
-North Indian, Chinese, South Indian, Street Food, Ice Cream, Beverages</p>
-	<p class="product-description">
-  {{restaurant.Location.landmark}}, {{restaurant.Location.city}}</p>
-  <p class="product-description">
- {{restaurant.openingTime}} – {{restaurant.closingTime}}</p>
- <p class="product-description">Food will available between above time only</p>
-  	<div>
+						<p class="product-description">North Indian, Chinese, South Indian, Street Food, Ice Cream, Beverages</p>
+            <p class="product-description">{{restaurant.Location.landmark}}, {{restaurant.Location.city}}</p>
+            <p class="product-description">{{restaurant.openingTime}} – {{restaurant.closingTime}}</p>
+            <p class="product-description">Food will available between above time only</p>
+            <div>
 							<button class="add-to-cart btn btn-default" type="button" data-toggle="modal" data-target="#myModal"><span class="fa fa-star"></span> Add Reviews</button>
 							<button class="like btn btn-default" type="button"><span class="fa fa-heart"></span></button>
-				</div><br>
+			    	</div><br>
         	</div>
-		</div>
-	</div><br>
+		    </div>
+	    </div><br>
 
-  <div class="tab">
-  <button class="tablinks" onclick="openCity(event, 'Overview')">Overview</button>
-  <button class="tablinks" onclick="openCity(event, 'Online Order')">Online Order</button>
-  <button class="tablinks" onclick="openCity(event, 'Review')">Review</button>
-  <button class="tablinks" onclick="openCity(event, 'Menu')">Menu</button>
-  <button class="tablinks" onclick="openCity(event, 'Photos')">Photos</button>
-</div>
-
-<div id="Overview" class="tabcontent">
-  <h3>About this place</h3>
-  <p><h4>Name : {{restaurant.name}}</h4></p>
-  <p><h5>Address : {{restaurant.address}}, {{restaurant.Location.landmark}}, {{restaurant.Location.city}}, {{restaurant.Location.state}}, {{restaurant.Location.country}}, </h5></p>
-
-   <p><h5>Contact : {{restaurant.contact}}</h5></p>
-</div>
-
-
-<div id="Online Order" class="tabcontent">
-<div class="container">
-<h2 class="my-5 text-center" style="font-size: 2.5rem; font-weight: 600;">Menuitems</h2>
-
- <div class="row mt-4 mb-4 text-center">
-{{#each menuitems}}
-<div class="mb-4 shadow col-12 bg-white" style="border-radius: 10px; padding: 15px;">
-  <div class="card-body">
-    <div class="row " >
-      <div class="col-2">
-        <div class="img"><img src="https://cdn.pixabay.com/photo/2014/11/05/15/57/salmon-518032__480.jpg" class="img-fluid border-secondary" alt="..."></div>
+      <div class="tab">
+        <button class="tablinks" onclick="openCity(event, 'Overview')">Overview</button>
+        <button class="tablinks" onclick="openCity(event, 'Online Order')">Online Order</button>
+        <button class="tablinks" onclick="openCity(event, 'Review')">Review</button>
+        <button class="tablinks" onclick="openCity(event, 'Menu')">Menu</button>
+        <button class="tablinks" onclick="openCity(event, 'Photos')">Photos</button>
       </div>
-      <div class="col-8">
-        <h4 class="card-title pricing-card-title text-left" style="font-size: 2rem; font-weight: 600;" >{{this.name}}</h4>
-        <h5 class="card-title pricing-card-title text-left" style="font-size: 1.5rem;" >&#8377; {{this.price}}</h5>
-        <p class="text-left" style="font-size: 1.2rem;">{{this.description}}</p>
-      </div>
-      <div class="col-2 d-flex align-items-center justify-content-end">
-        <button type="button" class="btn p-3 btn-green"
-        onClick="cartLS.add({id: {{this.id}}, name: '{{this.name}}', price:{{this.price}},})">Add to
-        Cart</button>
-      </div>
-    </div>
-  </div>
-</div>
-{{/each}}
-</div>
- <div class="card mb-4 shadow-sm">
-<div class="card-header">
-<h2 style="font-size: 2rem; font-weight: 600;">Cart</h2>
-</div>
-<div class="card-body">
-<table class="table cart-table">
-<tbody class="cart">
-</tbody>
-<tfoot>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td class="text-right">Total: <strong class="total"></strong></td>
-<td class="text-right"><button class="btn btn-green" id="order-btn">Order</button></td>
-</tfoot>
-</table>
-</div>
-</div>
-</div>
-</div>
 
-<div id="Review" class="tabcontent">
-  <section id="testimonials">
-        <div class="testimonial-heading">
+      <div id="Overview" class="tabcontent">
+        <h3>About this place</h3>
+        <p><h4>Name : {{restaurant.name}}</h4></p>
+        <p><h5>Address : {{restaurant.address}}, {{restaurant.Location.landmark}}, {{restaurant.Location.city}}, {{restaurant.Location.state}}, {{restaurant.Location.country}}, </h5></p>
+
+        <p><h5>Contact : {{restaurant.contact}}</h5></p>
+      </div>
+
+
+      <div id="Online Order" class="tabcontent">
+        <div class="container">
+          <h2 class="my-5 text-center" style="font-size: 2.5rem; font-weight: 600;">Menuitems</h2>
+          <div class="row mt-4 mb-4 text-center">
+            {{#each menuitems}}
+            <div class="mb-4 shadow col-12 bg-white" style="border-radius: 10px; padding: 15px;">
+              <div class="card-body">
+                <div class="row " >
+                  <div class="col-2">
+                    <div class="img"><img src="https://cdn.pixabay.com/photo/2014/11/05/15/57/salmon-518032__480.jpg" class="img-fluid border-secondary" alt="..."></div>
+                  </div>
+                  <div class="col-8">
+                    <h4 class="card-title pricing-card-title text-left" style="font-size: 2rem; font-weight: 600;" >{{this.name}}</h4>
+                    <h5 class="card-title pricing-card-title text-left" style="font-size: 1.5rem;" >&#8377; {{this.price}}</h5>
+                    <p class="text-left" style="font-size: 1.2rem;">{{this.description}}</p>
+                  </div>
+                  <div class="col-2 d-flex align-items-center justify-content-end">
+                    <button type="button" class="btn p-3 btn-green" onClick="cartLS.add({id: {{this.id}}, name: '{{this.name}}', price:{{this.price}},})">Add to Cart</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {{/each}}
+          </div>
+          <div class="card mb-4 shadow-sm">
+            <div class="card-header">
+              <h2 style="font-size: 2rem; font-weight: 600;">Cart</h2>
+            </div>
+            <div class="card-body">
+              <table class="table cart-table">
+                <tbody class="cart"></tbody>
+                <tfoot>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td class="text-right">Total: <strong class="total"></strong></td>
+                  <td class="text-right"><button class="btn btn-green" id="order-btn">Order</button></td>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="Review" class="tabcontent">
+        <section id="testimonials">
+          <div class="testimonial-heading">
             <span>Reviews</span>
             <h1>Customers Says</h1>
-        </div>
-        <div class="testimonial-box-container">
-          {{#each reviews}}
+          </div>
+          <div class="testimonial-box-container">
+            {{#each reviews}}
               <div class="testimonial-box">
                 <div class="box-top">
                     <div class="profile">
@@ -170,21 +171,21 @@ North Indian, Chinese, South Indian, Street Food, Ice Cream, Beverages</p>
                 <div class="client-comment">
                     <p>{{this.comment}}</p>
                 </div>
-            </div>
-          {{/each}}      
-        </div>
-     </section>
-</div>
-<div id="Menu" class="tabcontent">
-  <h3></h3>
-  <p></p>
-</div>
-<div id="Photos" class="tabcontent">
-  <h3></h3>
-  <p></p>
-</div>
-</div>
-</div>
+              </div>
+            {{/each}}      
+          </div>
+        </section>
+      </div>
+      <div id="Menu" class="tabcontent">
+        <h3></h3>
+        <p></p>
+      </div>
+      <div id="Photos" class="tabcontent">
+        <h3></h3>
+        <p></p>
+      </div>
+    </div>
+  </div>
 
 <!-- The Modal -->
 <div class="modal" id="myModal">
@@ -251,7 +252,7 @@ North Indian, Chinese, South Indian, Street Food, Ice Cream, Beverages</p>
     </div>
   </div>
 </div>
-
+<script src="https://unpkg.com/swiper@7/swiper-bundle.min.js"></script>
 <script>
   let port = window.location.port ? ':'+window.location.port: '';
   let baseUrl = `${window.location.protocol}//${window.location.hostname}${port}`;
@@ -336,14 +337,15 @@ document.getElementById('order-btn').onclick = function(e){
                 ).then(res => {
                   console.log(res)
                   let totalPrice = res.data.orderDetails.total;
+                  localStorage.setItem('updatedTotal',totalPrice)
                   //console.log(totalPrice)
                   let orderId = res.data.orderDetails.orderId;
                   //console.log(orderId)
                   let gst = res.data.orderDetails.gst;
                   //console.log(gst)
-                  let subtotal = totalPrice - gst;
-                  //console.log(subtotal)
                   let deliveryCharges = res.data.orderDetails.deliveryCharges;
+                  let subtotal = totalPrice - gst - deliveryCharges ;
+                  //console.log(subtotal)
                   if(res){
                     let url = `${baseUrl}/api/v1/payment/checkout?orderId=${orderId}&totalPrice=${totalPrice}&gst=${gst}&subtotal=${subtotal}&deliveryCharges=${deliveryCharges}`;
                     window.location = url;
@@ -370,6 +372,31 @@ function openCity(evt, cityName) {
   document.getElementById(cityName).style.display = "block";
   evt.currentTarget.className += " active";
 }
+
+var swiper = new Swiper(".mySwiper", {
+        loop: true,
+        spaceBetween: 10,
+        slidesPerView: 6,
+        freeMode: true,
+        watchSlidesProgress: true,
+        });
+      var swiper2 = new Swiper(".mySwiper2", {
+        loop: true,
+        spaceBetween: 10,
+        // autoplay: {
+        //   delay: 2500,
+        //   disableOnInteraction: false,
+        // },
+        navigation: {
+        nextEl: ".swiper-button-next",
+        prevEl: ".swiper-button-prev",
+        },
+        thumbs: {
+        swiper: swiper,
+        },
+    });
+
+
 </script>
   </body>
 </html>
