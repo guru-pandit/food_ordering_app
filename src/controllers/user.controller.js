@@ -90,7 +90,7 @@ const verifyUser = async (req, res) => {
         user.isVerified = true
         user.save()
         // console.log(user)
-        res.status(400).json({ message: "user Verified" })
+        res.render('login')
     }
 }
 
