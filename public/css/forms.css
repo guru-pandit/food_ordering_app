@@ -20,12 +20,23 @@ body {
 	min-height: 480px;
 }
 
+.container-small{
+	width: 360px;
+	max-width: 97%;
+	min-height: 320px;
+}
+
 .form-container {
 	position: absolute;
 	top: 0;
 	height: 100%;
 	transition: all 0.6s ease-in-out;
 }
+
+.form-100{
+	width: 100%;	
+}
+
 
 .form-inner-container {
 	left: 0;
@@ -35,6 +46,12 @@ body {
 
 .form-heading{
 	font-size: 2rem;
+	font-weight: 700;
+	margin: 0 0 1rem 0;
+}
+
+.form-sub-heading{
+	font-size: 1.5rem;
 	font-weight: 700;
 	margin: 0 0 1rem 0;
 }
@@ -121,6 +138,7 @@ form {
 	border: none;
 	outline: none;
 	width: 100%;
+	font-size: 1rem;
 }
 
 .name-input .input-container{
