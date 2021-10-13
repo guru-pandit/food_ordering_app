@@ -6,7 +6,7 @@ module.exports = (app) => {
     //update order
     app.post("/api/v1/updateorder/:orderId",orderController.updateOrder);
     // Get order by order id
-    app.get("/api/v1/order/:orderId", orderController.getOrderByOrderId);
+    app.get("/api/v1/order/:orderId", orderController.getOrderByOrderId);   
     // Get orders by user id
     app.get("/api/v1/userOrders/:userId", orderController.getOrdersByUserId);
     // payment
