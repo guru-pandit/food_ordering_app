@@ -28,6 +28,8 @@ module.exports = (sequelize, DataTypes) => {
     country: DataTypes.STRING,
     state: DataTypes.STRING,
     city: DataTypes.STRING,
+    googleId: DataTypes.STRING,
+    facebookId: DataTypes.STRING,
     isDeleted: DataTypes.BOOLEAN,
     isVerified: DataTypes.BOOLEAN
   }, {

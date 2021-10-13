@@ -8,6 +8,8 @@ const { uploadImage } = require("../services/upload.service")
 module.exports = (app) => {
     app.post("/api/v1/register", [checkDulicateEmail, checkConfirmPassword], userController.createUser);
     app.post("/api/v1/login", userController.loginUser);
+    app.get("/api/v1/googleAuth", userController.googleAuth);
+    app.get("/api/v1/authenticate/google", userController.authenticateGoogle);
     app.get("/api/v1/logout", userController.logoutUser);
     app.get("/api/v1/dashboard", userController.dashboard);
     //app.get("/api/v1/logout", userController.logOut);
@@ -27,6 +29,6 @@ module.exports = (app) => {
     app.post("/api/v1/resetPassword/:userId", userController.resetPassword);
     // app.post("/api/v1/resetPassword/:id", userController.resetPassword);
     app.get("/api/v1/verifyUserToken", userController.verifyUserToken);
-    app.post("/api/v1/profileImage/userId", userController.addImage)
+    app.post("/api/v1/profileImage/:userId", uploadImage.single("image"), userController.addImage)
 };
 

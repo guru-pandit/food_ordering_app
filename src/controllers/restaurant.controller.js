@@ -23,6 +23,8 @@ const home = async (req, res) => {
                 let checkEmail = req.session.users !== "undefined" ? req.session.users?.includes(decoded.email) : false
                 if (checkEmail) {
                     User.findOne({ where: { email: decoded.email } }).then((user) => {
+                        user.image = `/images/users/${user.id}/${user.image}`
+                        // user.image = `${req.protocol}://${req.headers.host}/images/users/${user.id}/${user.image}`
                         res.status(200).render("index", { isLoggedIn: true, user })
                     })
                 } else {

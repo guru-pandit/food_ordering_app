@@ -6,7 +6,11 @@ const crypto = require("crypto");//convert token into hexabytes
 const { sendVerificationMail, passwordResetMail } = require("../services/mail.service");//import service file
 const jwt = require('jsonwebtoken');
 const user = require("../models/user");
+const fs = require("fs")
+const path = require("path")
 const Op = db.Sequelize.Op;
+const queryString = require('query-string');
+const axios = require("axios")
 
 // Function to render register page
 const getRegisterPage = async (req, res) => {
@@ -59,13 +63,13 @@ const createUser = async (req, res) => {
             //create token here
             await Token.create(token)
             return res.status(200).json({
-                message: " User register succesfull",
+                message: "Successfully registered, Please verify your email to continue",
                 user: data,
-            });
+            })
         } else {
             return res.status(400).json({
-                message: " User register unsuccesfull",
-            });
+                message: "Successfully registered, Please verify your email to continue",
+            })
         }
 
     } catch (err) {
@@ -84,13 +88,13 @@ const verifyUser = async (req, res) => {
     // to check token expired or not
     //if token expired is less than current date then it will expired
     if (tokenData.expiredAt < currentDate) {
-        res.status(400).json({ message: "Token expired" })
+        res.status(400).json({ message: "Token has been expired" })
     } else {
         let user = await User.findOne({ where: { id: tokenData.userId } })
         user.isVerified = true
         user.save()
         // console.log(user)
-        res.status(400).json({ message: "user Verified" })
+        res.status(400).json({ message: "User successfully verified" })
     }
 }
 
@@ -111,7 +115,7 @@ const loginUser = async (req, res) => {
         if (!data) {
 
             //if not data found then return user does not exist
-            return res.status(400).json({ error: "user does not exist" });
+            return res.status(400).json({ error: "User does not exist" });
 
             //if user there then convert there password into hashed
         } else {
@@ -231,9 +235,11 @@ const getUsersById = async (req, res) => {
             where: { id: id },
         });
         if (info) {
+            info.image = `/images/users/${id}/${info.image}`
+            // info.image = `${req.protocol}://${req.headers.host}/images/users/${id.id}/${info.image}`
             res.status(200).json({ data: info });
         } else {
-            res.status(400).json({ error: "user not found" });
+            res.status(400).json({ error: "User not found" });
         }
     } catch (err) {
         res.status(500).json({ error: err.message || "Something went wrong" });
@@ -250,7 +256,7 @@ const deleteUser = async (req, res) => {
             if (deleteuser) {
                 return res
                     .status(200)
-                    .json({ message: "user was deleted successfully!" });
+                    .json({ message: "User was deleted successfully!" });
             } else {
                 return res.status(500).json({ error: "Cannot delete user" });
             }
@@ -268,7 +274,7 @@ const UpdateUser = async (req, res) => {
         const data = await User.update(req.body, { where: { id: userId } });
 
         if (data) {
-            return res.status(200).json({ message: "user was updatad successfully!" });
+            return res.status(200).json({ message: "User has been updated successfully!" });
         } else {
             return res.status(500).json({ error: "Cannot update user" });
         }
@@ -291,7 +297,7 @@ const getUsersByAddress = async (req, res) => {
         if (data.length > 0) {
             res.status(200).json({ data: data });
         } else {
-            res.status(400).json({ error: "user not found" });
+            res.status(400).json({ error: "User not found" });
         }
 
     } catch (err) {
@@ -307,7 +313,7 @@ const userPartialUpdate = async (req, res) => {
         const data = await User.update(req.body, { where: { id: userId } });
 
         if (data) {
-            return res.status(200).json({ message: "user updated successfully!" });
+            return res.status(200).json({ message: "User updated successfully!" });
         } else {
             return res.status(500).json({ error: "Cannot update user" });
         }
@@ -326,7 +332,7 @@ const forgetPassword = async (req, res) => {
         if (!user) {
 
             //if not data found then return user does not exist
-            return res.status(400).json({ error: "user does not exist" });
+            return res.status(400).json({ error: "User does not exist" });
 
             //if user there then convert there password into hashed
         } else {
@@ -367,7 +373,8 @@ const verifyUserToken = async (req, res) => {
         // to check token expired or not
         //if token expired is less than current date then it will expired
         if (tokenData.expiredAt < currentDate || tokenData.isUsed) {
-            res.status(400).json({ error: "Token expired or link already used" })
+            // res.status(400).json({ error: "Token expired or link already used" })
+            res.render("error", { message: "Link expired or already has been used", redirectTo: "/api/v1/login" })
         } else {
             tokenData.isUsed = true;
             tokenData.save()
@@ -411,58 +418,131 @@ const addImage = async (req, res) => {
     try {
         let { userId } = req.params;
         console.log(userId)
-        // console.log(req.file)
+        console.log(req.file)
+        let { originalname, filename } = req.file
 
         if (req.file == undefined) {
             res.status(400).json({ error: "Please select an image file to upload" });
         } else {
-            // let { filename, mimetype, originalname } = req.file;
-            // // console.log("CONTROLLER_REQ_FILE:", req.file);
-            // let user = await User.findOne({ where: { id } });
+            let user = await User.findOne({ where: { id: userId } });
 
             // // Checking user existence in DB
             // // if exist store the filename in DB
             // // check is filename successfully stored or not
             // // if stored then only move/copy the file from tmp folder to uploads folder
-            // if (user == null) {
-            //     return res.status(400).json({ error: "User not found" });
-            // } else {
-            //     user.fileName = originalname;
-            //     user.fileType = mimetype;
-            //     user.filePath = path.join(__basedir, `public/uploads/images/${id}/${filename}`);
-            //     await user.save();
+            if (user === null) {
+                return res.status(400).json({ error: "User not found" });
+            } else {
+                user.image = originalname;
+                await user.save();
 
-            //     let isFolderExist = fs.existsSync(path.join(__basedir, `public/uploads/images/${id}`));
+                let isFolderExist = fs.existsSync(path.join(__basedir, `public/images/users/${user.id}`));
 
-            //     if (isFolderExist) {
-            //         fs.copyFile(path.join(__basedir, `public/tmp/${filename}`), path.join(__basedir, `public/uploads/images/${id}/${filename}`), (err) => {
-            //             if (err) throw err;
+                if (isFolderExist) {
+                    fs.copyFile(path.join(__basedir, `public/tmp/${filename}`), path.join(__basedir, `public/images/users/${user.id}/${originalname}`), (err) => {
+                        if (err) throw err;
 
-            //             // fs.renameSync(path.join(__basedir, `public/uploads/images/${id}/${filename}`), path.join(__basedir, `public/uploads/images/${id}/${originalname}`))
-            //             fs.unlinkSync(path.join(__basedir, `public/tmp/${filename}`));
-            //             return res.status(200).json({ message: "File uploaded" });
-            //         })
-            //     } else {
-            //         fs.mkdir(path.join(__basedir, `public/uploads/images/${id}`), (err) => {
-            //             if (err) throw err;
+                        fs.unlinkSync(path.join(__basedir, `public/tmp/${filename}`));
+                        return res.status(200).json({ message: "Image uploaded" });
+                    })
+                } else {
+                    fs.mkdir(path.join(__basedir, `public/images/users/${user.id}`), (err) => {
+                        if (err) throw err;
 
-            //             fs.copyFile(path.join(__basedir, `public/tmp/${filename}`), path.join(__basedir, `public/uploads/images/${id}/${filename}`), (err) => {
-            //                 if (err) throw err;
+                        fs.copyFile(path.join(__basedir, `public/tmp/${filename}`), path.join(__basedir, `public/images/users/${user.id}/${originalname}`), (err) => {
+                            if (err) throw err;
 
-            //                 // fs.renameSync(path.join(__basedir, `public/uploads/images/${id}/${filename}`), path.join(__basedir, `public/uploads/images/${id}/${originalname}`))
-            //                 fs.unlinkSync(path.join(__basedir, `public/tmp/${filename}`));
-            //                 return res.status(200).json({ message: "File uploaded" });
-            //             })
-            //         })
-            //         fs.unlinkSync(path.join(__basedir, `public/tmp/${filename}`));
-            //     }
-
-            // }
+                            // fs.renameSync(path.join(__basedir, `public/uploads/images/${id}/${filename}`), path.join(__basedir, `public/uploads/images/${id}/${originalname}`))
+                            fs.unlinkSync(path.join(__basedir, `public/tmp/${filename}`));
+                            return res.status(200).json({ message: "Image uploaded" });
+                        })
+                    })
+                }
+            }
         }
 
-    } catch (error) {
+    } catch (err) {
         res.status(500).json({ error: err.message || "Something went wrong" });
     }
 }
 
-module.exports = { createUser, verifyUser, loginUser, logoutUser, dashboard, getUsersById, deleteUser, UpdateUser, getUsersByAddress, userPartialUpdate, getLoginPage, getRegisterPage, forgetPassword, resetPassword, verifyUserToken, addImage }
+// function for Google login
+const googleAuth = async (req, res) => {
+    try {
+        const stringifiedParams = queryString.stringify({
+            client_id: process.env.GOOGLE_CLIENT_ID,
+            redirect_uri: 'http://localhost:8080/api/v1/authenticate/google',
+            scope: [
+                'https://www.googleapis.com/auth/userinfo.email',
+                'https://www.googleapis.com/auth/userinfo.profile',
+            ].join(' '), // space seperated string
+            response_type: 'code',
+            access_type: 'offline',
+            prompt: 'consent',
+        });
+
+        const googleLoginUrl = `https://accounts.google.com/o/oauth2/v2/auth?${stringifiedParams}`;
+
+        return res.status(200).json({ googleLoginUrl })
+    } catch (err) {
+        res.status(500).json({ error: err.message || "Something went wrong" });
+    }
+}
+
+// Google authentication
+const authenticateGoogle = async (req, res) => {
+    try {
+        // console.log(req.query)
+        let { code } = req.query
+        // console.log(code)
+
+        await axios({
+            url: `https://oauth2.googleapis.com/token`,
+            method: 'post',
+            data: {
+                client_id: process.env.GOOGLE_CLIENT_ID,
+                client_secret: process.env.GOOGLE_CLIENT_SECRET,
+                redirect_uri: 'http://localhost:8080/api/v1/authenticate/google',
+                grant_type: 'authorization_code',
+                code,
+            },
+        }).then(({ data }) => {
+            // console.log({ data });
+            axios({
+                url: 'https://www.googleapis.com/oauth2/v2/userinfo',
+                method: 'get',
+                headers: {
+                    Authorization: `Bearer ${data.access_token}`,
+                },
+            }).then(({ data }) => {
+                console.log(data)
+
+                // Checking user exist or not
+                User.findOne({ where: { email: data.email } }).then((user) => {
+                    console.log(user);
+                    if (user !== null) {
+                        // if user exist update only google id 
+                        if (user.googleId === null) {
+                            user.googleId = data.id;
+                            user.isVerified = true;
+                            user.save()
+                            return res.status(200).json({ user })
+                        } else {
+                            return res.status(200).json({ user })
+                        }
+                    } else {
+                        // if not exist then create new user
+                        let body = { email: data.email, googleId: data.id, isVerified: true }
+                        User.create(body).then((newUser) => {
+                            return res.status(200).json({ message: "User created successfully" })
+                        })
+                    }
+                })
+            })
+        })
+    } catch (err) {
+        res.status(500).json({ error: err.message || "Something went wrong" });
+    }
+}
+
+module.exports = { createUser, verifyUser, loginUser, logoutUser, googleAuth, authenticateGoogle, dashboard, getUsersById, deleteUser, UpdateUser, getUsersByAddress, userPartialUpdate, getLoginPage, getRegisterPage, forgetPassword, resetPassword, verifyUserToken, addImage }
