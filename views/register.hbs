@@ -19,7 +19,7 @@
 				<h1 class="form-heading">Sign up</h1>
 				<div class="social-container">
 					<a href="#" class="social-link"><i class="fa fa-facebook"></i></a>
-					<a href="#" class="social-link"><i class="fa fa-google"></i></a>
+					<a href="#" class="social-link" id="google-signup"><i class="fa fa-google"></i></a>
 					<a href="#" class="social-link"><i class="fa fa-twitter"></i></a>
 				</div>
 				<span class="separator">or use your email</span>
@@ -97,6 +97,7 @@
 					// console.log(res.data)
 					// alert(res.data.message)
 					openModal("success",res.data.message)
+					
 				}).catch((err)=>{
 					// console.log(err.response.data)
 					// alert(err)
@@ -107,6 +108,17 @@
 				openModal("error", "Please fill all the fields")
 			}
 		})
+
+		// Window load event listener
+		window.addEventListener("load",()=>{
+        let url = `${baseUrl}/api/v1/googleAuth`;
+
+        // Adding locations in dropdown
+        axios.get(url).then(({data})=>{
+			// console.log(data)
+			$("#google-signup").attr("href", data.googleLoginUrl)
+        })
+      })
 	</script>
 </body>
 </html>

@@ -19,7 +19,7 @@
 				<h1 class="form-heading">Sign in</h1>
 				<div class="social-container">
 					<a href="#" class="social-link"><i class="fa fa-facebook"></i></a>
-					<a href="#" class="social-link"><i class="fa fa-google"></i></a>
+					<a href="#" class="social-link" id="google-login"><i class="fa fa-google"></i></a>
 					<a href="#" class="social-link"><i class="fa fa-twitter"></i></a>
 				</div>
 				<span class="separator">or use your email</span>
@@ -107,6 +107,17 @@
 			  openModal("error",err.response.data.error);
             })
         }
+
+		// Window load event listener
+		window.addEventListener("load",()=>{
+        let url = `${baseUrl}/api/v1/googleAuth`;
+
+        // Adding locations in dropdown
+        axios.get(url).then(({data})=>{
+			// console.log(data)
+			$("#google-login").attr("href", data.googleLoginUrl)
+        })
+      })
 	</script>
 
 </body>
