@@ -4,7 +4,7 @@ const { isLoggedIn } = require("../middlewares/auth")
 
 module.exports = (app) => {
    // Home page
-   app.get("/api/v1", restaurantController.home)
+   app.get("/", restaurantController.home)
    //to get all restaurant
    app.get("/api/v1/restaurants", restaurantController.getAllRestaurants)
    //to get restaurants by location
