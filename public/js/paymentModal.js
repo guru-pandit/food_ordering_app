@@ -1,8 +1,6 @@
 let modal = document.getElementById("myModal");
 let closeIcon;
 
-//<a href="#" class="modal-btn modal-btn-green">Ok</a>
-//<a href="#" class="modal-btn modal-btn-red">Ok</a>
 
 // Function to open modal
 function openModal(type, msg) {
@@ -13,11 +11,11 @@ function openModal(type, msg) {
                             <i class="fa fa-times btn-circular" id="close-icon"></i>
                             <div class="modal-cont modal-cont-success">
                                 <div class="modal-icon">
-                                    <i class="fa fa-thumbs-up"></i>
+                                    <i class="fa fa-money"></i>
                                 </div>
-                                <h3 class="modal-head" id="modal-text">Success</h3>
+                                <h3 class="modal-head" id="modal-text">Payment Successful</h3>
                                 <p class="modal-text" id="modal-text">${msg}</p>
-                               
+                                <a href="#" class="modal-btn modal-btn-green">Order more</a>
                                 </div> 
                         </div>`
 
@@ -25,10 +23,11 @@ function openModal(type, msg) {
                                     <i class="fa fa-times btn-circular" id="close-icon"></i>
                                     <div class="modal-cont modal-cont-error">
                                         <div class="modal-icon">
-                                            <i class="fa fa-thumbs-down"></i>
+                                            <i class="fa fa-money"></i>
                                         </div>
-                                        <h3 class="modal-head" id="modal-text">Error</h3>
+                                        <h3 class="modal-head" id="modal-text">Payment failed</h3>
                                         <p class="modal-text" id="modal-text">${msg}</p>
+                                        <a href="#" class="modal-btn modal-btn-red">Try again</a>
                                     </div> 
                             </div>`
     if (type === "success") {

@@ -38,9 +38,38 @@
           </div>
 
           <div class="top-bar-right">
-            <a class="btn btn-green mx-2" href="/api/v1/login">Sign In</a>
-            <a class="btn btn-outlined-green mx-2" href="/api/v1/register">Sign Up</a>
-          </div>
+            {{#if isLoggedIn}}
+                <div class="user-menu-wrap">
+                    <a class="mini-photo-wrapper" id="mini-photo-wrapper" href="#" >
+                        <img class="mini-photo" src="https://randomuser.me/api/portraits/men/43.jpg"/>
+                    </a>
+                    <div class="menu-container" id="menu-container">
+                      <ul class="user-menu">
+                        <div class="profile-highlight">
+                          <div class="details">
+                            <div id="profile-name">{{user.firstName}} {{user.lastName}}</div>
+                          </div>
+                        </div>
+                        <li class="user-menu__item">
+                              <a class="user-menu-link" href="#">Profile</a>
+                        </li>
+                        <li class="user-menu__item">
+                              <a class="user-menu-link" href="#">Orders</a>
+                        </li>
+                        <div class="footer">
+                          <li class="user-menu__item">
+                              <a class="btn-link-red" href="/api/v1/logout">Logout</a>
+                          </li>
+                        </div>
+                      </ul>
+                    </div>
+              </div>
+          {{/if}}
+          {{#unless isLoggedIn}}
+              <a class="btn btn-green mx-2" href="/api/v1/login">Sign In</a>
+              <a class="btn btn-outlined-green mx-2" href="/api/v1/register">Sign Up</a>
+          {{/unless}}
+        </div>
       </div>
       
 
@@ -171,6 +200,10 @@
       let menuitems=[]
       let mealtypes=[]
       let cuisines=[]
+
+      $("#mini-photo-wrapper").click(function(){
+        $("#menu-container").toggleClass("active");
+      })
 
       // Setting menu items array
       function setMenuitems(){

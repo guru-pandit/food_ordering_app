@@ -51,10 +51,6 @@
 	<!-- The Modal -->
 	<div id="myModal" class="modal">
 		<!-- Modal content -->
-		<div class="modal-content">
-			<i class="fa fa-times btn-circular" id="close"></i>
-			<h3 class="modal-text" id="modal-text"></h3>
-		</div>
 	</div>
 
 
@@ -78,13 +74,14 @@
 				axios.post(url, body).then((res)=>{
 				//console.log(res.status)
 				// console.log(res.data.message)
-				alert(res.data.message)
+				// alert(res.data.message)
+				window.location = `${baseUrl}/api/v1`
 			}).catch((err)=>{
 				// console.log(err.response.data)
-				openModal(err.response.data.error);
+				openModal("error",err.response.data.error)
 			})
 			}else{
-				console.log("Fields should not be empty")
+				openModal("error","Please fill all the fields")
 			}
 			
 		})
@@ -102,12 +99,12 @@
             axios.post(`${baseUrl}/api/v1/forgetPassword`,data,
             ).then(res => {
               //console.log(res)
-				openModal(`Link has been sent to ${email}`);
+				openModal("success",`Link has been sent to ${email}`);
 			  //alert(`Password reset link has been sent to ${email}`)
             })
             .catch(err => {
               // console.log(err.response.data)
-			  openModal(err.response.data.error);
+			  openModal("error",err.response.data.error);
             })
         }
 	</script>

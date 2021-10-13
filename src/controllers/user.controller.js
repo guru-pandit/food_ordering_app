@@ -4,7 +4,7 @@ const bcrypt = require("bcryptjs"); //bcrypt password
 const { validationResult } = require("express-validator");//for validations
 const crypto = require("crypto");//convert token into hexabytes
 const { sendVerificationMail, passwordResetMail } = require("../services/mail.service");//import service file
-const jwt = require('jsonwebtoken');//
+const jwt = require('jsonwebtoken');
 const user = require("../models/user");
 const Op = db.Sequelize.Op;
 
@@ -98,8 +98,9 @@ const verifyUser = async (req, res) => {
 const getLoginPage = async (req, res) => {
     res.render('login')
 }
-// for login user
-//var sessionArray = []
+
+// Function to login user
+let sessionArray = []
 const loginUser = async (req, res) => {
     try {
         //take email and password
@@ -114,31 +115,20 @@ const loginUser = async (req, res) => {
 
             //if user there then convert there password into hashed
         } else {
-            let isPassMatched = await bcrypt.compareSync(
-                password,
-                data.password
-            );
+            let isPassMatched = await bcrypt.compareSync(password, data.password);
 
             //if password is match then generate a token
             if (isPassMatched && data.isVerified == true) {
-                let token = jwt.sign(
-                    { id: data.id, email: data.email },
-                    process.env.SECRETKEY,
-                    { expiresIn: "1h" }
-                );
+                // req.session.email = data.email
+                // console.log(req.session);
+                // res.status(200).json({ message: "Successfully logged in" })
+
+                let token = jwt.sign({ id: data.id, email: data.email }, process.env.SECRET_KEY);
                 // console.log(token)
-
-                // console.log(req.session.id)
-
-                // sessionArray.push(data.email);
-                // req.session.user = sessionArray;
-                // console.log(req.session.user)
-                // //req.session.save();
-                // return res.send("user logged in");
-
-                // console.log("Login successful")
-                res.cookie(`access-token`, token).json({ message: "Login successful" });
-
+                sessionArray.push(data.email)
+                req.session.users = sessionArray
+                console.log(req.session.users)
+                res.cookie(`access-token`, token).json({ message: "Successfully logged in" });
             } else {
                 return res.status(400).json({ error: "Login failed" });
             }
@@ -148,6 +138,32 @@ const loginUser = async (req, res) => {
         res.status(500).json({ error: err.message || "Something went wrong" });
     }
 };
+
+// Function to logout user
+const logoutUser = async (req, res) => {
+    try {
+        let token = req.cookies["access-token"]
+        // console.log(token)
+
+        // verify a token
+        jwt.verify(token, process.env.SECRET_KEY, function (err, decoded) {
+            if (err) throw err;
+            // console.log(decoded)
+            // check email in session array
+            // console.log(req.session.users)
+            sessionArray = req.session.users.filter((user) => {
+                return user !== decoded.email
+            })
+
+            req.session.users = sessionArray
+            console.log(req.session.users)
+            res.redirect("/api/v1/login")
+        });
+    } catch (err) {
+        // console.log(err);
+        res.status(500).json({ error: err.message || "Something went wrong" });
+    }
+}
 
 //user logout here
 // const logOut = async (req, res) => {
@@ -262,6 +278,7 @@ const UpdateUser = async (req, res) => {
         res.status(500).json({ error: err.message || "Something went wrong" });
     }
 };
+
 const getUsersByAddress = async (req, res) => {
     //console.log(req.params); //parameters
     try {
@@ -314,7 +331,7 @@ const forgetPassword = async (req, res) => {
             //if user there then convert there password into hashed
         } else {
             let currentDate = new Date()
-            console.log(currentDate)
+            // console.log(currentDate)
             const passToken = {
                 token: crypto.randomBytes(64).toString("hex"),
                 userId: user.id,
@@ -324,7 +341,7 @@ const forgetPassword = async (req, res) => {
             }
 
             const tokenData = await passwordToken.create(passToken)
-            console.log(tokenData)//save in database
+            // console.log(tokenData)//save in database
             passwordResetMail(req, user, passToken);
 
 
@@ -367,7 +384,7 @@ const resetPassword = async (req, res) => {
     const { userId } = req.params
     const { password, confirmPassword } = req.body
     //check if this id exist in database
-    console.log("userId :-" + userId);
+    // console.log("userId :-" + userId);
     const data = await User.findOne({ where: { id: userId } });
     if (!data) {
         //if not data found then return user does not exist
@@ -387,10 +404,65 @@ const resetPassword = async (req, res) => {
     }
 
 
-
-
-
-
 };
 
-module.exports = { createUser, verifyUser, loginUser, dashboard, getUsersById, deleteUser, UpdateUser, getUsersByAddress, userPartialUpdate, getLoginPage, getRegisterPage, forgetPassword, resetPassword, verifyUserToken }
+// Function to add image
+const addImage = async (req, res) => {
+    try {
+        let { userId } = req.params;
+        console.log(userId)
+        // console.log(req.file)
+
+        if (req.file == undefined) {
+            res.status(400).json({ error: "Please select an image file to upload" });
+        } else {
+            // let { filename, mimetype, originalname } = req.file;
+            // // console.log("CONTROLLER_REQ_FILE:", req.file);
+            // let user = await User.findOne({ where: { id } });
+
+            // // Checking user existence in DB
+            // // if exist store the filename in DB
+            // // check is filename successfully stored or not
+            // // if stored then only move/copy the file from tmp folder to uploads folder
+            // if (user == null) {
+            //     return res.status(400).json({ error: "User not found" });
+            // } else {
+            //     user.fileName = originalname;
+            //     user.fileType = mimetype;
+            //     user.filePath = path.join(__basedir, `public/uploads/images/${id}/${filename}`);
+            //     await user.save();
+
+            //     let isFolderExist = fs.existsSync(path.join(__basedir, `public/uploads/images/${id}`));
+
+            //     if (isFolderExist) {
+            //         fs.copyFile(path.join(__basedir, `public/tmp/${filename}`), path.join(__basedir, `public/uploads/images/${id}/${filename}`), (err) => {
+            //             if (err) throw err;
+
+            //             // fs.renameSync(path.join(__basedir, `public/uploads/images/${id}/${filename}`), path.join(__basedir, `public/uploads/images/${id}/${originalname}`))
+            //             fs.unlinkSync(path.join(__basedir, `public/tmp/${filename}`));
+            //             return res.status(200).json({ message: "File uploaded" });
+            //         })
+            //     } else {
+            //         fs.mkdir(path.join(__basedir, `public/uploads/images/${id}`), (err) => {
+            //             if (err) throw err;
+
+            //             fs.copyFile(path.join(__basedir, `public/tmp/${filename}`), path.join(__basedir, `public/uploads/images/${id}/${filename}`), (err) => {
+            //                 if (err) throw err;
+
+            //                 // fs.renameSync(path.join(__basedir, `public/uploads/images/${id}/${filename}`), path.join(__basedir, `public/uploads/images/${id}/${originalname}`))
+            //                 fs.unlinkSync(path.join(__basedir, `public/tmp/${filename}`));
+            //                 return res.status(200).json({ message: "File uploaded" });
+            //             })
+            //         })
+            //         fs.unlinkSync(path.join(__basedir, `public/tmp/${filename}`));
+            //     }
+
+            // }
+        }
+
+    } catch (error) {
+        res.status(500).json({ error: err.message || "Something went wrong" });
+    }
+}
+
+module.exports = { createUser, verifyUser, loginUser, logoutUser, dashboard, getUsersById, deleteUser, UpdateUser, getUsersByAddress, userPartialUpdate, getLoginPage, getRegisterPage, forgetPassword, resetPassword, verifyUserToken, addImage }

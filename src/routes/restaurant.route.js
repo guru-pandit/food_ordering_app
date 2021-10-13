@@ -1,5 +1,6 @@
 const restaurantController = require("../controllers").restaurant;
 const { uploadImage } = require("../services/upload.service");
+const { isLoggedIn } = require("../middlewares/auth")
 
 module.exports = (app) => {
    // Home page
