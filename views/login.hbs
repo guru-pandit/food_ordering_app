@@ -19,7 +19,7 @@
 				<h1 class="form-heading">Sign in</h1>
 				<div class="social-container">
 					<a href="#" class="social-link"><i class="fa fa-facebook"></i></a>
-					<a href="#" class="social-link"><i class="fa fa-google"></i></a>
+					<a href="#" class="social-link" id="google-login"><i class="fa fa-google"></i></a>
 					<a href="#" class="social-link"><i class="fa fa-twitter"></i></a>
 				</div>
 				<span class="separator">or use your email</span>
@@ -51,10 +51,6 @@
 	<!-- The Modal -->
 	<div id="myModal" class="modal">
 		<!-- Modal content -->
-		<div class="modal-content">
-			<i class="fa fa-times btn-circular" id="close"></i>
-			<h3 class="modal-text" id="modal-text"></h3>
-		</div>
 	</div>
 
 
@@ -78,13 +74,14 @@
 				axios.post(url, body).then((res)=>{
 				//console.log(res.status)
 				// console.log(res.data.message)
-				alert(res.data.message)
+				// alert(res.data.message)
+				window.location = `${baseUrl}/`
 			}).catch((err)=>{
 				// console.log(err.response.data)
-				openModal(err.response.data.error);
+				openModal("error",err.response.data.error)
 			})
 			}else{
-				console.log("Fields should not be empty")
+				openModal("error","Please fill all the fields")
 			}
 			
 		})
@@ -102,14 +99,25 @@
             axios.post(`${baseUrl}/api/v1/forgetPassword`,data,
             ).then(res => {
               //console.log(res)
-				openModal(`Link has been sent to ${email}`);
+				openModal("success",`Link has been sent to ${email}`);
 			  //alert(`Password reset link has been sent to ${email}`)
             })
             .catch(err => {
               // console.log(err.response.data)
-			  openModal(err.response.data.error);
+			  openModal("error",err.response.data.error);
             })
         }
+
+		// Window load event listener
+		window.addEventListener("load",()=>{
+        let url = `${baseUrl}/api/v1/googleAuth`;
+
+        // Adding locations in dropdown
+        axios.get(url).then(({data})=>{
+			// console.log(data)
+			$("#google-login").attr("href", data.googleLoginUrl)
+        })
+      })
 	</script>
 
 </body>

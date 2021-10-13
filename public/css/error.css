@@ -46,14 +46,6 @@
   }
 }
 
-.modal-content-success::before{
-  position: absolute;
-  content: "";
-  width: 100%;
-  height: 12px;
-  background-image: linear-gradient(to right, #5fb395, #55ad8d, #4ba685, #41a07d, #369a75, #2f956f, #27916a, #1e8c64, #18875e, #118359, #097e53, #007a4e);
-}
-
 .modal-content-error::before{
   position: absolute;
   content: "";
@@ -82,11 +74,6 @@
   background-color: rgba(0,0,0,0.1);
 }
 
-.modal-cont-success .modal-icon .fa{
-  font-size: 2rem;
-  color: var(--color-dark);
-  filter: drop-shadow(0 4px 1px var(--color-success));
-}
 
 .modal-cont-error .modal-icon .fa{
   font-size: 2rem;
@@ -116,17 +103,6 @@
   background-image: linear-gradient(to right, #ff6674, #ff616f, #ff5b6a, #fe5564, #fe4f5f, #fb4959, #f74354, #f43d4e, #ee3646, #e72e3e, #e12537, #da1c2f);
 }
 
-.modal-cont-success .modal-head::after{
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  content: "";
-  width: 100%;
-  height: 5px;
-  border-radius: 10px;
-  background-image: linear-gradient(to right, #5fb395, #55ad8d, #4ba685, #41a07d, #369a75, #2f956f, #27916a, #1e8c64, #18875e, #118359, #097e53, #007a4e);
-}
-
 .modal-text{
   font-size: .9rem;
   font-weight: 600;
@@ -150,16 +126,6 @@
     text-decoration: none !important;
 } 
 
-.modal-btn-green{
-  color: var(--color-green);
-  border: 2px solid var(--color-green);
-  transition: all .3s ease;
-}
-
-.modal-btn-green:hover{
-  background-color: var(--color-green);
-  color: var(--color-white);
-}
 
 .modal-btn-red{
   color: var(--color-red);

@@ -1,14 +1,42 @@
-const { Restaurant, Location, Review, Menuitem } = require("../models");
+const { Restaurant, Location, Review, Menuitem, User } = require("../models");
 const db = require("../models");
 const Op = db.Sequelize.Op;
+const jwt = require('jsonwebtoken');
 const fs = require("fs")
 const path = require("path")
 
 // function to render homepage
 const home = async (req, res) => {
-    res.status(200).render("index");
+    try {
+        let token = req.cookies["access-token"]
+        // console.log(token)
+
+        // verify a token
+        if (token === undefined) {
+            res.status(200).render("index", { isLoggedIn: false })
+        } else {
+            jwt.verify(token, process.env.SECRET_KEY, function (err, decoded) {
+                if (err) throw err;
+                // console.log(decoded)
+                // check email in session array
+                // console.log(req.session.users)
+                let checkEmail = req.session.users !== "undefined" ? req.session.users?.includes(decoded.email) : false
+                if (checkEmail) {
+                    User.findOne({ where: { email: decoded.email } }).then((user) => {
+                        user.image = `/images/users/${user.id}/${user.image}`
+                        // user.image = `${req.protocol}://${req.headers.host}/images/users/${user.id}/${user.image}`
+                        res.status(200).render("index", { isLoggedIn: true, user })
+                    })
+                } else {
+                    res.status(200).render("index", { isLoggedIn: false })
+                }
+            });
+        }
+    } catch (err) {
+        res.status(500).json({ error: err.message || "Something went wrong" });
+    }
 }
- 
+
 //to get all restaurants
 const getAllRestaurants = async (req, res) => {
     try {
@@ -70,11 +98,11 @@ const getRestaurantsByLocation = async (req, res) => {
             response.forEach((rest) => {
                 let imgPath = []
                 imgPath = rest.image.map((img) => {
-                     return `${req.protocol}://${req.headers.host}/images/restaurants/${rest.id}/${img}`
+                    return `${req.protocol}://${req.headers.host}/images/restaurants/${rest.id}/${img}`
                     //return `/images/restaurants/${rest.id}/${img}`
                 })
                 rest.image = imgPath
-                restaurants.push(rest) 
+                restaurants.push(rest)
             })
 
             // let menuitemsByLocation = []

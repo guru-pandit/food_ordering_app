@@ -5,7 +5,7 @@ const path = require("path");
 const cors = require("cors");
 const db = require("./src/models");
 const cookieParser = require("cookie-parser");
-const session = require("express-session");
+const session = require('express-session')
 require('dotenv').config();
 global.__basedir = __dirname;
 
@@ -18,8 +18,7 @@ let corsOptions = {
 app.use(cors(corsOptions));
 app.use(cookieParser());
 app.use(express.json());
-//app.use(session({ secret: process.env.SESSION_SECRET_KEY, resave: false, saveUninitialized: true }));
-//app.use(express.static('public'));
+app.use(session({ secret: process.env.SESSION_SECRET, resave: false, saveUninitialized: false }))
 
 //setting view engine
 app.set("views", "views");

@@ -19,15 +19,17 @@
 				<h1 class="form-heading">Sign up</h1>
 				<div class="social-container">
 					<a href="#" class="social-link"><i class="fa fa-facebook"></i></a>
-					<a href="#" class="social-link"><i class="fa fa-google"></i></a>
+					<a href="#" class="social-link" id="google-signup"><i class="fa fa-google"></i></a>
 					<a href="#" class="social-link"><i class="fa fa-twitter"></i></a>
 				</div>
 				<span class="separator">or use your email</span>
 				<div class="name-input">
 					<div class="input-container">
+						<i class="fa fa-user"></i>
 						<input type="text" id="fname" name="fname" placeholder="First name" aria-label="First name" class="input-inner" onkeyup="validate(event)">
 					</div>
 					<div class="input-container">
+						<i class="fa fa-user"></i>
 						<input type="text" id="lname" name="lname" placeholder="Last name" aria-label="Last name" class="input-inner" onkeyup="validate(event)">
 					</div>
 				</div>
@@ -59,15 +61,10 @@
 		</div>
 	</div>
 
-	<!-- The Modal -->
+	<!-- The success Modal -->
 	<div id="myModal" class="modal">
 		<!-- Modal content -->
-		<div class="modal-content">
-			<i class="fa fa-times btn-circular" id="close"></i>
-			<h3 class="modal-text" id="modal-text"></h3>
-		</div>
 	</div>
-
 
 	<script src="https://cdn.jsdelivr.net/npm/axios@0.21.4/dist/axios.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -99,16 +96,29 @@
 				axios.post(url,body).then((res)=>{
 					// console.log(res.data)
 					// alert(res.data.message)
-					openModal(res.data.message)
+					openModal("success",res.data.message)
+					
 				}).catch((err)=>{
 					// console.log(err.response.data)
 					// alert(err)
-					openModal(err.response.data.error)
+					openModal("error",err.response.data.error)
 				})
 			}else{
-				console.log("Fields should not be empty")
+				//console.log("Fields should not be empty")
+				openModal("error", "Please fill all the fields")
 			}
 		})
+
+		// Window load event listener
+		window.addEventListener("load",()=>{
+        let url = `${baseUrl}/api/v1/googleAuth`;
+
+        // Adding locations in dropdown
+        axios.get(url).then(({data})=>{
+			// console.log(data)
+			$("#google-signup").attr("href", data.googleLoginUrl)
+        })
+      })
 	</script>
 </body>
 </html>

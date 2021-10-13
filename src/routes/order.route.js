@@ -4,7 +4,7 @@ module.exports = (app) => {
     // Place order
     app.post("/api/v1/order", orderController.placeOrder);
     //update order
-    app.post("/api/v1/updateorder/:orderId",orderController.updateOrder);
+    app.post("/api/v1/updateorder/:orderId", orderController.updateOrder);
     // Get order by order id
     app.get("/api/v1/order/:orderId", orderController.getOrderByOrderId);   
     // Get orders by user id
@@ -12,11 +12,11 @@ module.exports = (app) => {
     // payment
     app.post("/api/v1/payment/order", orderController.orderPayment);
     //checkout
-     app.get("/api/v1/payment/checkout", orderController.checkoutPayment)
+    app.get("/api/v1/payment/checkout", orderController.checkoutPayment)
     //callback
-    app.post("/api/v1/isordercomplete",orderController.checkSuccessOrFailure)
+    app.post("/api/v1/isordercomplete", orderController.checkSuccessOrFailure)
     //success
-    app.get("/api/v1/paymentsuccess", orderController.paymentSuccess);
+    // app.get("/api/v1/paymentsuccess", orderController.paymentSuccess);
     //failure
-    app.get("/api/v1/paymentfailure", orderController.paymentFailure);
+    // app.get("/api/v1/paymentfailure", orderController.paymentFailure);
 }

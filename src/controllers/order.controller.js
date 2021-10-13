@@ -9,7 +9,7 @@ const placeOrder = async (req, res) => {
     try {
         let totalPrice = 0;
         let deliveryCharge = 40;
-        console.log(req.body)
+        // console.log(req.body)
         let orderBody = {
             orderId: v1(),
             items: req.body.items,
@@ -28,19 +28,19 @@ const placeOrder = async (req, res) => {
             let menu = await Menuitem.findOne({ where: { id: menuitemId } });
             totalPrice += menu.price * quantity;
         }))
-        
+
         let GST = totalPrice * 5 / 100;
-    
+
         let finalPrize = totalPrice + GST;
 
         //assigning GST to the orderBody.gst
         orderBody.gst = GST;
 
         // Assigning total price to the orderBody.total
-        if(finalPrize < 1000){
+        if (finalPrize < 1000) {
             orderBody.total = finalPrize + deliveryCharge;
             orderBody.deliveryCharges = deliveryCharge
-        }else{
+        } else {
             orderBody.total = finalPrize;
         }
         //orderBody.total = finalPrize < 1000 ? finalPrize + deliveryCharge : finalPrize;
@@ -61,37 +61,37 @@ const placeOrder = async (req, res) => {
 }
 
 //to update order
-const updateOrder = async(req,res)=>{
-    try{
-        const {orderId} = req.params;
-        const {totalPrice ,items} = req.body;
-        const order = await Order.findOne({where :{orderId: orderId}})
-        if(order !== null){
+const updateOrder = async (req, res) => {
+    try {
+        const { orderId } = req.params;
+        const { totalPrice, items } = req.body;
+        const order = await Order.findOne({ where: { orderId: orderId } })
+        if (order !== null) {
             let deliveryCharge = 40;
             let GST = totalPrice * 5 / 100;
             let finalPrize = totalPrice + GST;
 
-             //to update gst
+            //to update gst
             order.gst = GST;
             order.items = items;
 
             // to update total price and to update delivery charges.
-            if(finalPrize < 1000){
+            if (finalPrize < 1000) {
                 order.total = finalPrize + deliveryCharge;
                 order.deliveryCharges = deliveryCharge
-            }else{
+            } else {
                 order.total = finalPrize;
             }
-                let updateOrder = await order.save();
-                
-                if(updateOrder !== null){
-                    res.status(200).json({message: "order updated successfully" , order : updateOrder})
-                }else{
-                    res.status(200).json({message: "order NOT updated successfully" })
-                }
-            
+            let updateOrder = await order.save();
+
+            if (updateOrder !== null) {
+                res.status(200).json({ message: "order updated successfully", order: updateOrder })
+            } else {
+                res.status(200).json({ message: "order NOT updated successfully" })
             }
-    }catch(err){
+
+        }
+    } catch (err) {
         res.status(500).json({ error: err.message || "Something went wrong" });
     }
 }
@@ -148,108 +148,110 @@ const getOrdersByUserId = async (req, res) => {
 }
 
 // Function for payment gateway integration
-const orderPayment = async(req, res) => {
+const orderPayment = async (req, res) => {
     let { totalPrice } = req.query;
     //console.log(totalPrice)
     // console.log("TotalPrice: ", totalPrice);
     const instance = new Razorpay({
-        key_id: process.env.RAZORPAY_KEYID, 
+        key_id: process.env.RAZORPAY_KEYID,
         key_secret: process.env.RAZORPAY_KEYSECRET,
     })
     // console.log("RazorpayInstance: ", instance);
     let options = {
-        amount: totalPrice * 100, 
+        amount: totalPrice * 100,
         currency: "INR"
     }
 
     instance.orders
         .create(options)
         .then((data) => {
-             res.status(200).json({ data }); 
+            res.status(200).json({ data });
             //  console.log("Data: ",data); 
-            
+
         }).catch((err) => {
             res.status(500).json({ error: err.message || "Something went wrong" });
         });
 }
 
-const checkoutPayment = async(req,res) => {
+const checkoutPayment = async (req, res) => {
     res.render('paymentCheckout.hbs');
 }
 
-const checkSuccessOrFailure = async(req,res)=> {
-    const {orderId} = req.query;
+const checkSuccessOrFailure = async (req, res) => {
+    const { orderId } = req.query;
     const instance = new Razorpay({
-        key_id: process.env.RAZORPAY_KEYID, 
+        key_id: process.env.RAZORPAY_KEYID,
         key_secret: process.env.RAZORPAY_KEYSECRET,
     })
-    console.log(req.body)
-    if(req.body.razorpay_payment_id && req.body.razorpay_order_id && req.body.razorpay_signature){
-            let order = await Order.findOne({where:{orderId : orderId}})
-            if(order !== null){
-                order.razorpay_payment_id = req.body.razorpay_payment_id;
-                order.razorpay_order_id = req.body.razorpay_order_id;
-                order.razorpay_signature = req.body.razorpay_signature;
+    // console.log(req.body)
+    if (req.body.razorpay_payment_id && req.body.razorpay_order_id && req.body.razorpay_signature) {
+        let order = await Order.findOne({ where: { orderId: orderId } })
+        if (order !== null) {
+            order.razorpay_payment_id = req.body.razorpay_payment_id;
+            order.razorpay_order_id = req.body.razorpay_order_id;
+            order.razorpay_signature = req.body.razorpay_signature;
 
-                await order.save();
-            }
+            await order.save();
+        }
 
     }
-    instance.payments.fetch(req.body.razorpay_payment_id).then((paymentDocument)=>{
-        console.log(paymentDocument)
-        if(paymentDocument.status === 'captured'){
+
+    instance.payments.fetch(req.body.razorpay_payment_id).then((paymentDocument) => {
+        // console.log(paymentDocument)
+        if (paymentDocument.status === 'captured') {
             res.status(201).json({
-                    message: "Payment Successful",
-                    redirectUrl: "http://localhost:8080/api/v1/paymentsuccess"
-                    })
-        }else{
+                message: "success",
+                // redirectUrl: "http://localhost:8080/api/v1/paymentsuccess"
+            })
+        } else {
             res.status(201).json({
-                    message: "Payment Failed",
-                    redirectUrl: "http://localhost:8080/api/v1/paymentfailure"
-                    })
+                message: "failed",
+                // redirectUrl: "http://localhost:8080/api/v1/paymentfailure"
+            })
         }
     })
 
-//     let body=req.body.razorpay_order_id + "|" + req.body.razorpay_payment_id;
+    //     let body=req.body.razorpay_order_id + "|" + req.body.razorpay_payment_id;
 
-//     var expectedSignature = crypto.createHmac('sha256', 'Wok5mJv2F0pa5HKLeXZfUr9r')
-//                                   .update(body.toString())
-//                                   .digest('hex');
-//                                   console.log("sig received " ,req.body.razorpay_signature);
-//                                   console.log("sig generated " ,expectedSignature);
-// console.log(expectedSignature === req.body.razorpay_signature);
+    //     var expectedSignature = crypto.createHmac('sha256', 'Wok5mJv2F0pa5HKLeXZfUr9r')
+    //                                   .update(body.toString())
+    //                                   .digest('hex');
+    //                                   console.log("sig received " ,req.body.razorpay_signature);
+    //                                   console.log("sig generated " ,expectedSignature);
+    // console.log(expectedSignature === req.body.razorpay_signature);
 
-//         if(expectedSignature === req.body.razorpay_signature){
-//             //res.status(301).redirect('http://localhost:8080/api/v1/paymentsuccess')
-//             res.status(201).json({
-//                 message: "Order registered",
-//                 redirectUrl: "http://localhost:8080/api/v1/paymentsuccess"
-//                })
-//         }else{
-//             //res.status(301).redirect('http://localhost:8080/api/v1/paymentfailure')
-//             res.status(201).json({
-//                 message: "Order registered",
-//                 redirectUrl: "http://localhost:8080/api/v1/paymentfailure"
-//                })
-//         }
+    //         if(expectedSignature === req.body.razorpay_signature){
+    //             //res.status(301).redirect('http://localhost:8080/api/v1/paymentsuccess')
+    //             res.status(201).json({
+    //                 message: "Order registered",
+    //                 redirectUrl: "http://localhost:8080/api/v1/paymentsuccess"
+    //                })
+    //         }else{
+    //             //res.status(301).redirect('http://localhost:8080/api/v1/paymentfailure')
+    //             res.status(201).json({
+    //                 message: "Order registered",
+    //                 redirectUrl: "http://localhost:8080/api/v1/paymentfailure"
+    //                })
+    //         }
 
 
 }
-const paymentSuccess = async(req,res) => {
-        res.render('paymentSuccess.hbs')
+const paymentSuccess = async (req, res) => {
+    res.render('paymentSuccess.hbs')
 }
 
-const paymentFailure = async(req,res) => {
+const paymentFailure = async (req, res) => {
     res.render('paymentFailure.hbs')
 }
 
-module.exports = { placeOrder,
-     getOrderByOrderId,
-     getOrdersByUserId, 
-     orderPayment, 
-     checkoutPayment, 
-     checkSuccessOrFailure,
-     paymentSuccess,
-     paymentFailure,
-     updateOrder
-    }
+module.exports = {
+    placeOrder,
+    getOrderByOrderId,
+    getOrdersByUserId,
+    orderPayment,
+    checkoutPayment,
+    checkSuccessOrFailure,
+    paymentSuccess,
+    paymentFailure,
+    updateOrder
+}

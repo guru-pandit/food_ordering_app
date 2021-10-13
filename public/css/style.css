@@ -27,6 +27,10 @@ a:hover{
   color: var(--color-white);
 }
 
+ul {
+  list-style: none;
+}
+
 
 body{
   width: 100%;
@@ -130,6 +134,17 @@ body{
 .btn-outlined-gray:hover{
   border-color: var(--color-gray);
   color: var(--color-gray);
+}
+
+.btn-link-red{
+  text-decoration: none;
+  font-size: .9rem;
+  color: var(--color-red);
+  font-weight: 500;
+}
+
+.btn-link-red:hover{
+  color: var(--color-red);
 }
 
 
