@@ -545,4 +545,23 @@ const authenticateGoogle = async (req, res) => {
     }
 }
 
-module.exports = { createUser, verifyUser, loginUser, logoutUser, googleAuth, authenticateGoogle, dashboard, getUsersById, deleteUser, UpdateUser, getUsersByAddress, userPartialUpdate, getLoginPage, getRegisterPage, forgetPassword, resetPassword, verifyUserToken, addImage }
+//to update delivery address
+const updateUserInfo = async(req,res)=>{
+try{
+    let {userId} = req.params;
+    let {deliveryAddress} = req.body;
+    let user = await User.findOne({id : userId})
+    if(user!==null){
+        user.deliveryAddress = deliveryAddress;
+        let updatedUser = await user.save();
+        if(updatedUser!==null){
+            res.status(200).json({ message: "user updated successfully", user: updatedUser })
+        }else{
+            res.status(500).json({ message: "order NOT updated successfully" })
+        }
+    }    
+}catch(err){
+    res.status(500).json({ error: err.message || "Something went wrong" });
+}
+}
+module.exports = { createUser, verifyUser, loginUser, logoutUser, googleAuth, authenticateGoogle, dashboard, getUsersById, deleteUser, UpdateUser, getUsersByAddress, userPartialUpdate, getLoginPage, getRegisterPage, forgetPassword, resetPassword, verifyUserToken, addImage,updateUserInfo }

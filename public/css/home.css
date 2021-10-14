@@ -739,6 +739,7 @@ input[type="range"]:active::-webkit-slider-thumb{
 .cart-heading{
   font-size: 1.5rem;
   font-weight: 600;
+  margin-top: 1rem;
 }
 .edit-btn{
   height: 24px;
@@ -846,4 +847,15 @@ input[type="range"]:active::-webkit-slider-thumb{
   padding: .3rem .75rem;
   text-decoration: none;
   color: var(--color-red) !important;
+}
+
+/* delivery address */
+.textarea-address{
+  margin-right: 1rem;
+    width: 365px;
+    height: 70px;
+}
+.address-input{
+  display: flex;
+    align-items: center;
 }

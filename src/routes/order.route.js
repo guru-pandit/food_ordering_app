@@ -1,8 +1,9 @@
 const orderController = require("../controllers").order;
+const {isLoggedIn} = require("../middlewares/auth");
 
 module.exports = (app) => {
     // Place order
-    app.post("/api/v1/order", orderController.placeOrder);
+    app.post("/api/v1/order", orderController.placeOrder); 
     //update order
     app.post("/api/v1/updateorder/:orderId", orderController.updateOrder);
     // Get order by order id

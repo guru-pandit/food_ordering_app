@@ -316,7 +316,7 @@ cartLS.onChange(renderCart)
                 }
 
                 axios.post(
-                  `${baseUrl}/api/v1/addnewreview?userId=1&restaurantId=${restaurantId}`,
+                  `${baseUrl}/api/v1/addnewreview?userId=2&restaurantId=${restaurantId}`,
                    data,
                 ).then(res => {
                   console.log(res)
@@ -343,7 +343,7 @@ document.getElementById('order-btn').onclick = function(e){
    
               if(items.length > 0){
                 axios.post(
-                  `${baseUrl}/api/v1/order?userId=1&restaurantId=${restaurantId}`,
+                  `${baseUrl}/api/v1/order?userId=2&restaurantId=${restaurantId}`,
                    {items},
                 ).then(res => {
                   console.log(res)
@@ -358,7 +358,7 @@ document.getElementById('order-btn').onclick = function(e){
                   let subtotal = totalPrice - gst - deliveryCharges ;
                   //console.log(subtotal)
                   if(res){
-                    let url = `${baseUrl}/api/v1/payment/checkout?userId=1&orderId=${orderId}&totalPrice=${totalPrice}&gst=${gst}&subtotal=${subtotal}&deliveryCharges=${deliveryCharges}&restaurantId=${restaurantId}`;
+                    let url = `${baseUrl}/api/v1/payment/checkout?userId=2&orderId=${orderId}&totalPrice=${totalPrice}&gst=${gst}&subtotal=${subtotal}&deliveryCharges=${deliveryCharges}&restaurantId=${restaurantId}`;
                     window.location = url;
                   }
                 })
