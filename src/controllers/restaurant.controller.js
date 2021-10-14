@@ -20,7 +20,7 @@ const home = async (req, res) => {
                 // console.log(decoded)
                 // check email in session array
                 // console.log(req.session.users)
-                let checkEmail = req.session.users !== "undefined" ? req.session.users?.includes(decoded.email) : false
+                let checkEmail = req.session.users !== "undefined" || req.session.users.length <= 0 ? req.session.users?.includes(decoded.email) : false
                 if (checkEmail) {
                     User.findOne({ where: { email: decoded.email } }).then((user) => {
                         user.image = `/images/users/${user.id}/${user.image}`

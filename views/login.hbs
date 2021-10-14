@@ -73,8 +73,11 @@
 				let body = {email, password}
 				axios.post(url, body).then((res)=>{
 				//console.log(res.status)
+				//console.log(res.data)
+				//console.log(res.data.user)
+				let user = { id:res.data.user.id, email:res.data.user.email }
+				localStorage.setItem("user", JSON.stringify(user))
 				// console.log(res.data.message)
-				// alert(res.data.message)
 				window.location = `${baseUrl}/`
 			}).catch((err)=>{
 				// console.log(err.response.data)

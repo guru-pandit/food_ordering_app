@@ -132,7 +132,7 @@ const loginUser = async (req, res) => {
                 sessionArray.push(data.email)
                 req.session.users = sessionArray
                 console.log(req.session.users)
-                res.cookie(`access-token`, token).json({ message: "Successfully logged in" });
+                res.cookie(`access-token`, token).json({ message: "Successfully logged in", user: data });
             } else {
                 return res.status(400).json({ error: "Login failed" });
             }
@@ -147,7 +147,7 @@ const loginUser = async (req, res) => {
 const logoutUser = async (req, res) => {
     try {
         let token = req.cookies["access-token"]
-        // console.log(token)
+        console.log(token)
 
         // verify a token
         jwt.verify(token, process.env.SECRET_KEY, function (err, decoded) {
@@ -155,13 +155,18 @@ const logoutUser = async (req, res) => {
             // console.log(decoded)
             // check email in session array
             // console.log(req.session.users)
-            sessionArray = req.session.users.filter((user) => {
-                return user !== decoded.email
-            })
+            if (req.session.users.length <= 0) {
+                return res.render("index")
+            } else {
+                sessionArray = req.session.users.filter((user) => {
+                    return user !== decoded.email
+                })
+                req.session.users = sessionArray
+                return res.render("index", {})
+            }
 
-            req.session.users = sessionArray
             console.log(req.session.users)
-            res.redirect("/api/v1/login")
+            // res.redirect("/api/v1/login")
         });
     } catch (err) {
         // console.log(err);
