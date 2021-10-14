@@ -70,6 +70,15 @@ body{
   filter: brightness(.9);
 }
 
+.btn-red{
+  color: var(--color-white);
+  background-color: var(--color-red);
+  border-color: var(--color-red);
+}
+.btn-red:hover{
+  filter: brightness(.9);
+}
+
 .btn-rounded{
   padding: .5rem .8rem;
   border-radius: 50px;

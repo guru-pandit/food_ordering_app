@@ -1,105 +1,141 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Checkout</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="/css/style.css">
-    <link rel="stylesheet" href="/css/home.css">
-    <link rel="stylesheet" href="/css/paymentModal.css">
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/home.css">
+  <link rel="stylesheet" href="/css/modals.css"/>
+  <link rel="stylesheet" href="/css/paymentModal.css">
 </head>
 <body>
-    <div class="payment-page">
-        <div class="payment-page-content row">
-            <div class="col-7" style="border-right: 1px solid lightgrey;">
-                <div class="product-details mr-2">
-                    <div class="cart-heading">Edit your order</div>
-                    <div id="cart-item"></div>
-                    <div class="subtotal" id="cart-subtotal"></div>
-                    <button class="btn btn-green" id="confirm-order">Confirm Order</button>
+      <div class="payment-page">
+  <div class="payment-page-content row">
+      <div class="col-7" style="border-right: 1px solid lightgrey;">
+         <div class="product-details mr-2">
+                <div id="outer-address" style="display:none;">
+                  <h6>Delivery Address</h6>
+                <div style="display:flex;align-items:center">
+                  <div id="delivery-address" class="pl-1" style="border: 1px solid gray;width: 360px;height: 70px;"></div>
+                  <button id="edit-btn" class="btn btn-green ml-3">Edit</button>
                 </div>
+                </div>
+               <div id="outer-enter-address" style="display:block">
+                  <h6>Enter your address</h6>
+                <div class="address-input">
+                  <textarea id="enter-address" class="textarea-address pl-1"></textarea>
+                  <button id="add-btn" class="btn btn-green">Add</button>
+                </div>
+               </div>
+                <div class="cart-heading">Edit your order</div>
+                <div id="cart-item"></div>
+                <div class="subtotal" id="cart-subtotal"></div>
+                <button class="btn btn-green" id="confirm-order" style="margin-left: 160px; margin-top:10px;">Confirm Order</button>
+                <button class="btn btn-red" id="cancel-order" style="margin-left: 10px; margin-top:10px;">Cancel Order</button>
             </div>
+        </div>
         <div class="col-5">
-        <h2>Thanks for Order</h2>
-        <ul class="payment-list-wrapper">
-            <li class="payment-list-item">
-                <span>Subtotal </span>
-                <span id="subtotal"></span>
-            </li>
-            <li class="payment-list-item">
-                <span>Discount </span>
-                <span>- &#8377; 0</span>
-            </li>
-            <li class="payment-list-item">
-                <span>GST </span>
-                <span id="gst"></span>
-            </li>
-            <li class="payment-list-item">
-                <span>Delivery Charges</span>
-                <span id="delivery"></span>
-            </li>
-        </ul>
-        <div class="payment-total-wrapper">
-            <h3>Total</h3> <b id="totalprice"></b>
-        </div>
-        <div class="payment-confirmation-wrapper">
-            <button class="payment-button" id="rzp-button1">Pay Online</button>
-            <span>Or</span>
-            <button class="payment-button">Cash on Delivery</button>
-        </div>
+        <h2>
+      Thanks for Order
+      </h2>
+      <ul class="payment-list-wrapper">
+        <li class="payment-list-item">
+          <span>Subtotal </span>
+          <span id="subtotal"></span>
+        </li>
+        <li class="payment-list-item">
+          <span>Discount </span>
+          <span>- &#8377; 0</span>
+        </li>
+        <li class="payment-list-item">
+          <span>GST </span>
+          <span id="gst"></span>
+        </li>
+        <li class="payment-list-item">
+          <span>Delivery Charges</span>
+          <span id="delivery"></span>
+        </li>
+      </ul>
+      <div class="payment-total-wrapper">
+      <h3>Total</h3> <b id="totalprice"></b>
       </div>
-    </div>
-  </div>
+      <div class="payment-selection-wrapper" id="payment-select">
+        <button class="payment-button" id="payment-select-btn">Select Payment Method</button>
+      </div>
+      <div class="payment-confirmation-wrapper" id="payment-choice">
+      <button class="payment-button" id="rzp-button1">
+        Pay Online
+      </button>
+      <span>Or</span>
+       <button class="payment-button">
+        Cash on Delivery
+      </button>
+      <button type="button" class="btn btn-danger" id="payment-choice-close">Close</button>
+      </div>
+      </div>
 
   {{!-- Modal --}}
-  <div id="myModal" class="modal">
+  <div id="payModal" class="modal">
 		<!-- Modal content -->
 	</div>
 
+
+<!-- The Modal -->
+	<div id="cancelModal" class="modal">
+		<!-- Modal content -->
+		<div class="modal-content modal-content-error">
+                        <i class="fa fa-times btn-circular" id="close-icon"></i>
+                        <div class="modal-cont modal-cont-error">
+                        <div class="modal-icon">
+                        <i class="fa fa-money"></i>
+                        </div>
+                      <h3 class="modal-head" id="modal-text">Are you sure!!you want to cancel the order?</h3>
+                        <a href="#" class="modal-btn modal-btn-red mt-3" id="modal-ok">Ok</a>
+               </div> 
+          </div>
+	</div>
 
 
     <script src="https://cdn.jsdelivr.net/npm/axios@0.21.4/dist/axios.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.0/jquery-ui.min.js"></script>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script src="/js/modal.js"></script>
     <script src="/js/paymentModal.js"></script>
 
     <script>
-      let port = window.location.port ? ':'+window.location.port: '';
-      let baseUrl = `${window.location.protocol}//${window.location.hostname}${port}`;
-
-      let subtotal = 0
-      //console.log("subtotal : ",subtotal)
-
-      const queryString = window.location.search;
-      //console.log(queryString);
-      const urlParams = new URLSearchParams(queryString);
-      //console.log(urlParams);
-      const totalPrice = urlParams.get('totalPrice');
-      //console.log(totalPrice);
-      const orderId = urlParams.get('orderId');
-      const gst = urlParams.get('gst');
-      //const subtotal = urlParams.get('subtotal');
-      const deliveryCharges = urlParams.get('deliveryCharges'); 
-
-      axios.get(`${baseUrl}/api/v1/order/${orderId}`)
-      .then((order)=>{
-
-      })
-      .catch(err=>{
-        console.log(err)
+   
+      //to select payment methods
+      $("#payment-select").click(function(){
+        $('#payment-choice').css({
+          'display':'flex'
+        })
+        $('#payment-select').css({
+          'display':'none'
+        })
       })
 
-            let finalTotal = localStorage.getItem('updatedTotal')
-            console.log(finalTotal)
-            axios.post(`${baseUrl}/api/v1/payment/order?totalPrice=${finalTotal}`).then((data)=>{
+      $("#payment-choice-close").click(function(){
+        $('#payment-choice').css({
+          'display':'none'
+        })
+        $('#payment-select').css({
+          'display':'flex'
+        })
+      })
+
+      document.getElementById('payment-select').onclick = function(e){
+        var finalTotal = localStorage.getItem('updatedTotal')
+                  console.log(finalTotal)
+                  axios.post(`${baseUrl}/api/v1/payment/order?totalPrice=${finalTotal}`).then((data)=>{
                 console.log(data)
                 console.log(data.data.data.id)
                 var options = {
-                      "key": "rzp_test_sfVXbRhBv56ltm",
+                      "key": "rzp_test_uYURsxfax869Qb",
                       "amount": data.data.data.amount,
                       "currency": data.data.data.currency,
                       "name": "Acme Corp",
@@ -110,6 +146,7 @@
                               axios.post(`${baseUrl}/api/v1/isordercomplete?orderId=${orderId}`,response).then(res=>{
                                 // console.log(res.data.message);
                                 if(res.data.message==="success"){
+                                    localStorage.clear();
                                     openModal("success", "Thank you for your payment")
                                 }else{
                                     openModal("error", "Oh no, your payment failed")
@@ -145,7 +182,89 @@
                 e.preventDefault();
               }
             })
-            
+      }
+
+      let port = window.location.port ? ':'+window.location.port: '';
+      let baseUrl = `${window.location.protocol}//${window.location.hostname}${port}`;
+
+      let subtotal = 0
+      //console.log("subtotal : ",subtotal)
+
+      const queryString = window.location.search;
+      //console.log(queryString);
+      const urlParams = new URLSearchParams(queryString);
+      //console.log(urlParams);
+      const totalPrice = urlParams.get('totalPrice');
+      //console.log(totalPrice);
+      const orderId = urlParams.get('orderId');
+      const gst = urlParams.get('gst');
+      //const subtotal = urlParams.get('subtotal');
+      const deliveryCharges = urlParams.get('deliveryCharges'); 
+      const restaurantId = urlParams.get('restaurantId');    
+      const userId = urlParams.get('userId');  
+
+
+      //delivery address
+      $("#add-btn").click(function(){
+        $('#outer-address').css({
+          'display':'block'
+        })
+        $('#outer-enter-address').css({
+          'display':'none'
+        })
+      })
+
+      $("#edit-btn").click(function(){
+        $('#outer-address').css({
+          'display':'none'
+        })
+        $('#outer-enter-address').css({
+          'display':'block'
+        })
+      })
+
+      document.getElementById('add-btn').onclick = function(e){
+
+          let deliveryAddress = document.getElementById('enter-address').value;
+
+          let data = {
+            deliveryAddress : deliveryAddress
+          }
+
+          axios.post(
+                  `${baseUrl}/api/v1/updatedeliveryaddress/${userId}`,
+                   data,
+                ).then(res => {
+                  console.log(res)
+
+                  let updatedDeliveryAddress = res.data.user.deliveryAddress;
+
+                  $("#delivery-address").empty();
+
+                  let deliveryaddressstring = `${updatedDeliveryAddress}`
+                  $("#delivery-address").append(deliveryaddressstring)
+                })
+                .catch(err => {
+                  alert(err.response.data.error)
+                })
+      }
+
+           
+            //to cancle order
+            document.getElementById('cancel-order').onclick = function(e){
+             $("#cancelModal").addClass("active")
+           }
+
+            document.getElementById('modal-ok').onclick = function(e){
+              localStorage.clear();
+              let url = `${baseUrl}/api/v1/restaurantsdetails?restaurantId=${restaurantId}`;
+              window.location = url;
+              $("#cancelModal").removeClass("active")
+            }
+
+            document.getElementById('close-icon').onclick = function(e){
+              $("#cancelModal").removeClass("active")
+            }
 
             //update order api
             document.getElementById('confirm-order').onclick = function(e){
@@ -180,7 +299,7 @@
 
                   $("#totalprice").empty();
                   $("#gst").empty();
-                  $("#delivery").empty();
+                  $("#delivery").empty(); 
 
                   let totalpricestring = `&#8377; ${updatedtotal}`
                   $("#totalprice").append(totalpricestring)
@@ -194,7 +313,6 @@
                 })
               }
 
-            
               let totalpricestring = `&#8377; ${totalPrice}`
               $("#totalprice").append(totalpricestring)
               let gststring = `+ &#8377; ${gst}`
@@ -224,7 +342,7 @@
                 $("#cart-item").empty()
         
                 data.map(item =>{
-                  let templateString = `<div class="d-flex justify-content-between align-items-center mt-3 p-2 items rounded">
+                  let templateString = `<div class="d-flex justify-content-between align-items-center mt-1 p-2 items rounded">
                     <div class="d-flex flex-row">
                         <div class="ml-2"><span class="font-weight-bold d-block">${item.name}</span></div>
                     </div>

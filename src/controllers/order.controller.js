@@ -20,7 +20,7 @@ const placeOrder = async (req, res) => {
             restaurantId: req.query.restaurantId,
             transactionId: null,
             orderedAt: Date.now(),
-            isDelivered: false
+            isDelivered: false 
         }
         // console.log(orderBody)
         // Calculating total price
@@ -87,7 +87,7 @@ const updateOrder = async (req, res) => {
             if (updateOrder !== null) {
                 res.status(200).json({ message: "order updated successfully", order: updateOrder })
             } else {
-                res.status(200).json({ message: "order NOT updated successfully" })
+                res.status(500).json({ message: "order NOT updated successfully" })
             }
 
         }

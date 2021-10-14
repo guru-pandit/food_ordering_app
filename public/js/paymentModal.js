@@ -1,11 +1,11 @@
-let modal = document.getElementById("myModal");
+let modal = document.getElementById("payModal");
 let closeIcon;
 
 
 // Function to open modal
 function openModal(type, msg) {
     // modal.style.display = "block"
-    $("#myModal").addClass("active").empty()
+    $("#payModal").addClass("active").empty()
 
     let successTemplateString = `<div class="modal-content modal-content-success" id="modal-content">
                             <i class="fa fa-times btn-circular" id="close-icon"></i>
@@ -15,7 +15,7 @@ function openModal(type, msg) {
                                 </div>
                                 <h3 class="modal-head" id="modal-text">Payment Successful</h3>
                                 <p class="modal-text" id="modal-text">${msg}</p>
-                                <a href="#" class="modal-btn modal-btn-green">Order more</a>
+                                <a href="/" class="modal-btn modal-btn-green">Order more</a>
                                 </div> 
                         </div>`
 
@@ -31,14 +31,14 @@ function openModal(type, msg) {
                                     </div> 
                             </div>`
     if (type === "success") {
-        $("#myModal").append(successTemplateString)
+        $("#payModal").append(successTemplateString)
     } else {
-        $("#myModal").append(errorTemplateString)
+        $("#payModal").append(errorTemplateString)
     }
     closeIcon = document.getElementById("close-icon");
 
     closeIcon.onclick = function () {
-        $("#myModal").removeClass("active")
+        $("#payModal").removeClass("active")
     }
 
 }
@@ -48,7 +48,7 @@ window.onclick = function (event) {
     // console.log(event)
     // console.log(event.target)
     if (event.target == modal) {
-        $("#myModal").removeClass("active")
+        $("#payModal").removeClass("active")
     }
 }
 

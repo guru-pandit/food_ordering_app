@@ -31,5 +31,8 @@ module.exports = (app) => {
     app.get("/api/v1/googleAuth", userController.googleAuth);
     app.get("/api/v1/authenticate/google", userController.authenticateGoogle);
     app.get("/api/v1/logout", userController.logoutUser);
+
+    //to update delivery address
+    app.post("/api/v1/updatedeliveryaddress/:userId",userController.updateUserInfo)
 };
 
