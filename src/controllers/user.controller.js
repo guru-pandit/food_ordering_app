@@ -146,28 +146,9 @@ const loginUser = async (req, res) => {
 // Function to logout user
 const logoutUser = async (req, res) => {
     try {
-        let token = req.cookies["access-token"]
-        console.log(token)
-
-        // verify a token
-        jwt.verify(token, process.env.SECRET_KEY, function (err, decoded) {
-            if (err) throw err;
-            // console.log(decoded)
-            // check email in session array
-            // console.log(req.session.users)
-            if (req.session.users.length <= 0) {
-                return res.render("index")
-            } else {
-                sessionArray = req.session.users.filter((user) => {
-                    return user !== decoded.email
-                })
-                req.session.users = sessionArray
-                return res.render("index", {})
-            }
-
-            console.log(req.session.users)
-            // res.redirect("/api/v1/login")
-        });
+        req.session = null;
+        req.logout();
+        res.redirect("/");
     } catch (err) {
         // console.log(err);
         res.status(500).json({ error: err.message || "Something went wrong" });
@@ -471,102 +452,51 @@ const addImage = async (req, res) => {
     }
 }
 
-// function for Google login
-const googleAuth = async (req, res) => {
+// Google authentication
+const googleAuthCallback = async (req, res) => {
     try {
-        const stringifiedParams = queryString.stringify({
-            client_id: process.env.GOOGLE_CLIENT_ID,
-            redirect_uri: 'http://localhost:8080/api/v1/authenticate/google',
-            scope: [
-                'https://www.googleapis.com/auth/userinfo.email',
-                'https://www.googleapis.com/auth/userinfo.profile',
-            ].join(' '), // space seperated string
-            response_type: 'code',
-            access_type: 'offline',
-            prompt: 'consent',
-        });
-
-        const googleLoginUrl = `https://accounts.google.com/o/oauth2/v2/auth?${stringifiedParams}`;
-
-        return res.status(200).json({ googleLoginUrl })
+        res.status(200).json({ message: "Callback" })
     } catch (err) {
         res.status(500).json({ error: err.message || "Something went wrong" });
     }
 }
-
-// Google authentication
-const authenticateGoogle = async (req, res) => {
+// Google authentication success
+const googleAuthSuccess = async (req, res) => {
     try {
-        // console.log(req.query)
-        let { code } = req.query
-        // console.log(code)
-
-        await axios({
-            url: `https://oauth2.googleapis.com/token`,
-            method: 'post',
-            data: {
-                client_id: process.env.GOOGLE_CLIENT_ID,
-                client_secret: process.env.GOOGLE_CLIENT_SECRET,
-                redirect_uri: 'http://localhost:8080/api/v1/authenticate/google',
-                grant_type: 'authorization_code',
-                code,
-            },
-        }).then(({ data }) => {
-            // console.log({ data });
-            axios({
-                url: 'https://www.googleapis.com/oauth2/v2/userinfo',
-                method: 'get',
-                headers: {
-                    Authorization: `Bearer ${data.access_token}`,
-                },
-            }).then(({ data }) => {
-                console.log(data)
-
-                // Checking user exist or not
-                User.findOne({ where: { email: data.email } }).then((user) => {
-                    console.log(user);
-                    if (user !== null) {
-                        // if user exist update only google id 
-                        if (user.googleId === null) {
-                            user.googleId = data.id;
-                            user.isVerified = true;
-                            user.save()
-                            return res.status(200).json({ user })
-                        } else {
-                            return res.status(200).json({ user })
-                        }
-                    } else {
-                        // if not exist then create new user
-                        let body = { email: data.email, googleId: data.id, isVerified: true }
-                        User.create(body).then((newUser) => {
-                            return res.status(200).json({ message: "User created successfully" })
-                        })
-                    }
-                })
-            })
-        })
+        console.log(req.user)
+        res.status(200).json({ message: "Success" })
+    } catch (err) {
+        res.status(500).json({ error: err.message || "Something went wrong" });
+    }
+}
+// Google authentication failure
+const googleAuthFailure = async (req, res) => {
+    try {
+        res.status(200).json({ message: "failed" })
     } catch (err) {
         res.status(500).json({ error: err.message || "Something went wrong" });
     }
 }
 
 //to update delivery address
-const updateUserInfo = async(req,res)=>{
-try{
-    let {userId} = req.params;
-    let {deliveryAddress} = req.body;
-    let user = await User.findOne({id : userId})
-    if(user!==null){
-        user.deliveryAddress = deliveryAddress;
-        let updatedUser = await user.save();
-        if(updatedUser!==null){
-            res.status(200).json({ message: "user updated successfully", user: updatedUser })
-        }else{
-            res.status(500).json({ message: "order NOT updated successfully" })
+const updateUserInfo = async (req, res) => {
+    try {
+        let { userId } = req.params;
+        let { deliveryAddress } = req.body;
+        let user = await User.findOne({ id: userId })
+        if (user !== null) {
+            user.deliveryAddress = deliveryAddress;
+            let updatedUser = await user.save();
+            if (updatedUser !== null) {
+                res.status(200).json({ message: "user updated successfully", user: updatedUser })
+            } else {
+                res.status(500).json({ message: "order NOT updated successfully" })
+            }
         }
-    }    
-}catch(err){
-    res.status(500).json({ error: err.message || "Something went wrong" });
+    } catch (err) {
+        res.status(500).json({ error: err.message || "Something went wrong" });
+    }
 }
-}
-module.exports = { createUser, verifyUser, loginUser, logoutUser, googleAuth, authenticateGoogle, dashboard, getUsersById, deleteUser, UpdateUser, getUsersByAddress, userPartialUpdate, getLoginPage, getRegisterPage, forgetPassword, resetPassword, verifyUserToken, addImage,updateUserInfo }
+
+
+module.exports = { createUser, verifyUser, loginUser, logoutUser, googleAuthCallback, googleAuthSuccess, googleAuthFailure, dashboard, getUsersById, deleteUser, UpdateUser, getUsersByAddress, userPartialUpdate, getLoginPage, getRegisterPage, forgetPassword, resetPassword, verifyUserToken, addImage, updateUserInfo }

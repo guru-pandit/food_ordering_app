@@ -5,7 +5,10 @@ const path = require("path");
 const cors = require("cors");
 const db = require("./src/models");
 const cookieParser = require("cookie-parser");
-const session = require('express-session')
+// const session = require('express-session')
+const passport = require("passport")
+const cookieSession = require("cookie-session")
+require("./src/services/passport")
 require('dotenv').config();
 global.__basedir = __dirname;
 
@@ -18,7 +21,15 @@ let corsOptions = {
 app.use(cors(corsOptions));
 app.use(cookieParser());
 app.use(express.json());
-app.use(session({ secret: process.env.SESSION_SECRET, resave: false, saveUninitialized: false }))
+// app.use(session({ secret: process.env.SESSION_SECRET, resave: false, saveUninitialized: false }))
+
+// Passport
+app.use(cookieSession({
+    name: "google-auth-session",
+    keys: ["key1", "key2"]
+}))
+app.use(passport.initialize())
+app.use(passport.session())
 
 //setting view engine
 app.set("views", "views");
