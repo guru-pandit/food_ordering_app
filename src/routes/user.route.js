@@ -15,10 +15,11 @@ module.exports = (app) => {
     app.get("/api/v1/login", userController.getLoginPage)
     app.get("/api/v1/logout", userController.logoutUser);
 
-    // Google auth with passport
+    // Local auth with passport
     app.post("/api/v1/local", [body("email").trim().isEmail().withMessage({ message: "Not an email", }), body("password").trim().matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[#$@!%&*?])[A-Za-z\d#$@!%&*?]{8,20}$/).withMessage("Password must be contain one capital letter,one special charecter ,Number and Should be minimum 8 character long  ")], userController.loginUser);
-    app.post("/api/v1/local", [body("email").trim().isEmail().withMessage({ message: "Not an email", }), body("password").trim().matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[#$@!%&*?])[A-Za-z\d#$@!%&*?]{8,20}$/).withMessage("Password must be contain one capital letter,one special charecter ,Number and Should be minimum 8 character long  ")], userController.loginUser);
-    app.post("/api/v1/local", [body("email").trim().isEmail().withMessage({ message: "Not an email", }), body("password").trim().matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[#$@!%&*?])[A-Za-z\d#$@!%&*?]{8,20}$/).withMessage("Password must be contain one capital letter,one special charecter ,Number and Should be minimum 8 character long  ")], userController.loginUser);
+    app.post("/api/v1/local/login", passport.authenticate('local', { failureRedirect: "/api/v1/local/failure", successRedirect: "api/v1/local/succes" }));
+    app.get("/api/v1/local/success", userController.localAuthSuccess);
+    app.get("/api/v1/local/failure", userController.localAuthFailure);
 
     // Google auth with passport
     app.get("/api/v1/google/login", passport.authenticate('google', { scope: ['email', 'profile'] }));

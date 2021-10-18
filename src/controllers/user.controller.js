@@ -166,7 +166,7 @@ const logoutUser = async (req, res) => {
 //     });
 // });
 
-// 
+//
 
 // sessionArray = sessionArray.filter((userEmail) => {
 //     return email !== userEmail
@@ -187,6 +187,7 @@ const logoutUser = async (req, res) => {
 //     res.clearCookie("access-token");
 
 // }
+
 
 // app dashboard
 const dashboard = async (req, res) => {
@@ -453,6 +454,16 @@ const addImage = async (req, res) => {
     }
 }
 
+// Local authentication success
+const localAuthSuccess = async (req, res) => {
+    return res.status(400).json({ Message: "Authentication success" })
+}
+
+// Local authentication failure
+const localAuthFailure = (req, res) => {
+    return res.status(400).json({ error: "Authentication failed" })
+}
+
 // Google authentication success
 const googleAuthSuccess = async (req, res) => {
     try {
@@ -551,4 +562,4 @@ const updateUserInfo = async (req, res) => {
 }
 
 
-module.exports = { createUser, verifyUser, loginUser, logoutUser, googleAuthSuccess, googleAuthFailure, facebookAuthSuccess, facebookAuthFailure, dashboard, getUsersById, deleteUser, UpdateUser, getUsersByAddress, userPartialUpdate, getLoginPage, getRegisterPage, forgetPassword, resetPassword, verifyUserToken, addImage, updateUserInfo }
+module.exports = { createUser, verifyUser, loginUser, logoutUser, localAuthSuccess, localAuthFailure, googleAuthSuccess, googleAuthFailure, facebookAuthSuccess, facebookAuthFailure, dashboard, getUsersById, deleteUser, UpdateUser, getUsersByAddress, userPartialUpdate, getLoginPage, getRegisterPage, forgetPassword, resetPassword, verifyUserToken, addImage, updateUserInfo }
