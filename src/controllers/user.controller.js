@@ -146,7 +146,7 @@ const loginUser = async (req, res) => {
 // Function to logout user
 const logoutUser = async (req, res) => {
     try {
-        req.session = null;
+        // req.session = null;
         req.logout();
         res.redirect("/");
     } catch (err) {
@@ -231,6 +231,7 @@ const getUsersById = async (req, res) => {
         res.status(500).json({ error: err.message || "Something went wrong" });
     }
 };
+
 //user delete here
 const deleteUser = async (req, res) => {
     try {
@@ -452,30 +453,81 @@ const addImage = async (req, res) => {
     }
 }
 
-// Google authentication
-const googleAuthCallback = async (req, res) => {
-    try {
-        res.status(200).json({ message: "Callback" })
-    } catch (err) {
-        res.status(500).json({ error: err.message || "Something went wrong" });
-    }
-}
 // Google authentication success
 const googleAuthSuccess = async (req, res) => {
     try {
-        console.log(req.user)
-        res.status(200).json({ message: "Success" })
+        // console.log(req.user)
+        let user = await User.findOne({ where: { email: req.user.email } })
+        // console.log(user);
+
+        // if no user found then create new user otherwise update google id
+        if (user === null) {
+            let body = {
+                firstName: req.user.given_name,
+                lastName: req.user.family_name,
+                email: req.user.email,
+                isVerified: true,
+                googleId: req.user.id
+            }
+            await User.create(body).then((newUser) => {
+                // console.log(newUser);
+                res.status(200).redirect("/")
+                // res.status(200).json({ message: "You have successfully registered" })
+            })
+        } else {
+            user.googleId = req.user.id;
+            user.isVerified = true
+            await user.save()
+            res.status(200).redirect("/")
+            // res.status(200).json({ message: "You have successfully registered" })
+        }
     } catch (err) {
         res.status(500).json({ error: err.message || "Something went wrong" });
     }
 }
+
 // Google authentication failure
-const googleAuthFailure = async (req, res) => {
+const googleAuthFailure = (req, res) => {
+    return res.status(400).json({ error: "Authentication failed" })
+}
+
+// Facebook authentication success
+const facebookAuthSuccess = async (req, res) => {
     try {
-        res.status(200).json({ message: "failed" })
+        console.log(req.user)
+        let user = await User.findOne({ where: { email: req.user.email } })
+        // console.log(user);
+
+        // if no user found then create new user otherwise update facebook id
+        if (user === null) {
+            let body = {
+                firstName: req.user.first_name,
+                lastName: req.user.last_name,
+                email: req.user.email,
+                isVerified: true,
+                facebookId: req.user.id
+            }
+            await User.create(body).then((newUser) => {
+                // console.log(newUser);
+                res.status(200).redirect("/")
+                // res.status(200).json({ message: "You have successfully registered" })
+            })
+        } else {
+            user.facebookId = req.user.id;
+            user.isVerified = true
+            await user.save()
+            res.status(200).redirect("/")
+            // res.status(200).json({ message: "You have successfully registered" })
+        }
+        res.status(200).json({ message: "Authentication successfull" })
     } catch (err) {
         res.status(500).json({ error: err.message || "Something went wrong" });
     }
+}
+
+// Facebook authentication failure
+const facebookAuthFailure = (req, res) => {
+    return res.status(400).json({ error: "Authentication failed" })
 }
 
 //to update delivery address
@@ -499,4 +551,4 @@ const updateUserInfo = async (req, res) => {
 }
 
 
-module.exports = { createUser, verifyUser, loginUser, logoutUser, googleAuthCallback, googleAuthSuccess, googleAuthFailure, dashboard, getUsersById, deleteUser, UpdateUser, getUsersByAddress, userPartialUpdate, getLoginPage, getRegisterPage, forgetPassword, resetPassword, verifyUserToken, addImage, updateUserInfo }
+module.exports = { createUser, verifyUser, loginUser, logoutUser, googleAuthSuccess, googleAuthFailure, facebookAuthSuccess, facebookAuthFailure, dashboard, getUsersById, deleteUser, UpdateUser, getUsersByAddress, userPartialUpdate, getLoginPage, getRegisterPage, forgetPassword, resetPassword, verifyUserToken, addImage, updateUserInfo }

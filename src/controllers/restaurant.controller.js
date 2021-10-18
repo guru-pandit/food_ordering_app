@@ -10,6 +10,7 @@ const userRoute = require("../routes/user.route");
 const home = async (req, res) => {
     try {
         if (req.user) {
+            // console.log(req.user.email);
             await User.findOne({ where: { email: req.user.email } }).then((user) => {
                 // user.image = `${req.protocol}://${req.headers.host}/images/users/${user.id}/${user.image}`
                 user.image = `/images/users/${user.id}/${user.image}`
