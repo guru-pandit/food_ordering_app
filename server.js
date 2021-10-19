@@ -27,7 +27,8 @@ app.use(passport.initialize())
 app.use(passport.session())
 
 //setting view engine
-app.set("views", "views");
+const viewsDirectory = path.join(__dirname, "./src/views");
+app.set("views", viewsDirectory);
 app.set("view engine", 'hbs');
 
 //setting public directory
