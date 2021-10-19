@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link rel="stylesheet" href="/css/style.css" />
     <link rel="stylesheet" href="/css/home.css" />
-    <title>Food</title>
+    <title>GoFood</title>
   </head>
   <body>
     <div class="restaurants">
@@ -57,8 +57,8 @@
                               <a class="user-menu-link" href="#">Orders</a>
                         </li>
                         <div class="footer">
-                          <li class="user-menu__item">
-                              <a class="btn-link-red" href="/api/v1/logout">Logout</a>
+                          <li class="user-menu__item" >
+                              <a class="btn-link-red" href="/api/v1/logout" id="logout">Logout</a>
                           </li>
                         </div>
                       </ul>
@@ -352,6 +352,12 @@
 
         })
       }
+
+      //Logout 
+      //$("#logout").click(function(){
+        //  let url = `${baseUrl}/api/v1/logout`
+          //axios.get(url)
+     // });
 
 
       // Rediredirect to detail page

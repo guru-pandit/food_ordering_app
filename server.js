@@ -6,6 +6,8 @@ const cors = require("cors");
 const db = require("./src/models");
 const cookieParser = require("cookie-parser");
 const session = require('express-session')
+const passport = require("passport")
+require("./src/services/passport.service")
 require('dotenv').config();
 global.__basedir = __dirname;
 
@@ -20,8 +22,13 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(session({ secret: process.env.SESSION_SECRET, resave: false, saveUninitialized: false }))
 
+// Passport
+app.use(passport.initialize())
+app.use(passport.session())
+
 //setting view engine
-app.set("views", "views");
+const viewsDirectory = path.join(__dirname, "./src/views");
+app.set("views", viewsDirectory);
 app.set("view engine", 'hbs');
 
 //setting public directory

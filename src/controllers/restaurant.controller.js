@@ -3,34 +3,22 @@ const db = require("../models");
 const Op = db.Sequelize.Op;
 const jwt = require('jsonwebtoken');
 const fs = require("fs")
-const path = require("path")
+const path = require("path");
+const userRoute = require("../routes/user.route");
 
-// function to render homepage
+// This function renders the homepage as per the login status of the user
 const home = async (req, res) => {
     try {
-        let token = req.cookies["access-token"]
-        // console.log(token)
-
-        // verify a token
-        if (token === undefined) {
-            res.status(200).render("index", { isLoggedIn: false })
+        if (req.user) {
+            // console.log(req.user.email);
+            await User.findOne({ where: { email: req.user.email } }).then((user) => {
+                // user.image = `${req.protocol}://${req.headers.host}/images/users/${user.id}/${user.image}`
+                user.image = `/images/users/${user.id}/${user.image}`
+                // console.log(user);
+                res.status(200).render("index", { isLoggedIn: true, user })
+            })
         } else {
-            jwt.verify(token, process.env.SECRET_KEY, function (err, decoded) {
-                if (err) throw err;
-                // console.log(decoded)
-                // check email in session array
-                // console.log(req.session.users)
-                let checkEmail = req.session.users !== "undefined" ? req.session.users?.includes(decoded.email) : false
-                if (checkEmail) {
-                    User.findOne({ where: { email: decoded.email } }).then((user) => {
-                        user.image = `/images/users/${user.id}/${user.image}`
-                        // user.image = `${req.protocol}://${req.headers.host}/images/users/${user.id}/${user.image}`
-                        res.status(200).render("index", { isLoggedIn: true, user })
-                    })
-                } else {
-                    res.status(200).render("index", { isLoggedIn: false })
-                }
-            });
+            res.status(200).render("index", { isLoggedIn: false })
         }
     } catch (err) {
         res.status(500).json({ error: err.message || "Something went wrong" });

@@ -5,12 +5,9 @@ const { validationResult } = require("express-validator");//for validations
 const crypto = require("crypto");//convert token into hexabytes
 const { sendVerificationMail, passwordResetMail } = require("../services/mail.service");//import service file
 const jwt = require('jsonwebtoken');
-const user = require("../models/user");
 const fs = require("fs")
 const path = require("path")
 const Op = db.Sequelize.Op;
-const queryString = require('query-string');
-const axios = require("axios")
 
 // Function to render register page
 const getRegisterPage = async (req, res) => {
@@ -132,7 +129,7 @@ const loginUser = async (req, res) => {
                 sessionArray.push(data.email)
                 req.session.users = sessionArray
                 console.log(req.session.users)
-                res.cookie(`access-token`, token).json({ message: "Successfully logged in" });
+                res.cookie(`access-token`, token).json({ message: "Successfully logged in", user: data });
             } else {
                 return res.status(400).json({ error: "Login failed" });
             }
@@ -146,23 +143,9 @@ const loginUser = async (req, res) => {
 // Function to logout user
 const logoutUser = async (req, res) => {
     try {
-        let token = req.cookies["access-token"]
-        // console.log(token)
-
-        // verify a token
-        jwt.verify(token, process.env.SECRET_KEY, function (err, decoded) {
-            if (err) throw err;
-            // console.log(decoded)
-            // check email in session array
-            // console.log(req.session.users)
-            sessionArray = req.session.users.filter((user) => {
-                return user !== decoded.email
-            })
-
-            req.session.users = sessionArray
-            console.log(req.session.users)
-            res.redirect("/api/v1/login")
-        });
+        // req.session = null;
+        req.logout();
+        res.redirect("/");
     } catch (err) {
         // console.log(err);
         res.status(500).json({ error: err.message || "Something went wrong" });
@@ -180,7 +163,7 @@ const logoutUser = async (req, res) => {
 //     });
 // });
 
-// 
+//
 
 // sessionArray = sessionArray.filter((userEmail) => {
 //     return email !== userEmail
@@ -201,6 +184,7 @@ const logoutUser = async (req, res) => {
 //     res.clearCookie("access-token");
 
 // }
+
 
 // app dashboard
 const dashboard = async (req, res) => {
@@ -245,6 +229,7 @@ const getUsersById = async (req, res) => {
         res.status(500).json({ error: err.message || "Something went wrong" });
     }
 };
+
 //user delete here
 const deleteUser = async (req, res) => {
     try {
@@ -458,83 +443,93 @@ const addImage = async (req, res) => {
     }
 }
 
-// function for Google login
-const googleAuth = async (req, res) => {
+// Local authentication success
+const localAuthSuccess = async (req, res) => {
+    // console.log(req.user);
+    // res.status(200).redirect("/")
+    return res.status(200).json({ Message: "Authentication success" })
+}
+
+// Local authentication failure
+const localAuthFailure = (req, res) => {
+    // console.log(req.user);
+    return res.status(400).json({ error: "Authentication failed" })
+}
+
+// Google authentication success
+const googleAuthSuccess = async (req, res) => {
     try {
-        const stringifiedParams = queryString.stringify({
-            client_id: process.env.GOOGLE_CLIENT_ID,
-            redirect_uri: 'http://localhost:8080/api/v1/authenticate/google',
-            scope: [
-                'https://www.googleapis.com/auth/userinfo.email',
-                'https://www.googleapis.com/auth/userinfo.profile',
-            ].join(' '), // space seperated string
-            response_type: 'code',
-            access_type: 'offline',
-            prompt: 'consent',
-        });
+        // console.log(req.user)
+        let user = await User.findOne({ where: { email: req.user.email } })
+        // console.log(user);
 
-        const googleLoginUrl = `https://accounts.google.com/o/oauth2/v2/auth?${stringifiedParams}`;
-
-        return res.status(200).json({ googleLoginUrl })
+        // if no user found then create new user otherwise update google id
+        if (user === null) {
+            let body = {
+                firstName: req.user.given_name,
+                lastName: req.user.family_name,
+                email: req.user.email,
+                isVerified: true,
+                googleId: req.user.id
+            }
+            await User.create(body).then((newUser) => {
+                // console.log(newUser);
+                res.status(200).redirect("/")
+                // res.status(200).json({ message: "You have successfully registered" })
+            })
+        } else {
+            user.googleId = req.user.id;
+            user.isVerified = true
+            await user.save()
+            res.status(200).redirect("/")
+            // res.status(200).json({ message: "You have successfully registered" })
+        }
     } catch (err) {
         res.status(500).json({ error: err.message || "Something went wrong" });
     }
 }
 
-// Google authentication
-const authenticateGoogle = async (req, res) => {
+// Google authentication failure
+const googleAuthFailure = (req, res) => {
+    return res.status(400).json({ error: "Authentication failed" })
+}
+
+// Facebook authentication success
+const facebookAuthSuccess = async (req, res) => {
     try {
-        // console.log(req.query)
-        let { code } = req.query
-        // console.log(code)
+        // console.log(req.user)
+        let user = await User.findOne({ where: { email: req.user.email } })
+        // console.log(user);
 
-        await axios({
-            url: `https://oauth2.googleapis.com/token`,
-            method: 'post',
-            data: {
-                client_id: process.env.GOOGLE_CLIENT_ID,
-                client_secret: process.env.GOOGLE_CLIENT_SECRET,
-                redirect_uri: 'http://localhost:8080/api/v1/authenticate/google',
-                grant_type: 'authorization_code',
-                code,
-            },
-        }).then(({ data }) => {
-            // console.log({ data });
-            axios({
-                url: 'https://www.googleapis.com/oauth2/v2/userinfo',
-                method: 'get',
-                headers: {
-                    Authorization: `Bearer ${data.access_token}`,
-                },
-            }).then(({ data }) => {
-                console.log(data)
-
-                // Checking user exist or not
-                User.findOne({ where: { email: data.email } }).then((user) => {
-                    console.log(user);
-                    if (user !== null) {
-                        // if user exist update only google id 
-                        if (user.googleId === null) {
-                            user.googleId = data.id;
-                            user.isVerified = true;
-                            user.save()
-                            return res.status(200).json({ user })
-                        } else {
-                            return res.status(200).json({ user })
-                        }
-                    } else {
-                        // if not exist then create new user
-                        let body = { email: data.email, googleId: data.id, isVerified: true }
-                        User.create(body).then((newUser) => {
-                            return res.status(200).json({ message: "User created successfully" })
-                        })
-                    }
-                })
+        // if no user found then create new user otherwise update facebook id
+        if (user === null) {
+            let body = {
+                firstName: req.user.first_name,
+                lastName: req.user.last_name,
+                email: req.user.email,
+                isVerified: true,
+                facebookId: req.user.id
+            }
+            await User.create(body).then((newUser) => {
+                // console.log(newUser);
+                res.status(200).redirect("/")
+                // res.status(200).json({ message: "You have successfully registered" })
             })
-        })
+        } else {
+            user.facebookId = req.user.id;
+            user.isVerified = true
+            await user.save()
+            res.status(200).redirect("/")
+            // res.status(200).json({ message: "You have successfully registered" })
+        }
     } catch (err) {
         res.status(500).json({ error: err.message || "Something went wrong" });
     }
+}
+
+// Facebook authentication failure
+const facebookAuthFailure = (req, res) => {
+    return res.status(400).json({ error: "Authentication failed" })
 }
 
 //to update delivery address
@@ -551,9 +546,11 @@ try{
         }else{
             res.status(500).json({ message: "user NOT updated successfully" })
         }
-    }    
-}catch(err){
-    res.status(500).json({ error: err.message || "Something went wrong" });
+    }
+ } catch (err) {
+        res.status(500).json({ error: err.message || "Something went wrong" });
+    }
 }
-}
-module.exports = { createUser, verifyUser, loginUser, logoutUser, googleAuth, authenticateGoogle, dashboard, getUsersById, deleteUser, UpdateUser, getUsersByAddress, userPartialUpdate, getLoginPage, getRegisterPage, forgetPassword, resetPassword, verifyUserToken, addImage,updateUserInfo }
+
+
+module.exports = { createUser, verifyUser, loginUser, logoutUser, localAuthSuccess, localAuthFailure, googleAuthSuccess, googleAuthFailure, facebookAuthSuccess, facebookAuthFailure, dashboard, getUsersById, deleteUser, UpdateUser, getUsersByAddress, userPartialUpdate, getLoginPage, getRegisterPage, forgetPassword, resetPassword, verifyUserToken, addImage, updateUserInfo }
