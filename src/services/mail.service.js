@@ -18,7 +18,7 @@ const sendVerificationMail = (req, user, token) => {
         subject: "Please verify email",
         html: `<h2>${userFullName} Thanks for registering...</h2>
               <h4>please verify your email to proceed..</h4>
-              <a href="http://${req.headers.host}/api/v1/verifyUser?token=${token.token}">Verify here</a>`,
+              <a href="http://${req.headers.host}/api/v1/verifyUser?token=${token.token}&userId=${user.id}">Verify here</a>`,
     };
     transporter.sendMail(mailOptions)
 

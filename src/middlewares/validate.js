@@ -13,9 +13,6 @@ const checkConfirmPassword = async (req, res, next) => {
     if (!isPasswordMatched) {
         return res.status(400).json({ error: "Password and Confirm password are not match please try again" });
     }
-
-    let hashedPassword = await bcrypt.hashSync(password, 10);
-    req.body.password = hashedPassword;
     next();
 };
 

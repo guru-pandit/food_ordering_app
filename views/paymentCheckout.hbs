@@ -16,6 +16,7 @@
       <div class="payment-page">
   <div class="payment-page-content row">
       <div class="col-7" style="border-right: 1px solid lightgrey;">
+        <div id="go-back" style="margin-top: -15px; margin-bottom: 10px; color: #0C9463; font-size: 14px;font-weight:600;cursor:pointer"><< Previous Page</div>
          <div class="product-details mr-2">
                 <div id="outer-address" style="display:none;">
                   <h6>Delivery Address</h6>
@@ -231,6 +232,7 @@
             deliveryAddress : deliveryAddress
           }
 
+          //to update user model
           axios.post(
                   `${baseUrl}/api/v1/updatedeliveryaddress/${userId}`,
                    data,
@@ -247,7 +249,24 @@
                 .catch(err => {
                   alert(err.response.data.error)
                 })
+          
+          //to update order model
+          axios.post(
+                  `${baseUrl}/api/v1/updateaddress/${orderId}`,
+                   data,
+                ).then(res => {
+                  console.log(res)
+                })
+                .catch(err => {
+                  alert(err.response.data.error)
+                })
       }
+
+            //to navigate to previous page
+            document.getElementById('go-back').onclick = function(e){
+              let url = `${baseUrl}/api/v1/restaurantsdetails?restaurantId=${restaurantId}`;
+              window.location = url;
+            }
 
            
             //to cancle order

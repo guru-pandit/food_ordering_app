@@ -37,14 +37,14 @@
 					<i class="fa fa-envelope input-icon"></i>
 					<input type="email" placeholder="Email" id="email" name="email" class="input-inner" onkeyup="validate(event)" />
 				</div>
-				<div class="input-container">
+				{{!-- <div class="input-container">
 					<i class="fa fa-lock input-icon"></i>
 					<input type="password" placeholder="Password" id="password" name="password"  class="input-inner" onkeyup="validate(event)"/>
 				</div>
 				<div class="input-container">
 					<i class="fa fa-lock input-icon"></i>
 					<input type="password" placeholder="Confirm Password" id="cpassword" name="cpassword"  class="input-inner" onkeyup="validate(event)"/>
-				</div>
+				</div> --}}
 				<button type="submit" id="signup" class="btn btn-green btn-rounded" >Sign Up</input>
 			</form>
 		</div>
@@ -79,18 +79,18 @@
             let fname = $("#fname").val();
             let lname = $("#lname").val();
 			let email = $("#email").val();
-			let password = $("#password").val() 
-            let cpassword = $("#cpassword").val();
+			//let password = $("#password").val() 
+            //let cpassword = $("#cpassword").val();
 
 			let url = `${baseUrl}/api/v1/register`
 
-			if(fname && lname && email && password && cpassword){
+			if(fname && lname && email){
 				let body = {
 					firstName: fname,
 					lastName: lname,
 					email: email,
-					password: password,
-					confirmPassword:cpassword
+					//password: password,
+					//confirmPassword:cpassword
            		}
 				// console.log(body)
 				axios.post(url,body).then((res)=>{

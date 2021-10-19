@@ -20,4 +20,6 @@ module.exports = (app) => {
     // app.get("/api/v1/paymentsuccess", orderController.paymentSuccess);
     //failure
     // app.get("/api/v1/paymentfailure", orderController.paymentFailure);
+    //to update delivery address
+    app.post("/api/v1/updateaddress/:orderId", orderController.updateAddress) 
 }

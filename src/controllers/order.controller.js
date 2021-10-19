@@ -96,6 +96,26 @@ const updateOrder = async (req, res) => {
     }
 }
 
+//to update delivery address
+const updateAddress = async(req,res)=>{
+    try{
+        let {orderId} = req.params;
+        let {deliveryAddress} = req.body;
+
+        let order = await Order.findOne({ where : { orderId : orderId} })
+        
+        if(order!==null){
+            order.deliveryAddress = deliveryAddress;
+            order.save();
+        
+            res.status(200).json({ message: "order updated successfully"})
+        
+        }
+    }catch(err){
+        res.status(500).json({ error: err.message || "Something went wrong" });
+    }
+}
+
 // Function to get order details by order id
 const getOrderByOrderId = async (req, res) => {
     try {
@@ -253,5 +273,6 @@ module.exports = {
     checkSuccessOrFailure,
     paymentSuccess,
     paymentFailure,
-    updateOrder
+    updateOrder,
+    updateAddress
 }

@@ -38,7 +38,7 @@ const createUser = async (req, res) => {
             address: req.body.address,
             country: req.body.country,
             state: req.body.state,
-            city: req.body.city,
+            city: req.body.city,   
         };
         // create new user
         const data = await User.create(user);
@@ -58,7 +58,7 @@ const createUser = async (req, res) => {
                 expiredAt: new Date(currentDate.getTime() + 30 * 60000)
             }
 
-            sendVerificationMail(req, user, token);
+            sendVerificationMail(req, data, token);
 
             //create token here
             await Token.create(token)
@@ -94,7 +94,7 @@ const verifyUser = async (req, res) => {
         user.isVerified = true
         user.save()
         // console.log(user)
-        res.status(400).json({ message: "User successfully verified" })
+        res.render("setPassword");
     }
 }
 
@@ -395,22 +395,14 @@ const resetPassword = async (req, res) => {
     const data = await User.findOne({ where: { id: userId } });
     if (!data) {
         //if not data found then return user does not exist
-        return res.status(400).json({ error: "Invalid id..." });
+        return res.status(400).json({ error: "Invalid userId..." });
     } else {
-        let isPasswordMatched = password === confirmPassword;
-
-        if (!isPasswordMatched) {
-            return res.status(400).json({ error: "Password and Confirm password are not match please try again" });
-        } else {
             let hashedPassword = await bcrypt.hashSync(password, 10);
             data.password = hashedPassword
             data.save()
-        }
+
         res.status(200).json({ message: "password change " });
-
     }
-
-
 };
 
 // Function to add image
@@ -557,7 +549,7 @@ try{
         if(updatedUser!==null){
             res.status(200).json({ message: "user updated successfully", user: updatedUser })
         }else{
-            res.status(500).json({ message: "order NOT updated successfully" })
+            res.status(500).json({ message: "user NOT updated successfully" })
         }
     }    
 }catch(err){
