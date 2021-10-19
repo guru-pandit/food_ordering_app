@@ -5,12 +5,9 @@ const { validationResult } = require("express-validator");//for validations
 const crypto = require("crypto");//convert token into hexabytes
 const { sendVerificationMail, passwordResetMail } = require("../services/mail.service");//import service file
 const jwt = require('jsonwebtoken');
-const user = require("../models/user");
 const fs = require("fs")
 const path = require("path")
 const Op = db.Sequelize.Op;
-const queryString = require('query-string');
-const axios = require("axios")
 
 // Function to render register page
 const getRegisterPage = async (req, res) => {
@@ -456,11 +453,14 @@ const addImage = async (req, res) => {
 
 // Local authentication success
 const localAuthSuccess = async (req, res) => {
-    return res.status(400).json({ Message: "Authentication success" })
+    // console.log(req.user);
+    // res.status(200).redirect("/")
+    return res.status(200).json({ Message: "Authentication success" })
 }
 
 // Local authentication failure
 const localAuthFailure = (req, res) => {
+    // console.log(req.user);
     return res.status(400).json({ error: "Authentication failed" })
 }
 
@@ -505,7 +505,7 @@ const googleAuthFailure = (req, res) => {
 // Facebook authentication success
 const facebookAuthSuccess = async (req, res) => {
     try {
-        console.log(req.user)
+        // console.log(req.user)
         let user = await User.findOne({ where: { email: req.user.email } })
         // console.log(user);
 
@@ -530,7 +530,6 @@ const facebookAuthSuccess = async (req, res) => {
             res.status(200).redirect("/")
             // res.status(200).json({ message: "You have successfully registered" })
         }
-        res.status(200).json({ message: "Authentication successfull" })
     } catch (err) {
         res.status(500).json({ error: err.message || "Something went wrong" });
     }

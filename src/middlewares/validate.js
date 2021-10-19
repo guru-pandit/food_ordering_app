@@ -39,8 +39,6 @@ const checkDulicateEmail = async (req, res, next) => {
 const validate = {
     checkConfirmPassword,
     checkDulicateEmail,
-    // LogedIn
-
 };
 
 module.exports = validate;

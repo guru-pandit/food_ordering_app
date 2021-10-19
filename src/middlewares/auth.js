@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const isLoggedIn = async (req, res, next) => {
     try {
         if (req.user) {
+            console.log(req.user);
             next();
         } else {
             res.redirect("/api/v1/login");

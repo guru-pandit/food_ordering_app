@@ -16,20 +16,19 @@ module.exports = (app) => {
     app.get("/api/v1/logout", userController.logoutUser);
 
     // Local auth with passport
-    app.post("/api/v1/local", [body("email").trim().isEmail().withMessage({ message: "Not an email", }), body("password").trim().matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[#$@!%&*?])[A-Za-z\d#$@!%&*?]{8,20}$/).withMessage("Password must be contain one capital letter,one special charecter ,Number and Should be minimum 8 character long  ")], userController.loginUser);
-    app.post("/api/v1/local/login", passport.authenticate('local', { failureRedirect: "/api/v1/local/failure", successRedirect: "api/v1/local/succes" }));
+    app.post("/api/v1/local/login", passport.authenticate('local', { successRedirect: "/api/v1/local/success", failureRedirect: "/api/v1/local/failure" }));
     app.get("/api/v1/local/success", userController.localAuthSuccess);
     app.get("/api/v1/local/failure", userController.localAuthFailure);
 
     // Google auth with passport
     app.get("/api/v1/google/login", passport.authenticate('google', { scope: ['email', 'profile'] }));
-    app.get("/api/v1/google/callback", passport.authenticate('google', { failureRedirect: "/api/v1/google/failure", successRedirect: "/api/v1/google/success" }));
+    app.get("/api/v1/google/callback", passport.authenticate('google', { successRedirect: "/api/v1/google/success", failureRedirect: "/api/v1/google/failure" }));
     app.get("/api/v1/google/success", userController.googleAuthSuccess);
     app.get("/api/v1/google/failure", userController.googleAuthFailure);
 
     // facebook auth with passport
     app.get("/api/v1/facebook/login", passport.authenticate('facebook', { scope: ['email', 'public_profile'] }));
-    app.get("/api/v1/facebook/callback", passport.authenticate('facebook', { failureRedirect: "/api/v1/facebook/failure", successRedirect: "/api/v1/facebook/success" }));
+    app.get("/api/v1/facebook/callback", passport.authenticate('facebook', { successRedirect: "/api/v1/facebook/success", failureRedirect: "/api/v1/facebook/failure" }));
     app.get("/api/v1/facebook/success", userController.facebookAuthSuccess);
     app.get("/api/v1/facebook/failure", userController.facebookAuthFailure);
 

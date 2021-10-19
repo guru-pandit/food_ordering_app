@@ -3,12 +3,15 @@ const GoogleStrategy = require("passport-google-oauth2").Strategy;
 const FacebookStrategy = require("passport-facebook").Strategy;
 const LocalStrategy = require("passport-local").Strategy;
 const { User } = require("../models")
+const bcrypt = require("bcryptjs");
 
 passport.serializeUser(function (user, done) {
+    // console.log("Serializer: ", user)
     done(null, user);
 });
 
 passport.deserializeUser(function (user, done) {
+    // console.log("Deserializer: ", user)
     done(null, user);
 });
 
@@ -35,19 +38,30 @@ passport.use(new FacebookStrategy({
 }))
 
 // Local strategy
-passport.use(new LocalStrategy(
+passport.use(new LocalStrategy({ usernameField: "email", passwordField: "password" },
     function (email, password, done) {
-        // console.log(username, password);
-        User.findOne({ where: { email: email } }, function (err, user) {
-            if (err) { return done(err); }
-            if (!user) {
-                return done(null, false, { message: 'Incorrect username.' });
+        User.findOne({ where: { email } }).then(async (data) => {
+            // console.log(data);
+            if (!data) {
+                return done(null, false);
+            } else {
+                let isPassMatched = await bcrypt.compareSync(password, data.password);
+
+                if (!isPassMatched) {
+                    return done(null, false)
+                } else {
+                    let user = {
+                        id: data.id,
+                        firstName: data.firstName,
+                        lastName: data.lastName,
+                        email: data.email
+                    }
+                    // console.log(user);
+                    return done(null, user)
+                }
             }
-            if (!user.validPassword(password)) {
-                return done(null, false, { message: 'Incorrect password.' });
-            }
-            console.log(user);
-            return done(null, user);
-        });
+        }).catch((err) => {
+            return done(err)
+        })
     }
 ));

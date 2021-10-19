@@ -72,18 +72,16 @@
 
 			if(email && password){
 				let body = {email, password}
+				// console.log(body)
 				axios.post(url, body).then((res)=>{
-				//console.log(res.status)
-				//console.log(res.data)
-				//console.log(res.data.user)
-				let user = { id:res.data.user.id, email:res.data.user.email }
-				// localStorage.setItem("user", JSON.stringify(user))
-				// console.log(res.data.message)
-				window.location = `${baseUrl}/`
-			}).catch((err)=>{
-				// console.log(err.response.data)
-				openModal("error",err.response.data.error)
-			})
+					// console.log(res.data.user)
+					// let user = { id:res.data.user.id, email:res.data.user.email }
+					// localStorage.setItem("user", JSON.stringify(user))
+					window.location = `${baseUrl}/`
+				}).catch((err)=>{
+					// console.log(err.response.data)
+					openModal("error",err.response.data.error)
+				})
 			}else{
 				openModal("error","Please fill all the fields")
 			}
