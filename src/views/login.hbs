@@ -22,8 +22,13 @@
 					<a href="/api/v1/google/login" class="social-link" id="google-login"><i class="fa fa-google"></i></a>
 					<a href="#" class="social-link"><i class="fa fa-twitter"></i></a>
 				</div>
-				<span class="separator">or use your email</span>
-				<div class="input-container">
+				<div id="btn-outer">
+					<button type="button" id="btn-cwc" class="btn btn-green mt-3" style="width:245px;">Continue with Credentials</button>
+					<button type="button" id="btn-cwm" class="btn btn-green mt-3" style="width:245px;">Continue with Mobile</button>
+				</div>
+				<div id="credentials-div" style="display: none;">
+					<span class="separator">use your email</span>
+				<div class="input-container mt-2">
 					<i class="fa fa-envelope input-icon"></i>
 					<input type="email" placeholder="Email" id="email" name="email"  class="input-inner" onkeyup="validate(event)" />
 				</div>
@@ -31,8 +36,21 @@
 					<i class="fa fa-lock input-icon"></i>
 					<input type="password" placeholder="Password" id="password" name="password" class="input-inner" onkeyup="validate(event)"  />
 				</div>
-				<a href="#" id="forget-password" class="forget-password"> Forgot your password?</a>
-				<button type="submit" id="login" class="btn btn-green btn-rounded" >Sign In</input>
+				<a href="#" id="forget-password" class="forget-password" style="display:block;"> Forgot your password?</a>
+				<button type="submit" id="login" class="btn btn-green btn-rounded" >Sign In</button>
+				<div id="go-back-btn" style="margin-top:10px;color:#dc3545;cursor:pointer"><< Go back </div>
+				</div>
+				<div id="mobile-div" style="display: none; margin-top:10px;">
+					<input name="phone_number[main]" type="text" class="form-control mb-2 inptFielsd" id="phone"
+					placeholder="Phone Number" />
+					<button type="button" id="mobile-continue" class="btn btn-green mt-3">Continue</button>
+					<div id="go-back-mobile" style="margin-top:10px;color:#dc3545;cursor:pointer"><< Go back </div>
+				</div>
+				<div id="otp-div" style="display: none; margin-top:10px;">
+					<input type="text" class="form-control" id="otp-input"
+					placeholder="6 digit verification code" style="text-align: center;" />
+					<button id="verify-otp" class="btn btn-green mt-3">Verify</button>
+				</div>
 			</form>
 		</div>
 
@@ -53,7 +71,15 @@
 		<!-- Modal content -->
 	</div>
 
-
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"
+        integrity="sha512-DNeDhsl+FWnx5B1EQzsayHMyP6Xl/Mg+vcnFPXGNjUZrW28hQaa1+A4qL9M+AiOMmkAhKAWYHh1a+t6qxthzUw=="
+        crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.min.css"
+        integrity="sha512-yye/u0ehQsrVrfSd6biT17t39Rg9kNc+vENcCXZuMz2a+LWFGvXUnYuWUW6pbfYj1jcBb/C39UZw2ciQvwDDvg=="
+        crossorigin="anonymous" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js"
+        integrity="sha512-BNZ1x39RMH+UYylOW419beaGO0wqdSkO7pi1rYDYco9OL3uvXaC/GTqA5O4CVK2j4K9ZkoDNSSHVkEQKkgwdiw=="
+        crossorigin="anonymous"></script>
 	<script src="https://cdn.jsdelivr.net/npm/axios@0.21.4/dist/axios.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="/js/validate.js"></script>
@@ -61,6 +87,119 @@
 
 	<script>
 		let baseUrl = `${window.location.protocol}//${window.location.hostname}:${window.location.port}`;
+
+			var phone_number = window.intlTelInput(document.querySelector("#phone"), {
+			separateDialCode: true,
+			preferredCountries:["in"],
+			hiddenInput: "full",
+			utilsScript: "//cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.3/js/utils.js"
+			});
+
+			function insertUrlParam(key, value) {
+						if (history.pushState) {
+							let searchParams = new URLSearchParams(window.location.search);
+							searchParams.set(key, value);
+							let newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?' + searchParams.toString();
+							window.history.pushState({path: newurl}, '', newurl);
+						}
+					}
+
+			document.getElementById('mobile-continue').onclick = function(e){
+				e.preventDefault()
+				var full_number = phone_number.getNumber(intlTelInputUtils.numberFormat.E164);
+				$("input[name='phone_number[full]'").val(full_number);
+				console.log(full_number)
+					let data = {
+					phoneNumber:parseInt(full_number),
+					channel:'sms'
+				    }
+					console.log(data)
+					axios.post(`${baseUrl}/api/v1/loginwithotp`, data).then((res)=>{
+						insertUrlParam('phoneNumber',parseInt(full_number))
+						openModal("success",`OTP has been sent to ${full_number}`);
+				}).catch((err)=>{
+					// console.log(err.response.data)
+					openModal("error",err.response.data.error)
+				})
+			}
+
+			document.getElementById('verify-otp').onclick = function(e){
+				e.preventDefault()
+
+				const queryString = window.location.search;
+				//console.log(queryString);
+				const urlParams = new URLSearchParams(queryString);
+				//console.log(urlParams);
+				const phoneNumber = urlParams.get('phoneNumber');
+				//console.log(phoneNumber);
+
+				let code = $('#otp-input').val()
+
+				let data = {
+					phoneNumber:phoneNumber,
+					code:code
+				    }
+				console.log(data)
+				axios.post(`${baseUrl}/api/v1/verifymobileotp`, data).then((res)=>{
+						//console.log(res)
+						if(res.data.status == "approved"){
+							openModal("success",`successfully logged in`);
+							window.location = `${baseUrl}/`
+						}else{
+							openModal("error","please enter valid OTP")
+						}
+				}).catch((err)=>{
+					// console.log(err.response.data)
+					openModal("error",err.response.data.error)
+				})
+			}
+
+		 //to select login methods
+      $("#btn-cwc").click(function(){
+        $('#credentials-div').css({
+          'display':'block'
+        })
+        $('#btn-outer').css({
+          'display':'none'
+        })
+      })
+
+      $("#btn-cwm").click(function(){
+        $('#mobile-div').css({
+          'display':'block'
+        })
+        $('#btn-outer').css({
+          'display':'none'
+        })
+      })
+
+      $("#go-back-btn").click(function(){
+        $('#credentials-div').css({
+          'display':'none'
+        })
+		$('#mobile-div').css({
+          'display':'none'
+        })
+        $('#btn-outer').css({
+          'display':'block'
+        })
+      })
+      $("#go-back-mobile").click(function(){
+		$('#mobile-div').css({
+          'display':'none'
+        })
+        $('#btn-outer').css({
+          'display':'block'
+        })
+      })
+      $("#mobile-continue").click(function(){
+		$('#mobile-div').css({
+          'display':'none'
+        })
+        $('#otp-div').css({
+          'display':'block'
+        })
+      })
 
 		$("#signin-form").submit(function(e){
 			e.preventDefault()
@@ -109,6 +248,7 @@
 			  openModal("error",err.response.data.error);
             })
         }
+
 
 		// Window load event listener
 		window.addEventListener("load",()=>{

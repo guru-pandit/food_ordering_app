@@ -50,5 +50,9 @@ module.exports = (app) => {
 
     //to update delivery address
     app.post("/api/v1/updatedeliveryaddress/:userId", userController.updateUserInfo)
+
+    //to login with mobile and otp
+    app.post("/api/v1/loginwithotp",userController.loginWithOtp)
+    app.post("/api/v1/verifymobileotp",userController.verifyMobileOtp)
 };
 

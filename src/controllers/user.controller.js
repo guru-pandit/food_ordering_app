@@ -4,6 +4,7 @@ const bcrypt = require("bcryptjs"); //bcrypt password
 const { validationResult } = require("express-validator");//for validations
 const crypto = require("crypto");//convert token into hexabytes
 const { sendVerificationMail, passwordResetMail } = require("../services/mail.service");//import service file
+const config = require('../config/otpConfig');
 const jwt = require('jsonwebtoken');
 const fs = require("fs")
 const path = require("path")
@@ -552,5 +553,47 @@ try{
     }
 }
 
+//to login with mobile and otp
 
-module.exports = { createUser, verifyUser, loginUser, logoutUser, localAuthSuccess, localAuthFailure, googleAuthSuccess, googleAuthFailure, facebookAuthSuccess, facebookAuthFailure, dashboard, getUsersById, deleteUser, UpdateUser, getUsersByAddress, userPartialUpdate, getLoginPage, getRegisterPage, forgetPassword, resetPassword, verifyUserToken, addImage, updateUserInfo }
+const client = require("twilio")(config.accountSID,config.authToken)
+
+const loginWithOtp = async(req,res)=>{
+    try{
+        const {phoneNumber,channel} = req.body;
+        client
+            .verify
+            .services(config.serviceId)
+            .verifications
+            .create({
+                to:`+${phoneNumber}`,
+                channel:channel
+            })
+            .then((data)=>{
+                res.status(200).send(data);
+            })
+    }catch(err){ 
+        res.status(500).json({ error: err.message || "Something went wrong" });
+    }
+}
+
+const verifyMobileOtp = async(req,res)=>{
+    try{
+        const {phoneNumber,code} = req.body;
+    client
+        .verify
+        .services(config.serviceId)
+        .verificationChecks
+        .create({
+            to:`+${phoneNumber}`,
+            code:code
+        })
+        .then((data)=>{
+            res.status(200).send(data);
+        })
+    }catch(err){
+        res.status(500).json({ error: err.message || "Something went wrong" });
+    }
+}
+
+
+module.exports = { createUser, verifyUser, loginUser, logoutUser, localAuthSuccess, localAuthFailure, googleAuthSuccess, googleAuthFailure, facebookAuthSuccess, facebookAuthFailure, dashboard, getUsersById, deleteUser, UpdateUser, getUsersByAddress, userPartialUpdate, getLoginPage, getRegisterPage, forgetPassword, resetPassword, verifyUserToken, addImage, updateUserInfo,loginWithOtp,verifyMobileOtp }
