@@ -261,7 +261,141 @@
 </div>
 
 {{!-- checkout Modal --}}
+<div class="payment-page">
+  <div class="payment-page-content">
+    <span href="#" class="go-to-rest" id="go-to-rest"><i class="fa fa-arrow-left"></i> Back to Restaurant</span>
+    <div class="row payment-content">
+      <div class="col-7 p-0 payment-address">
+        <h2 class="payment-heading">Checkout</h2>
+        <div class="delivery-address">
+          <h3 class="delivery-address-heading" >Delivery address</h3>
+          <textarea name="" id="" class="address-text"></textarea>
+          <div class="add-new-address"><i class="fa fa-plus"></i>  Add new address</div>
+        </div>
+        <div class="payment-methods">
+          <h3 class="payment-method-heading">Select payment method:</h3>
+          <div class="payment-method-radio">
+              <div class="radio-item">
+                  <input type="radio" id="pay_online" name="payment_mode" value="online">
+                  <label for="pay_online">Pay online</label>
+              </div>
 
+              <div class="radio-item">
+                  <input type="radio" id="cash_on_delivery" name="payment_mode" value="cod">
+                  <label for="cash_on_delivery">Cash on delivery</label>
+              </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-5 p-0 order-summary">
+        <h3 class="order-summary-heading" >Summary</h3>
+        <div class="order-from">
+          <p class="order-from-heading">Order from</p>
+          <p class="order-from-rest">Royal baithak</p>
+        </div>
+        <div class="order-items">
+          <div class="order-item">
+            <div class="order-item-name">
+                <p class="name">Masala dosa</p>
+                <p class="price">&#8377; 59</p>
+            </div>
+            <div class="order-btn">
+              <div class="quantity">
+                  <div>
+                      <i class="fa fa-minus"  onClick="cartLS.quantity(${item.id},-1)"></i>
+                  </div>
+                  <div>2</div>
+                  <div>
+                      <i class="fa fa-plus" onClick="cartLS.quantity(${item.id},1)"></i>
+                  </div>
+              </div>
+            </div>
+          </div>
+          <div class="order-item">
+            <div class="order-item-name">
+                <p class="name">Masala dosa</p>
+                <p class="price">&#8377; 59</p>
+            </div>
+            <div class="order-btn">
+              <div class="quantity">
+                  <div>
+                      <i class="fa fa-minus"  onClick="cartLS.quantity(${item.id},-1)"></i>
+                  </div>
+                  <div>2</div>
+                  <div>
+                      <i class="fa fa-plus" onClick="cartLS.quantity(${item.id},1)"></i>
+                  </div>
+              </div>
+            </div>
+          </div>
+          <div class="order-item">
+            <div class="order-item-name">
+                <p class="name">Masala dosa</p>
+                <p class="price">&#8377; 59</p>
+            </div>
+            <div class="order-btn">
+              <div class="quantity">
+                  <div>
+                      <i class="fa fa-minus"  onClick="cartLS.quantity(${item.id},-1)"></i>
+                  </div>
+                  <div>2</div>
+                  <div>
+                      <i class="fa fa-plus" onClick="cartLS.quantity(${item.id},1)"></i>
+                  </div>
+              </div>
+            </div>
+          </div>
+          <div class="order-item">
+            <div class="order-item-name">
+                <p class="name">Masala dosa</p>
+                <p class="price">&#8377; 59</p>
+            </div>
+            <div class="order-btn">
+              <div class="quantity">
+                  <div>
+                      <i class="fa fa-minus"  onClick="cartLS.quantity(${item.id},-1)"></i>
+                  </div>
+                  <div>2</div>
+                  <div>
+                      <i class="fa fa-plus" onClick="cartLS.quantity(${item.id},1)"></i>
+                  </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="payment-details">
+            <ul class="payment-list-wrapper">
+                <li class="payment-list-item">
+                    <span>Subtotal </span>
+                    <span id="subtotal">59</span>
+                </li>
+                <li class="payment-list-item">
+                    <span>Discount </span>
+                    <span>- &#8377; 50</span>
+                </li>
+                <li class="payment-list-item">
+                    <span>GST </span>
+                    <span id="gst">5</span>
+                </li>
+                <li class="payment-list-item">
+                    <span>Delivery Charges</span>
+                    <span id="delivery">5</span>
+                </li>
+            </ul>
+            <div class="payment-total-wrapper">
+                <h3>Grand Total</h3> <span id="totalprice">500</span>
+            </div>
+        </div>
+        <div class="order-for">
+          <p class="order-for-heading">Ordering for</p>
+          <p class="order-for-rest">Guru Pandit, 7776088638</p>
+        </div>
+
+       <button class="place-order btn btn-green">Place order</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
@@ -374,7 +508,7 @@ $("#cart-toggle-btn").click((e)=>{
 
 
 // Order button
-document.getElementById('order-btn').onclick = function(e){
+document.getElementById('continue').onclick = function(e){
       e.preventDefault();
                 
       let data = JSON.parse(localStorage.getItem('__cart'))
