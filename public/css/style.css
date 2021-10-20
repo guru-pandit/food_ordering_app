@@ -89,14 +89,14 @@ body{
 .btn-outlined-green{
   background-color: transparent;
   background-image: none;
-  border-color: var(--color-green);
-  color: var(--color-green);
+  border-color: var(--color-green) !important;
+  color: var(--color-green) !important;
 }
 
 .btn-outlined-green:hover{
   background-color: var(--color-green);
   border-color: var(--color-green);
-  color: var(--color-white);
+  color: var(--color-white) !important;
 }
 
 .btn-circular{
