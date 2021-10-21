@@ -413,6 +413,8 @@
     top: 0;
     left: 0;
     z-index: 100;
+    /* visibility: hidden; */
+    /* opacity: 0; */
 }
 
 
@@ -582,14 +584,14 @@
     margin-bottom: 0;
 }
 
-.order-items{
+.order-itms{
     height: 180px;
     border: 1px solid rgba(0, 0, 0, .15);
     padding: 0 .5rem;
     overflow-y: auto;
 }
 
-.order-item{
+.order-itm{
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -612,7 +614,7 @@
 
 .payment-details{
     border: 1px solid rgba(0, 0, 0, .15);
-    padding: .5rem;
+    padding: .25rem;
 }
 
 .payment-list-wrapper{
