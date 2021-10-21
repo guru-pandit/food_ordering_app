@@ -4,6 +4,36 @@ const Razorpay = require("razorpay")
 const request = require('request');
 const crypto = require("crypto");
 
+// Create new order:
+const createOrder = async (req, res) => {
+    try {
+        console.log(req.body);
+        let orderBody = {
+            orderId: v1(),
+            items: req.body.items,
+            total: req.body.total,
+            gst: req.body.gst,
+            deliveryCharges: req.body.deliveryCharges,
+            userId: req.body.userId,
+            restaurantId: req.body.restaurantId,
+            transactionId: null,
+            orderedAt: Date.now(),
+            isDelivered: false
+        }
+
+        console.log(orderBody);
+
+        Order.create(orderBody).then((order) => {
+            return res.status(200).json({ message: "Order placed", orderDetails: order });
+        }).catch((err) => {
+            return res.status(400).json({ error: "Order not placed" });
+        })
+    } catch (err) {
+        res.status(500).json({ error: err.message || "Something went wrong" });
+    }
+}
+
+
 // Function to store the rder details
 const placeOrder = async (req, res) => {
     try {
@@ -20,7 +50,7 @@ const placeOrder = async (req, res) => {
             restaurantId: req.query.restaurantId,
             transactionId: null,
             orderedAt: Date.now(),
-            isDelivered: false 
+            isDelivered: false
         }
         // console.log(orderBody)
         // Calculating total price
@@ -97,21 +127,21 @@ const updateOrder = async (req, res) => {
 }
 
 //to update delivery address
-const updateAddress = async(req,res)=>{
-    try{
-        let {orderId} = req.params;
-        let {deliveryAddress} = req.body;
+const updateAddress = async (req, res) => {
+    try {
+        let { orderId } = req.params;
+        let { deliveryAddress } = req.body;
 
-        let order = await Order.findOne({ where : { orderId : orderId} })
-        
-        if(order!==null){
+        let order = await Order.findOne({ where: { orderId: orderId } })
+
+        if (order !== null) {
             order.deliveryAddress = deliveryAddress;
             order.save();
-        
-            res.status(200).json({ message: "order updated successfully"})
-        
+
+            res.status(200).json({ message: "order updated successfully" })
+
         }
-    }catch(err){
+    } catch (err) {
         res.status(500).json({ error: err.message || "Something went wrong" });
     }
 }
@@ -265,6 +295,7 @@ const paymentFailure = async (req, res) => {
 }
 
 module.exports = {
+    createOrder,
     placeOrder,
     getOrderByOrderId,
     getOrdersByUserId,

@@ -21,6 +21,7 @@
      <link rel="stylesheet" href="/css/style.css">
      <link rel="stylesheet" href="https://unpkg.com/swiper@7/swiper-bundle.min.css">
      <link rel="stylesheet" href="/css/details.css">
+     <link rel="stylesheet" href="/css/modals.css">
      <link rel="stylesheet" href="/css/carousel.css">
   </head>
 
@@ -104,7 +105,8 @@
                                 <div class="card-body">
                                     <div class="row " >
                                         <div class="col-2">
-                                            <div class="img"><img src="https://cdn.pixabay.com/photo/2014/11/05/15/57/salmon-518032__480.jpg" class="img-fluid border-secondary" alt="..."></div>
+                                            {{!-- <div class="img"><img src="https://cdn.pixabay.com/photo/2014/11/05/15/57/salmon-518032__480.jpg" class="img-fluid border-secondary" alt="..."></div> --}}
+                                            <div class="img"><img src="{{this.image.images.[0]}}" class="img-fluid border-secondary" alt="..."></div>
                                         </div>
                                         <div class="col-8">
                                             <h4 class="card-title pricing-card-title text-left">{{this.name}}</h4>
@@ -154,7 +156,7 @@
                         <div style="flex: 1;"></div>
                         <h3 class="cart-toggler-subtotal" id="cart-subtotal"></h3>
                         <button class="btn btn-outlined-green px-4 ml-2" id="clear-cart" onclick="cartLS.destroy()">Clear cart</button>
-                        <button class="btn btn-green px-4 ml-2" id="continue">Continue</button>
+                        <button class="btn btn-green px-4 ml-2" id="continue" onclick="openPaymentModal()">Continue</button>
                     </div>
                 </div>
             </div>
@@ -261,16 +263,17 @@
 </div>
 
 {{!-- checkout Modal --}}
-<div class="payment-page">
+<div class="payment-page" id="payment-page">
   <div class="payment-page-content">
-    <span href="#" class="go-to-rest" id="go-to-rest"><i class="fa fa-arrow-left"></i> Back to Restaurant</span>
+    <span class="go-to-rest" id="go-to-rest" onclick="closePaymentModal()"><i class="fa fa-arrow-left"></i> Back to Restaurant</span>
     <div class="row payment-content">
       <div class="col-7 p-0 payment-address">
         <h2 class="payment-heading">Checkout</h2>
         <div class="delivery-address">
           <h3 class="delivery-address-heading" >Delivery address</h3>
-          <textarea name="" id="" class="address-text"></textarea>
-          <div class="add-new-address"><i class="fa fa-plus"></i>  Add new address</div>
+          <div class="addresses" id="addresses"> </div>
+          <textarea name="" id="address-text" class="address-text"></textarea>
+          <div class="add-new-address" onclick="addDeliveryAddress()"><i class="fa fa-plus"></i>  Add new address</div>
         </div>
         <div class="payment-methods">
           <h3 class="payment-method-heading">Select payment method:</h3>
@@ -293,46 +296,28 @@
           <p class="order-from-heading">Order from</p>
           <p class="order-from-rest">Royal baithak</p>
         </div>
-        <div class="order-itms">
-          <div class="order-itm">
-            <div class="order-item-name">
-                <p class="name">Masala dosa</p>
-                <p class="price">&#8377; 59</p>
-            </div>
-            <div class="order-btn">
-              <div class="quantity">
-                  <div>
-                      <i class="fa fa-minus"  onClick="cartLS.quantity(${item.id},-1)"></i>
-                  </div>
-                  <div>2</div>
-                  <div>
-                      <i class="fa fa-plus" onClick="cartLS.quantity(${item.id},1)"></i>
-                  </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <div class="order-itms" id="checkout-items"></div>
         <div class="payment-details">
             <ul class="payment-list-wrapper">
                 <li class="payment-list-item">
                     <span>Subtotal </span>
-                    <span id="subtotal">59</span>
+                    <span id="checkout-total"></span>
                 </li>
                 <li class="payment-list-item">
                     <span>Discount </span>
-                    <span>- &#8377; 50</span>
+                    <span id="discount"></span>
                 </li>
                 <li class="payment-list-item">
                     <span>GST </span>
-                    <span id="gst">5</span>
+                    <span id="gst"></span>
                 </li>
                 <li class="payment-list-item">
                     <span>Delivery Charges</span>
-                    <span id="delivery">5</span>
+                    <span id="delivery"></span>
                 </li>
             </ul>
             <div class="payment-total-wrapper">
-                <h3>Grand Total</h3> <span id="totalprice">500</span>
+                <h3>Grand Total</h3> <span id="grandtotal"></span>
             </div>
         </div>
         <div class="order-for">
@@ -340,21 +325,33 @@
           <p class="order-for-rest">Guru Pandit, 7776088638</p>
         </div>
 
-       <button class="place-order btn btn-green">Place order</button>
+       <button class="place-order btn btn-green" id="place-order" onclick="placeOrder()">Place order</button>
       </div>
     </div>
   </div>
+  <!-- The Modal -->
+	<div id="dialog-modal" class="dialog-modal">
+		<!-- Modal content -->
+	</div>
 </div>
 
 
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/axios@0.21.4/dist/axios.min.js"></script>
 <script src="https://unpkg.com/cart-localstorage@1.1.4/dist/cart-localstorage.min.js" type="text/javascript"></script>
 <script src="https://unpkg.com/swiper@7/swiper-bundle.min.js"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script src="/js/modal.js"></script>
 <script>
     let port = window.location.port ? ':'+window.location.port: '';
     let baseUrl = `${window.location.protocol}//${window.location.hostname}${port}`;
+    let deliveryAddress=[]
+    let selectedAddress = ""
+    let selectedPaymentMode = ""
+    let orderDetails={}
+
+    let options={}
 
     const queryString = window.location.search;
     console.log(queryString);
@@ -363,12 +360,185 @@
     const restaurantId = urlParams.get('restaurantId');
     console.log(restaurantId);
 
-    function renderCart(items) {
+// Open payment modal
+function openPaymentModal() {
+  $("#payment-page").addClass("active")
+}
+
+// Close payment modal
+function closePaymentModal() {
+  $("#payment-page").removeClass("active")
+}
+    
+// Toggle cart
+$("#cart-toggle-btn").click((e)=>{
+  // console.log(e)
+  $("#order-content").toggleClass("active")
+  $("#clear-cart").toggleClass("active")
+})
+
+function renderAddresses(adrs){
+  let addresses = document.querySelector("#addresses")
+  addresses.innerHTML = adrs.map((adr)=>`<div class="radio-item">
+                          <input type="radio" id="${adr}" name="delAdrs" value="${adr}">
+                          <label for="${adr}">${adr}</label>
+                        </div>`).join("")
+}
+
+function setDeliveryAddress(){
+  selectedAddress = $("input[name='delAdrs']:checked").val()
+  console.log("selectedAddress:",selectedAddress)
+}
+
+function setPaymentMode(){
+  selectedPaymentMode = $("input[name='payment_mode']:checked").val()
+  console.log("selectedPaymentMode:",selectedPaymentMode)
+}
+
+//set Delivery address
+function addDeliveryAddress(){
+    deliveryAddress.push($("#address-text").val())
+    console.log(deliveryAddress)
+    $("#delivery-address-text").innerHTML = deliveryAddress;
+    renderAddresses(deliveryAddress)
+}
+
+//Calculate amounts
+function calculateAmounts(){
+  setDeliveryAddress();
+  setPaymentMode()
+  const gst = 5;
+  const deliveryCharges = 40;
+  const discount = 20;
+
+  let orderItems=[]
+  orderItems = JSON.parse(localStorage.getItem("__cart"))===null?[]:JSON.parse(localStorage.getItem("__cart"))
+  console.log(orderItems)
+
+  let totalItemPrice = 0;
+  orderItems.map(({ price, quantity })=>{
+      totalItemPrice += price * quantity
+  })
+  console.log("totalItemPrice: ",totalItemPrice)
+
+  let discountedPrice = totalItemPrice - discount
+  console.log("discountedPrice: ",discountedPrice)
+
+  let delCharge = discountedPrice < 1000 ? deliveryCharges : 0
+  console.log("delCharge: ",delCharge)
+
+  let gstValue = discountedPrice * 5 / 100
+  console.log("gstValue: ",gstValue)
+  
+  let grandTotal = discountedPrice + gstValue + delCharge
+  console.log("grandTotal: ",grandTotal)
+
+  return { gst, delCharge, totalItemPrice, discount, discountedPrice, gstValue, grandTotal }
+}
+
+
+// Function to place order
+function placeOrder(){
+  let {gst, delCharge, totalItemPrice, discount, discountedPrice, gstValue, grandTotal} = calculateAmounts()
+
+  let data = JSON.parse(localStorage.getItem('__cart'))
+  console.log("CartData:Localstorage:", data)
+  let selectedItems =[]
+            
+  data.map(item => {
+      let itm = {menuitemId:item.id,quantity:item.quantity}
+      selectedItems.push(itm)
+  })
+  console.log(selectedItems)
+
+  let body={
+            items: selectedItems,
+            total: grandTotal,
+            gst: gst,
+            deliveryCharges: delCharge,
+            userId: 2,
+            restaurantId: restaurantId
+  }
+
+
+    if(selectedPaymentMode===undefined || selectedAddress===undefined){
+      openModal("error", "All fields are required")
+    }else{
+      if(selectedPaymentMode==="cod"){
+          axios.post(`${baseUrl}/api/v1/createOrder`,body).then((order)=>{
+          console.log(order.data.orderDetails)
+          orderDetails = order.data.orderDetails
+              openModal("success", "Order placed")
+      
+          }).catch((err)=>{
+            console.log(err)
+          })
+      }else{
+          axios.post(`${baseUrl}/api/v1/createOrder`,body).then((order)=>{
+          console.log(order.data.orderDetails)
+          orderDetails = order.data.orderDetails
+          axios.post(`${baseUrl}/api/v1/payment/order?totalPrice=${orderDetails.total}`).then((res)=>{
+            console.log(res)
+
+            let options = {
+                  //"key": "rzp_test_uYURsxfax869Qb",
+                  "key": "rzp_test_sfVXbRhBv56ltm",
+                  "amount": res.data.data.amount,
+                  "currency": res.data.data.currency,
+                  "name": "Acme Corp",
+                  "description": "Test Transaction",
+                  "image": "https://example.com/your_logo",
+                  "order_id": res.data.data.id,
+                  "handler": function (response){
+                    axios.post(`${baseUrl}/api/v1/isordercomplete?orderId=${orderDetails.orderId}`,response).then(res=>{
+                        // console.log(res.data.message);
+                          if(res.data.message==="success"){
+                              cartLS.destroy()
+                              openModal("success", "Thank you for your payment", closePaymentModal)
+                          }else{
+                              openModal("error", "Oh no, your payment failed")
+                          }
+                        })
+                  },
+                    "theme": {
+                        "color": "#3399cc"
+                  }
+            };
+
+            var rzp1 = new Razorpay(options);
+                rzp1.on('payment.failed', function (response){
+                //window.location = `${baseUrl}/api/v1/paymentfailure`;
+                openModal("error", "Oh no, your payment failed")
+            });
+
+          function payNow(){
+                rzp1.open();
+                //e.preventDefault();
+          }
+          payNow()
+    })
+          }).catch((err)=>{
+            console.log(err)
+          })
+      }
+      
+    }
+}
+
+function renderCart(items) {
+        let {gst, delCharge, totalItemPrice, discount, discountedPrice, gstValue, grandTotal} = calculateAmounts()
+
         //const $cart = document.querySelector(".cart")
         //const $total = document.querySelector(".total")
         const $cart = document.querySelector("#order-items")
         const $total = document.querySelector("#cart-subtotal")
         const $heading = document.querySelector("#cart-toggler-heading")
+        const $checkoutItems = document.querySelector("#checkout-items")
+        const $checkoutTotal = document.querySelector("#checkout-total")
+        const $discount = document.querySelector("#discount")
+        const $gst = document.querySelector("#gst")
+        const $delivery = document.querySelector("#delivery")
+        const $grandtotal = document.querySelector("#grandtotal")
 
 // $cart.innerHTML = items.map((item) => `
             //  <tr>
@@ -406,6 +576,31 @@
 
     $total.innerHTML = "Subtotal:  &#8377;" + cartLS.total()
 
+    $checkoutItems.innerHTML = items.map((item)=>`<div class="order-itm">
+                                  <div class="order-item-name">
+                                      <p class="name">${item.name}</p>
+                                      <p class="price">&#8377; ${item.price * item.quantity}</p>
+                                  </div>
+                                  <div class="order-btn">
+                                    <div class="quantity">
+                                        <div>
+                                            <i class="fa fa-minus"  onClick="cartLS.quantity(${item.id},-1)"></i>
+                                        </div>
+                                        <div>${item.quantity}</div>
+                                        <div>
+                                            <i class="fa fa-plus" onClick="cartLS.quantity(${item.id},1)"></i>
+                                        </div>
+                                    </div>
+                                  </div>
+                                </div>`).join("")
+
+    $checkoutTotal.innerHTML = "&#8377;" + cartLS.total()
+
+    $discount.innerHTML="- &#8377;"+discount
+    $gst.innerHTML="&#8377;"+gstValue
+    $delivery.innerHTML="&#8377;"+delCharge
+    $grandtotal.innerHTML="&#8377;"+grandTotal
+
     let totalItems = 0
     $heading.innerHTML = items.map((item)=>{
        return totalItems+=item.quantity
@@ -424,13 +619,6 @@
 
 renderCart(cartLS.list())
 cartLS.onChange(renderCart)
-
-// Toggle cart
-$("#cart-toggle-btn").click((e)=>{
-  // console.log(e)
-  $("#order-content").toggleClass("active")
-  $("#clear-cart").toggleClass("active")
-})
 
 
 // Review submit button
@@ -456,8 +644,8 @@ $("#cart-toggle-btn").click((e)=>{
 }
 
 
-// Order button
-document.getElementById('continue').onclick = function(e){
+// Order button/continue
+/*document.getElementById('').onclick = function(e){
       e.preventDefault();
                 
       let data = JSON.parse(localStorage.getItem('__cart'))
@@ -466,7 +654,7 @@ document.getElementById('continue').onclick = function(e){
       let items = []
             
       data.map(item => {
-        let itm = {menuitemId:item.id,quantity:item.quantity}
+      let itm = {menuitemId:item.id,quantity:item.quantity}
         items.push(itm)
       })
       console.log(items)
@@ -493,7 +681,7 @@ document.getElementById('continue').onclick = function(e){
             })}else{
                   alert('Please Select food items to proceed')
             }
-}
+}*/
 
 function openCity(evt, cityName) {
     var i, tabcontent, tablinks;

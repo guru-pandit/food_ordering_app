@@ -142,7 +142,18 @@ const getRestaurantsDetails = async (req, res) => {
             })
             restaurantDetails.image = imgPath
 
-            // res.status(200).json({ message: "Restaurant Details Fetched Successfully", restaurants: restaurantDetails })
+            restaurantDetails.Menuitems.map((menu) => {
+                let menuImgPath = []
+                menuImgPath = menu.image.images.map((img) => {
+                    console.log(img);
+                    // return `${req.protocol}://${req.headers.host}/images/restaurants/${restaurantId}/${img}`
+                    return `/images/menuitems/${menu.id}/${img}`
+                })
+                console.log(menuImgPath);
+                menu.image.images = menuImgPath
+            })
+
+            // res.status(200).json({ message: "Restaurant Details Fetched Successfully", restaurants: restaurantDetails, menuitems: restaurantDetails.Menuitems })
             res.render('details', { restaurant: restaurantDetails, reviews: restaurantDetails.Reviews, reviewsCount: reviewsCount, avgRatings: avgRatings, menuitems: restaurantDetails.Menuitems })
         } else {
             res.status(500).json({ message: "Restaurants Details NOT Fetched Successfully" })
