@@ -1,15 +1,15 @@
-let modal = document.getElementById("myModal");
+let modal = document.getElementById("dialog-modal");
 let closeIcon;
 
 //<a href="#" class="modal-btn modal-btn-green">Ok</a>
 //<a href="#" class="modal-btn modal-btn-red">Ok</a>
 
 // Function to open modal
-function openModal(type, msg) {
+function openModal(type, msg, callback) {
     // modal.style.display = "block"
-    $("#myModal").addClass("active").empty()
+    $("#dialog-modal").addClass("active").empty()
 
-    let successTemplateString = `<div class="modal-content modal-content-success" id="modal-content">
+    let successTemplateString = `<div class="mymodal-content modal-content-success" id="modal-content">
                             <i class="fa fa-times btn-circular" id="close-icon"></i>
                             <div class="modal-cont modal-cont-success">
                                 <div class="modal-icon">
@@ -21,7 +21,7 @@ function openModal(type, msg) {
                                 </div> 
                         </div>`
 
-    let errorTemplateString = `<div class="modal-content modal-content-error">
+    let errorTemplateString = `<div class="mymodal-content modal-content-error">
                                     <i class="fa fa-times btn-circular" id="close-icon"></i>
                                     <div class="modal-cont modal-cont-error">
                                         <div class="modal-icon">
@@ -32,14 +32,15 @@ function openModal(type, msg) {
                                     </div> 
                             </div>`
     if (type === "success") {
-        $("#myModal").append(successTemplateString)
+        $("#dialog-modal").append(successTemplateString)
     } else {
-        $("#myModal").append(errorTemplateString)
+        $("#dialog-modal").append(errorTemplateString)
     }
     closeIcon = document.getElementById("close-icon");
 
     closeIcon.onclick = function () {
-        $("#myModal").removeClass("active")
+        $("#dialog-modal").removeClass("active")
+        typeof callback === 'function' && callback()
     }
 
 }
@@ -49,7 +50,7 @@ window.onclick = function (event) {
     // console.log(event)
     // console.log(event.target)
     if (event.target == modal) {
-        $("#myModal").removeClass("active")
+        $("#dialog-modal").removeClass("active")
     }
 }
 
