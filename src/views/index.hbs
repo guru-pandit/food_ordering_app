@@ -215,30 +215,41 @@
                   })
               }
           })
+          //localStorage.setItem('Menuitems',JSON.stringify(menuitems))
       }
 
       // Function to show restaurants
       function showFetchedRestaurants(){
         $("#rest-card").empty()
-        restaurants.forEach((rest)=>{
-          let templateString = `<div class="rest-card" data-restaurantid=${rest.id} onclick="showRestaurant(this.dataset.restaurantid)">
+        restaurants.length>0 ? restaurants.forEach((rest)=>{
+          //console.log(rest.image[0])
+          let templateString = rest.image !== null ? `<div class="rest-card" data-restaurantid=${rest.id} onclick="showRestaurant(this.dataset.restaurantid)">
                                     <div class="rest-img">
                                         <img src=${rest.image[0]} alt=""/>
                                         <div class="rating">${rest.avgRatings} <i class="fa fa-star"></i></div>
                                     </div>
                                     <h4 class="rest-heading">${rest.name}</h4>
-                                    <p class="rest-address">${rest.Location.landmark}, ${rest.Location.city}</p>
+                                    <p class="rest-address">${rest.Location.landmark}, ${rest.Location.City.name}</p>
+                                    <p class="rest-time">${rest.openingTime} - ${rest.closingTime}</p>
+                                </div>` : `<div class="rest-card" data-restaurantid=${rest.id} onclick="showRestaurant(this.dataset.restaurantid)">
+                                    <div class="rest-img">
+                                        <img src="" alt=""/>
+                                        <div class="rating">${rest.avgRatings !== null ? rest.avgRatings.toFixed(1): 0} <i class="fa fa-star"></i></div>
+                                    </div>
+                                    <h4 class="rest-heading">${rest.name}</h4>
+                                    <p class="rest-address">${rest.Location.landmark}, ${rest.Location.City.name}</p>
                                     <p class="rest-time">${rest.openingTime} - ${rest.closingTime}</p>
                                 </div>`
           $("#rest-card").append(templateString)
-        })
+        }):$("#rest-card").append('<b>No Restaurants Found!!')
       }
 
       // Function to show menuitems
       function showFetchedMenuitems(){
+        let items = JSON.parse(localStorage.getItem('Menuitems'))
           $("#menu-cards").empty()
-          menuitems.forEach((menu)=>{
-              let templateString =  `<div class="menu-card">
+          menuitems.length > 0 ? menuitems.forEach((menu)=>{
+              let templateString = menu.image.images !== null ? `<div class="menu-card">
                                         <div class="menu-img">
                                             <img src="/images/menuitems/${menu.id}/${menu.image.images[0]}" alt=""/>
                                         </div>
@@ -252,9 +263,23 @@
                                                   
                                             </div>
                                         </div>
+                                    </div>`:`<div class="menu-card">
+                                        <div class="menu-img">
+                                            <img src="" alt=""/>
+                                        </div>
+                                        <div class="menu-details">
+                                            <div class="details-left">
+                                                  <h4 class="menu-heading">${menu.name}</h4>
+                                                  <p class="menu-desc">${menu.description}</p>
+                                            </div>
+                                            <div class="details-right">
+                                                  <p class="menu-price">&#8377; ${menu.price}</p>
+                                                  
+                                            </div>
+                                        </div>
                                     </div>`
               $("#menu-cards").append(templateString)
-          })
+          }):$("#menu-cards").append('<b>No Menuitems Found!!')
       }
 
       // Function to show mealtypes
@@ -284,10 +309,12 @@
         
       // Get restuarants of selected location
       function getRestaurants(locationId){
+        //console.log(locationId)
         let url = `${baseUrl}/api/v1/restaurantsbylocation/${locationId}`;
 
         axios.get(url).then((data)=>{
           restaurants = [...data.data.restaurants]
+          console.log(restaurants)
           setMenuitems()
           showFetchedRestaurants()
           showFetchedMenuitems()
@@ -301,6 +328,7 @@
         axios.post(url,body).then((data)=>{
           restaurants = [...data.data.restaurants[0].restaurantList]
           menuitems = [...data.data.restaurants[1].menuitemList]
+          //localStorage.setItem('Menuitems',JSON.stringify(data.data.restaurants[1].menuitemList))
           showFetchedRestaurants()
           showFetchedMenuitems()
         })
@@ -373,12 +401,12 @@
 
         // Adding locations in dropdown
         axios.get(url).then(({data})=>{
-        // console.log(data)
+        console.log(data)
         return data.locations
         }).then((locations)=>{
           // console.log(locations)
           locations.forEach((loc=>{
-              let templateString = `<option class="locationOptions" value=${loc.id}>${loc.city}</option>`
+              let templateString = `<option class="locationOptions" value=${loc.id}>${loc.City.name}</option>`
               $("#location").append(templateString)
           }))
         }).then(()=>{
@@ -411,11 +439,11 @@
           $("#close-modal").on("click", function() {
               $(".filter-modal").removeClass("modal-active");
           })
-          $(this).on("click", function(e) {
-              if(e.target.id === "filter-overlay"){
-                  $(".filter-modal").removeClass("modal-active");
-              }
-          })
+          //$(this).on("click", function(e) {
+          //    if(e.target.id === "filter-overlay"){
+          //        $(".filter-modal").removeClass("modal-active");
+          //    }
+          //})
 
           // Apply filter
           $("#apply").on("click", function(e){
@@ -440,20 +468,23 @@
 
               let url = `${baseUrl}/api/v1/filter`;
               let data = {
-                sort: selectedSortOption,
+                sort: parseInt(selectedSortOption),
                 lcost: selectedLowCost,
                 hcost: selectedHighCost,
                 mealtypeIds:selectedMealtypes, 
-                cuisineIds: selectedCuisines
+                cuisineIds: selectedCuisines,
+                locationId: $("#location").val()
               }
               // console.log(data)
               axios.post(url, data).then((data)=>{
-                // console.log(data.data.menuitems)
+                console.log(data.data.menuitems)
                 menuitems = [...data.data.menuitems]
+                //localStorage.setItem('Menuitems',JSON.stringify(data.data.menuitems))
                 // console.log(menuitems)
                 $(".filter-modal").removeClass("modal-active");
-                showFetchedMenuitems();
+                showFetchedMenuitems();                
               })
+              $(".filter-modal").removeClass("modal-active");
           })
       });
 

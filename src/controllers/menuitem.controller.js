@@ -1,4 +1,4 @@
-const { Menuitem, Restaurant, Mealtype, Cuisine, Location } = require("../models");
+const { Menuitem, Restaurant, Mealtype, Cuisine, Location, City, State, Country } = require("../models");
 const db = require("../models");
 const Op = db.Sequelize.Op;
 const path = require("path");
@@ -83,7 +83,34 @@ const getMenuitems = async (req, res) => {
             include: [
                 { model: Mealtype, attributes: ["name", "content"] },
                 { model: Cuisine, attributes: ["name"] },
-                { model: Restaurant, attributes: ["name", "address", "contact", "locationId"] }
+                {
+                    model: Restaurant,
+                    attributes: ["name", "address", "contact", "locationId"],
+                    include: [
+                        {
+                            model: Location,
+                            attributes: ["landmark"],
+                            include: [
+                                {
+                                    model: City,
+                                    attributes: ["name"],
+                                    include: [
+                                        {
+                                            model: State,
+                                            attributes: ["name"],
+                                            include: [
+                                                {
+                                                    model: Country,
+                                                    attributes: ["name"]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
             ]
         });
         //to check if we get response or not
@@ -107,7 +134,34 @@ const getMenuitemsByRestaurant = async (req, res) => {
         const response = await Menuitem.findAll({
             where: { /*this id variable from Menuitem table*/ restaurantId: restaurantId /*this id variable from params*/ },
             include: [{ model: Mealtype, attributes: ["name", "content"] },
-            { model: Restaurant, attributes: ["name", "address", "contact", "locationId"] }
+            {
+                model: Restaurant,
+                attributes: ["name", "address", "contact", "locationId"],
+                include: [
+                    {
+                        model: Location,
+                        attributes: ["landmark"],
+                        include: [
+                            {
+                                model: City,
+                                attributes: ["name"],
+                                include: [
+                                    {
+                                        model: State,
+                                        attributes: ["name"],
+                                        include: [
+                                            {
+                                                model: Country,
+                                                attributes: ["name"]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
             ]
         })
 
@@ -132,7 +186,34 @@ const getMenuitemsByMealtype = async (req, res) => {
         const response = await Menuitem.findAll({
             where: { /*this id variable from Menuitem table*/ mealtypeId: mealtypeId /*this id variable from params*/ },
             include: [{ model: Mealtype, attributes: ["name", "content"] },
-            { model: Restaurant, attributes: ["name", "address", "contact", "locationId"] }
+            {
+                model: Restaurant,
+                attributes: ["name", "address", "contact", "locationId"],
+                include: [
+                    {
+                        model: Location,
+                        attributes: ["landmark"],
+                        include: [
+                            {
+                                model: City,
+                                attributes: ["name"],
+                                include: [
+                                    {
+                                        model: State,
+                                        attributes: ["name"],
+                                        include: [
+                                            {
+                                                model: Country,
+                                                attributes: ["name"]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
             ]
         })
 
@@ -169,7 +250,34 @@ const searchMenuitems = async (req, res) => {
             include: [
                 { model: Mealtype, attributes: ["name", "content"] },
                 { model: Cuisine, attributes: ["name"] },
-                { model: Restaurant, attributes: ["name", "address", "contact", "locationId"] }
+                {
+                    model: Restaurant,
+                    attributes: ["name", "address", "contact", "locationId"],
+                    include: [
+                        {
+                            model: Location,
+                            attributes: ["landmark"],
+                            include: [
+                                {
+                                    model: City,
+                                    attributes: ["name"],
+                                    include: [
+                                        {
+                                            model: State,
+                                            attributes: ["name"],
+                                            include: [
+                                                {
+                                                    model: Country,
+                                                    attributes: ["name"]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
             ]
         })
         if (filteredMenuitems.length > 0) {
@@ -235,26 +343,47 @@ const filterMenuitems = async (req, res) => {
     //     res.status(500).json({ error: err.message || "something went wrong" })
     // }
     try {
-        let { hcost, lcost, mealtypeIds, cuisineIds } = req.body;
+        let { hcost, lcost, mealtypeIds, cuisineIds, locationId } = req.body;
         let sort = req.body.sort ? req.body.sort : 1;
 
         var payload = {}
+
+        //here we create function to get restaurantids based on locationid
+        const getRestaurantIds = async (locationId) => {
+            let restaurantid = []
+            return await Restaurant.findAll({
+                where: { locationId: locationId }
+            }).then(restaurant => {
+                if (restaurant) {
+                    restaurant.forEach(res => {
+                        restaurantid.push(res.id);
+                    })
+                    return restaurantid;
+                }
+            })
+        }
+        //to set result array(result of getRestaurantIds(locationId)) into restaurantIds
+        let restaurantIds = await getRestaurantIds(locationId);
+        // console.log(restaurantIds);
 
         if (hcost && lcost) {
             payload = {
                 price: {
                     [Op.between]: [lcost, hcost],
-                }
+                },
+                restaurantId: { [Op.in]: restaurantIds }
             }
         }
         if (mealtypeIds.length > 0) {
             payload = {
-                mealtypeId: { [Op.in]: mealtypeIds }
+                mealtypeId: { [Op.in]: mealtypeIds },
+                restaurantId: { [Op.in]: restaurantIds }
             }
         }
         if (cuisineIds.length > 0) {
             payload = {
-                cuisineId: { [Op.in]: cuisineIds }
+                cuisineId: { [Op.in]: cuisineIds },
+                restaurantId: { [Op.in]: restaurantIds }
             }
         }
         if (hcost && lcost && mealtypeIds.length > 0) {
@@ -265,7 +394,8 @@ const filterMenuitems = async (req, res) => {
                             [Op.between]: [lcost, hcost],
                         }
                     },
-                    { mealtypeId: { [Op.in]: mealtypeIds } }
+                    { mealtypeId: { [Op.in]: mealtypeIds } },
+                    { restaurantId: { [Op.in]: restaurantIds } }
                 ]
             }
         }
@@ -277,7 +407,8 @@ const filterMenuitems = async (req, res) => {
                             [Op.between]: [lcost, hcost],
                         }
                     },
-                    { cuisineId: { [Op.in]: cuisineIds } }
+                    { cuisineId: { [Op.in]: cuisineIds } },
+                    { restaurantId: { [Op.in]: restaurantIds } }
                 ]
             }
         }
@@ -285,7 +416,8 @@ const filterMenuitems = async (req, res) => {
             payload = {
                 [Op.and]: [
                     { mealtypeId: { [Op.in]: mealtypeIds } },
-                    { cuisineId: { [Op.in]: cuisineIds } }
+                    { cuisineId: { [Op.in]: cuisineIds } },
+                    { restaurantId: { [Op.in]: restaurantIds } }
                 ]
             }
         }
@@ -298,7 +430,8 @@ const filterMenuitems = async (req, res) => {
                         }
                     },
                     { mealtypeId: { [Op.in]: mealtypeIds } },
-                    { cuisineId: { [Op.in]: cuisineIds } }
+                    { cuisineId: { [Op.in]: cuisineIds } },
+                    { restaurantId: { [Op.in]: restaurantIds } }
                 ]
             }
         }
@@ -314,14 +447,37 @@ const filterMenuitems = async (req, res) => {
                     {
                         model: Restaurant,
                         attributes: ["name", "address", "contact", "locationId", "image", "avgRatings", "openingTime", "closingTime"],
-                        include: [{ model: Location }]
+                        include: [
+                            {
+                                model: Location,
+                                attributes: ["landmark"],
+                                include: [
+                                    {
+                                        model: City,
+                                        attributes: ["name"],
+                                        include: [
+                                            {
+                                                model: State,
+                                                attributes: ["name"],
+                                                include: [
+                                                    {
+                                                        model: Country,
+                                                        attributes: ["name"]
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
                     }
                 ]
             })
             if (allMenuitems.length > 0) {
                 return res.status(200).json({ message: "Menuitems fetched successfully", menuitems: allMenuitems });
             } else {
-                return res.status(500).json({ error: "Menuitems not found" })
+                return res.status(200).json({ error: "Menuitems not found", menuitems: [] })
             }
         } else {
             let allMenuitems = await Menuitem.findAll({
@@ -335,14 +491,37 @@ const filterMenuitems = async (req, res) => {
                     {
                         model: Restaurant,
                         attributes: ["name", "address", "contact", "locationId", "image", "avgRatings", "openingTime", "closingTime"],
-                        include: [{ model: Location }]
+                        include: [
+                            {
+                                model: Location,
+                                attributes: ["landmark"],
+                                include: [
+                                    {
+                                        model: City,
+                                        attributes: ["name"],
+                                        include: [
+                                            {
+                                                model: State,
+                                                attributes: ["name"],
+                                                include: [
+                                                    {
+                                                        model: Country,
+                                                        attributes: ["name"]
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
                     }
                 ]
             })
             if (allMenuitems.length > 0) {
                 return res.status(200).json({ message: "Menuitems fetched successfully", menuitems: allMenuitems });
             } else {
-                return res.status(500).json({ error: "Menuitems not found" })
+                return res.status(200).json({ error: "Menuitems not found", menuitems: [] })
             }
         }
 
@@ -408,4 +587,4 @@ const addImage = async (req, res) => {
 
 
 
-module.exports = { addNewMenuitem, getMenuitems, getMenuitemsByRestaurant, getMenuitemsByMealtype, searchMenuitems, filterMenuitems, addImage,}
+module.exports = { addNewMenuitem, getMenuitems, getMenuitemsByRestaurant, getMenuitemsByMealtype, searchMenuitems, filterMenuitems, addImage, }

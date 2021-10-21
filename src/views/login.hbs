@@ -96,6 +96,7 @@
 			});
 
 			function insertUrlParam(key, value) {
+				//console.log(history.pushState);
 						if (history.pushState) {
 							let searchParams = new URLSearchParams(window.location.search);
 							searchParams.set(key, value);

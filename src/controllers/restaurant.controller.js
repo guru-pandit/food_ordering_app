@@ -1,4 +1,4 @@
-const { Restaurant, Location, Review, Menuitem, User } = require("../models");
+const { Restaurant, Location, Review, Menuitem, User, City, State, Country } = require("../models");
 const db = require("../models");
 const Op = db.Sequelize.Op;
 const jwt = require('jsonwebtoken');
@@ -32,7 +32,28 @@ const getAllRestaurants = async (req, res) => {
         const response = await Restaurant.findAll({
             //to include location model  in restaurant
             include: [
-                { model: Location, attributes: ["name", "landmark", "city", "state", "country"] },
+                {
+                    model: Location,
+                    attributes: ["landmark"],
+                    include: [
+                        {
+                            model: City,
+                            attributes: ["name"],
+                            include: [
+                                {
+                                    model: State,
+                                    attributes: ["name"],
+                                    include: [
+                                        {
+                                            model: Country,
+                                            attributes: ["name"]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
                 { model: Menuitem },
                 { model: Review },
             ]
@@ -74,7 +95,28 @@ const getRestaurantsByLocation = async (req, res) => {
             },
             //to include location,Menuitem,Review model in restaurant
             include: [
-                { model: Location, attributes: ["name", "landmark", "city", "state", "country"] },
+                {
+                    model: Location,
+
+                    include: [
+                        {
+                            model: City,
+                            attributes: ["name"],
+                            include: [
+                                {
+                                    model: State,
+                                    attributes: ["name"],
+                                    include: [
+                                        {
+                                            model: Country,
+                                            attributes: ["name"]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
                 { model: Menuitem },
                 { model: Review },
             ]
@@ -85,10 +127,10 @@ const getRestaurantsByLocation = async (req, res) => {
             let restaurants = []
             response.forEach((rest) => {
                 let imgPath = []
-                imgPath = rest.image.map((img) => {
+                imgPath = rest.image !== null ? rest.image.map((img) => {
                     return `${req.protocol}://${req.headers.host}/images/restaurants/${rest.id}/${img}`
                     //return `/images/restaurants/${rest.id}/${img}`
-                })
+                }) : null
                 rest.image = imgPath
                 restaurants.push(rest)
             })
@@ -126,7 +168,28 @@ const getRestaurantsDetails = async (req, res) => {
             where: { id: restaurantId },
             //to include location,Menuitem,Review model in restaurant
             include: [
-                { model: Location, attributes: ["name", "landmark", "city", "state", "country"] },
+                {
+                    model: Location,
+                    attributes: ["landmark"],
+                    include: [
+                        {
+                            model: City,
+                            attributes: ["name"],
+                            include: [
+                                {
+                                    model: State,
+                                    attributes: ["name"],
+                                    include: [
+                                        {
+                                            model: Country,
+                                            attributes: ["name"]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
                 { model: Menuitem },
                 { model: Review },
             ]
@@ -136,10 +199,10 @@ const getRestaurantsDetails = async (req, res) => {
             let avgRatings = restaurantDetails.avgRatings.toFixed()
 
             let imgPath = []
-            imgPath = restaurantDetails.image.map((img) => {
+            imgPath = restaurantDetails.image !== null ? restaurantDetails.image.map((img) => {
                 // return `${req.protocol}://${req.headers.host}/images/restaurants/${restaurantId}/${img}`
                 return `/images/restaurants/${restaurantId}/${img}`
-            })
+            }) : null
             restaurantDetails.image = imgPath
 
             // res.status(200).json({ message: "Restaurant Details Fetched Successfully", restaurants: restaurantDetails })
@@ -216,7 +279,28 @@ const filterRestaurant = async (req, res) => {
         const restaurant = await Restaurant.findAll({
             where: payload,
             include: [
-                { model: Location, attributes: ["name", "landmark", "city", "state", "country"] },
+                {
+                    model: Location,
+                    attributes: ["landmark"],
+                    include: [
+                        {
+                            model: City,
+                            attributes: ["name"],
+                            include: [
+                                {
+                                    model: State,
+                                    attributes: ["name"],
+                                    include: [
+                                        {
+                                            model: Country,
+                                            attributes: ["name"]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
                 { model: Menuitem },
                 { model: Review },
             ]
@@ -246,7 +330,28 @@ const searchRestaurant = async (req, res) => {
                 name: { [Op.like]: '%' + search + '%' },
                 locationId: locationId
             },
-            include: [{ model: Location, attributes: ["name", "landmark", "city", "state", "country"] }]
+            include: [{
+                model: Location,
+                attributes: ["landmark"],
+                include: [
+                    {
+                        model: City,
+                        attributes: ["name"],
+                        include: [
+                            {
+                                model: State,
+                                attributes: ["name"],
+                                include: [
+                                    {
+                                        model: Country,
+                                        attributes: ["name"]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },]
         })
 
         //to check whether searchResult is empty or not

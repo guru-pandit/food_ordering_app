@@ -73,7 +73,7 @@
 							<span class="review-no">{{reviewsCount}} reviews </span>
 						</div>
 						<p class="product-description">North Indian, Chinese, South Indian, Street Food, Ice Cream, Beverages</p>
-            <p class="product-description">{{restaurant.Location.landmark}}, {{restaurant.Location.city}}</p>
+            <p class="product-description">{{restaurant.Location.landmark}}, {{restaurant.Location.City.name}}</p>
             <p class="product-description">{{restaurant.openingTime}} – {{restaurant.closingTime}}</p>
             <p class="product-description">Food will available between above time only</p>
             <div>
@@ -95,7 +95,7 @@
       <div id="Overview" class="tabcontent">
         <h3>About this place</h3>
         <p><h4>Name : {{restaurant.name}}</h4></p>
-        <p><h5>Address : {{restaurant.address}}, {{restaurant.Location.landmark}}, {{restaurant.Location.city}}, {{restaurant.Location.state}}, {{restaurant.Location.country}}, </h5></p>
+        <p><h5>Address : {{restaurant.address}}, {{restaurant.Location.landmark}}, {{restaurant.Location.City.name}}, {{restaurant.Location.state}}, {{restaurant.Location.country}}, </h5></p>
 
         <p><h5>Contact : {{restaurant.contact}}</h5></p>
       </div>
