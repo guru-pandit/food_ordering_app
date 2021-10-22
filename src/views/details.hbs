@@ -67,7 +67,7 @@
 							              <span class="review-no mb-2">{{reviewsCount}} reviews </span>
 						            </div>
                         <p class="product-description mb-2">North Indian, Chinese, South Indian, Street Food, Ice Cream, Beverages</p>
-                        <p class="product-description mb-2">{{restaurant.Location.landmark}}, {{restaurant.Location.city}}</p>
+                        <p class="product-description mb-2">{{restaurant.Location.landmark}}, {{restaurant.Location.City.name}}</p>
                         <p class="product-description mb-2">{{restaurant.openingTime}} – {{restaurant.closingTime}}</p>
                         <p class="product-description mb-3">Food will available between above time only</p>
                         <div>
@@ -481,8 +481,8 @@ function placeOrder(){
             console.log(res)
 
             let options = {
-                  //"key": "rzp_test_uYURsxfax869Qb",
-                  "key": "rzp_test_sfVXbRhBv56ltm",
+                  "key": "rzp_test_uYURsxfax869Qb",
+                  //"key": "rzp_test_sfVXbRhBv56ltm",
                   "amount": res.data.data.amount,
                   "currency": res.data.data.currency,
                   "name": "Acme Corp",
