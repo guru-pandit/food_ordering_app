@@ -54,3 +54,21 @@ window.onclick = function (event) {
     }
 }
 
+
+// Review modal stars
+$("input[name='review-rating']").click(function () {
+    var sim = $("input[name='review-rating']:checked").val();
+    alert(sim)
+    // if (sim < 3) {
+    //     $('.myratings').css('color', 'red'); $(".myratings").text(sim);
+    // } else {
+    //     $('.myratings').css('color', 'green'); $(".myratings").text(sim);
+    // }
+});
+
+
+// Review modal js
+
+
+
+

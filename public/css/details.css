@@ -1,15 +1,4 @@
-
-/* ****************globals************/
-/* body {
-  font-family: 'open sans';
-  overflow-x: hidden; 
-  /* background-color: #d2d2d2; */
-  /*background: linear-gradient(rgba(0,0,0,0.2),rgba(0,0,0,0.2)),url('../images/bg/bg.jpg');
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-attachment: fixed;
-} */
+@import url(https://netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css);
 
 .go-to-home{
   padding: .5rem;
@@ -689,6 +678,190 @@
     margin-top: .75rem;
 }
 
+
+/* Review Modal */
+.review-modal{
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0,0,0,0.5);
+  /* opacity: 0; */
+  /* visibility: hidden; */
+  opacity: 1;
+  visibility: visible;
+  transition: all .3s ease;
+}
+
+.review-modal-inner.modal-active{
+  visibility: visible;
+  opacity: 1;
+}
+
+.review-modal-inner{
+  background-color: var(--color-white);
+  border-radius: 10px;
+  width: 90%;
+  max-width: 420px;
+}
+
+.review-modal-header{
+  color: var(--color-dark);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: .75rem 1rem;
+  border-bottom: 1px solid rgba(0,0,0,0.2);
+}
+
+.review-modal-header h3{
+  font-size: 1.5rem;
+}
+
+.review-modal-body{
+  padding: .5rem 1rem;
+}
+
+.review-modal-body > h3{
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: capitalize;
+  text-align: center;
+  color: var(--color-gray);
+  margin-bottom: .25rem;
+}
+
+.review-modal-body > p{
+  font-size: .8rem;
+  font-weight: 500;
+  /* letter-spacing: 1px; */
+  text-align: center;
+  color: var(--color-lightgray);
+  margin-bottom: .5rem;
+}
+
+.review-modal-forms{
+}
+
+.review-modal-rating{
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0 .5rem;
+}
+
+.reviews-stars{
+  height: 45px;
+}
+
+.reviews-stars>[id^="star"] {
+    display: none
+}
+
+.reviews-stars>label:before {
+    margin: .25rem;
+    font-size: 1.5rem;
+    font-family: FontAwesome;
+    display: inline-block;
+    content: "\f005"
+}
+
+.reviews-stars>.half:before {
+    content: "\f089";
+    position: absolute
+}
+
+.reviews-stars>label {
+    color: #ddd;
+    float: right
+}
+
+.reviews-stars>[id^="star"]:checked~label,
+.reviews-stars:not(:checked)>label:hover,
+.reviews-stars:not(:checked)>label:hover~label {
+    color: #FFD700
+}
+
+.reviews-stars>[id^="star"]:checked+label:hover,
+.reviews-stars>[id^="star"]:checked~label:hover,
+.reviews-stars>label:hover~[id^="star"]:checked~label,
+.reviews-stars>[id^="star"]:checked~label:hover~label {
+    color: #FFED85
+}
+
+.fa-minus{
+  font-size: .75rem;
+}
+
+.selected-rating{
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-gray);
+  margin: 0 16px;
+}
+
+.reset-option {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--color-lightgray);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 .5rem;
+    background-color: transparent;
+    transition: all .3s ease;
+    outline: none;
+}
+
+.reset-option:hover{
+    background-color: rgba(0, 0, 0, .1);
+    outline: none;
+}
+
+.reset-option:active,
+.reset-option:focus,
+.reset-option:focus-visible{
+  border: 2px solid var(--color-lightgray) !important;
+  outline: none !important;
+}
+
+.review-modal-feedback{
+  display: flex;
+  align-items: flex-start;
+  justify-items: center;
+  flex-direction: column;
+  padding: 0 1rem;
+}
+
+.review-comment-label{
+  font-size: .9rem;
+  margin-bottom: 5px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  color: var(--color-gray);
+}
+
+.review-comment{
+    width: 100%;
+    height: 80px;
+    max-height: 80px;
+    min-height: 80px;
+    outline: none;
+    padding: .25rem .5rem;
+    margin-bottom: 1rem;
+    border: 2px solid var(--color-lightgray);
+    border-radius: 3px;
+    color: var(--color-dark);
+}
 /* -------------------------------------------------------------------- */
 ul.list-inline.stars i {
   font-size: 18px;

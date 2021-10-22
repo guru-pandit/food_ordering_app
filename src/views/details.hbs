@@ -212,55 +212,68 @@
     </div>
 
     <!-- Review The Modal -->
-    <div class="modal" id="myModal">
-        <div class="modal-dialog">
-            <div class="modal-content">
+    <div class="review-modal" id="review-modal">
+        <div class="review-modal-inner">
+            {{!-- <div class="modal-content"> --}}
             <!-- Modal Header -->
-            <div class="modal-header">
-              <h4 class="modal-title" style="font-size: 2.5rem;">Review</h4>
-            </div>
+                <div class="review-modal-header">
+                    <h3>Review</h3>
+                    <i id="close-review-modal" class="fa fa-close btn-circular"></i>
+                </div>
             <!-- Modal body -->
-            <div class="modal-body">
-                <h2 id="fh2">WE APPRECIATE YOUR REVIEW!</h2>
-                <h6 id="fh6">Your review will help us to improve our web hosting quality products, and customer services.</h6>
-              <form id="feedback"  action="">
-              <div class="pinfo">Rate our overall services.</div>
-              <div class="form-group">
-                  <div class="inputGroupContainer" style="width: 100%;">
-                      <div class="input-group">
-                          <span class="input-group-addon" style="font-size : 14px"><i class="fa fa-star"></i></span>
-                          <select class="form-control" id="rate" name="stars">
-                              <option value="1star">1</option>
-                              <option value="2stars">2</option>
-                              <option value="3stars">3</option>
-                              <option value="4stars">4</option>
-                              <option value="5stars">5</option>
-                          </select>
-                      </div>
-                  </div>
-              </div>
-              <div class="pinfo" style="margin-top: 20px;">Write your feedback.</div>
-              <div class="form-group">
-                  <div class="inputGroupContainer" style="width: 100%;">
-                      <div class="input-group">
-                          <span class="input-group-addon" style="height: 70px; font-size : 14px"><i class="fa fa-pencil"></i></span>
-                          <textarea class="form-control" style="height: 70px;" id="review" rows="3" name="comment"></textarea>
-                      </div>
-                  </div>
-              </div>
-              <div class="w-100 text-center mt-5">
-                  <button type="submit" class="btn btn-green" id="btn-submit" data-dismiss="modal" style="margin:10px auto;margin-top: 30px; width: 80px; height: 30px; font-size: 12px;">Submit</button>
-              </div>
-          </form>
-      </div>
-      <!-- Modal footer -->
-      <div class="modal-footer">
-        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-      </div>
+                <div class="review-modal-body">
+                    <h3>We appreciate your review !</h3>
+                    <p>Your review will help us to improve our quality food, and customer services</p>
 
-    </div>
+                    <div class="review-modal-forms">
+                      <form id="review-modal-rating" class="review-modal-rating" action="#">
+                            <button type="reset" class="reset-option" name="rating"><i class="fa fa-minus"></i></button>
+                            <div class="reviews-stars">
+                                <input type="radio" id="star5" name="review-rating" value="5" />
+                                <label class="full" for="star5" title="Awesome - 5 stars"></label>
+
+                                <input type="radio" id="star4half" name="review-rating" value="4.5" />
+                                <label class="half" for="star4half" title="Pretty good - 4.5 stars"></label>
+
+                                <input type="radio" id="star4" name="review-rating" value="4" />
+                                <label class="full" for="star4" title="Pretty good - 4 stars"></label>
+
+                                <input type="radio" id="star3half" name="review-rating" value="3.5" />
+                                <label class="half" for="star3half" title="Meh - 3.5 stars"></label>
+
+                                <input type="radio" id="star3" name="review-rating" value="3" />
+                                <label class="full" for="star3" title="Meh - 3 stars"></label>
+
+                                <input type="radio" id="star2half" name="review-rating" value="2.5" />
+                                <label class="half" for="star2half" title="Kinda bad - 2.5 stars"></label>
+
+                                <input type="radio" id="star2" name="review-rating" value="2" />
+                                <label class="full" for="star2" title="Kinda bad - 2 stars"></label>
+
+                                <input type="radio" id="star1half" name="review-rating" value="1.5" />
+                                <label class="half" for="star1half" title="Meh - 1.5 stars"></label>
+
+                                <input type="radio" id="star1" name="review-rating" value="1" />
+                                <label class="full" for="star1" title="Sucks big time - 1 star"></label>
+
+                                <input type="radio" id="starhalf" name="review-rating" value="0.5" />
+                                <label class="half" for="starhalf" title="Sucks big time - 0.5 stars"></label>
+                            </div>
+                            <span class="selected-rating" id="selected-rating">4.5</span>
+                        </form>
+                        <form id="review-modal-feedback" class="review-modal-feedback" action="#">
+                            <label for="review-comment" class="review-comment-label">Write your feedback:</label>
+                            <textarea class="review-comment" name="review-comment" id="review-comment"></textarea>
+                            <div class="w-100 text-center mb-3">
+                                <button class="btn btn-green" id="btn-submit" >Submit</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+    {{!-- </div> --}}
   </div>
 </div>
+{{!-- Review modal end --}}
 
 {{!-- checkout Modal --}}
 <div class="payment-page" id="payment-page">
