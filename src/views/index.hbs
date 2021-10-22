@@ -58,7 +58,7 @@
                         </li>
                         <div class="footer">
                           <li class="user-menu__item" >
-                              <a class="btn-link-red" href="/api/v1/logout" id="logout">Logout</a>
+                              <a class="btn-link-red" href="/logout" id="logout">Logout</a>
                           </li>
                         </div>
                       </ul>
@@ -66,8 +66,8 @@
               </div>
           {{/if}}
           {{#unless isLoggedIn}}
-              <a class="btn btn-green mx-2" href="/api/v1/login">Sign In</a>
-              <a class="btn btn-outlined-green mx-2" href="/api/v1/register">Sign Up</a>
+              <a class="btn btn-green mx-2" href="/login">Sign In</a>
+              <a class="btn btn-outlined-green mx-2" href="/register">Sign Up</a>
           {{/unless}}
         </div>
       </div>
@@ -187,9 +187,9 @@
     </div>
     {{!-- <div class="add-menu"><i class="fa fa-plus"></i></div> --}}
 
-    <script src="/js/slider.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios@0.21.4/dist/axios.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="/js/slider.js"></script>
     
     <script>
       let locationElem = document.getElementById("location");
@@ -310,7 +310,7 @@
       // Get restuarants of selected location
       function getRestaurants(locationId){
         //console.log(locationId)
-        let url = `${baseUrl}/api/v1/restaurantsbylocation/${locationId}`;
+        let url = `${baseUrl}/restaurantsbylocation/${locationId}`;
 
         axios.get(url).then((data)=>{
           restaurants = [...data.data.restaurants]
@@ -323,7 +323,7 @@
 
       // Function to call search api
       function searchRestaurants(value){
-        let url = `${baseUrl}/api/v1/searchrestaurants`;
+        let url = `${baseUrl}/searchrestaurants`;
         let body = { locationId: $("#location").val(), search: value}
         axios.post(url,body).then((data)=>{
           restaurants = [...data.data.restaurants[0].restaurantList]
@@ -336,7 +336,7 @@
 
       // Get mealtypes
       function getMealtypes(){
-        let url = `${baseUrl}/api/v1/mealtypes`;
+        let url = `${baseUrl}/mealtypes`;
 
         axios.get(url).then((data)=>{
           // console.log(data.data.mealtypes)
@@ -348,7 +348,7 @@
 
       // Search mealtypes
       function searchMealtypes(value){
-        let url = `${baseUrl}/api/v1/searchmealtypes?search=${value}`;
+        let url = `${baseUrl}/searchmealtypes?search=${value}`;
 
         axios.get(url).then((data)=>{
           // console.log(data.data.mealtypes)
@@ -359,7 +359,7 @@
 
       // Get cuisines
       function getCuisines(){
-        let url = `${baseUrl}/api/v1/cuisines`;
+        let url = `${baseUrl}/cuisines`;
 
         axios.get(url).then((data)=>{
           // console.log(data.data.cuisines)
@@ -371,7 +371,7 @@
 
       // Search cuisines
       function searchCuisines(value){
-        let url = `${baseUrl}/api/v1/searchcuisines?search=${value}`;
+        let url = `${baseUrl}/searchcuisines?search=${value}`;
 
         axios.get(url).then((data)=>{
           // console.log(data.data.cuisines)
@@ -390,14 +390,14 @@
 
       // Rediredirect to detail page
       function showRestaurant(restaurantId){
-        let url = `${baseUrl}/api/v1/restaurantsdetails?restaurantId=${restaurantId}`;
+        let url = `${baseUrl}/restaurantsdetails?restaurantId=${restaurantId}`;
         window.location = url;
       }
 
       // Adding event listener on widnow to
       // get restaurants for default location on load
       window.addEventListener("load",()=>{
-        let url = `${baseUrl}/api/v1/locations`;
+        let url = `${baseUrl}/locations`;
 
         // Adding locations in dropdown
         axios.get(url).then(({data})=>{
@@ -466,7 +466,7 @@
 
               // console.log(selectedMealtypes, selectedCuisines, selectedSortOption, selectedLowCost, selectedHighCost)
 
-              let url = `${baseUrl}/api/v1/filter`;
+              let url = `${baseUrl}/filter`;
               let data = {
                 sort: parseInt(selectedSortOption),
                 lcost: selectedLowCost,

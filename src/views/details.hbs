@@ -89,22 +89,22 @@
 
       <div class="tab">
         <button class="tablinks" onclick="openCity(event, 'Overview')">Overview</button>
-        <button class="tablinks" onclick="openCity(event, 'Online Order')">Online Order</button>
+        <button class="tablinks" onclick="openCity(event, 'Online-Order')">Online Order</button>
         <button class="tablinks" onclick="openCity(event, 'Review')">Review</button>
         <button class="tablinks" onclick="openCity(event, 'Menu')">Menu</button>
         <button class="tablinks" onclick="openCity(event, 'Photos')">Photos</button>
       </div>
 
-      <div id="Overview" class="tabcontent">
-        <h3>About this place</h3>
-        <p><h4>Name : {{restaurant.name}}</h4></p>
-        <p><h5>Address : {{restaurant.address}}, {{restaurant.Location.landmark}}, {{restaurant.Location.City.name}}, {{restaurant.Location.state}}, {{restaurant.Location.country}}, </h5></p>
+      {{!-- <div id="Overview" class="tabcontent"> --}}
+        {{!-- <h3>About this place</h3> --}}
+        {{!-- <p><h4>Name : {{restaurant.name}}</h4></p> --}}
+        {{!-- <p><h5>Address : {{restaurant.address}}, {{restaurant.Location.landmark}}, {{restaurant.Location.City.name}}, {{restaurant.Location.state}}, {{restaurant.Location.country}}, </h5></p> --}}
 
           {{!-- Overview tab --}}
             <div id="Overview" class="tabcontent">
                   <h4>About this place</h4>
                   <p class="mb-0">Name : {{restaurant.name}}</p>
-                  <p class="mb-0">Address : {{restaurant.address}}, {{restaurant.Location.landmark}}, {{restaurant.Location.city}}, {{restaurant.Location.state}}, {{restaurant.Location.country}} </p>
+                  <p class="mb-0">Address : {{restaurant.address}}, {{restaurant.Location.landmark}}, {{restaurant.Location.City.name}}, {{restaurant.Location.City.State.name}}, {{restaurant.Location.City.State.Country.name}} </p>
                   <p class="mb-0">Contact : {{restaurant.contact}}</p>
             </div>
 

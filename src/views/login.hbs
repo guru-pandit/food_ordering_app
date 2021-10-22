@@ -18,8 +18,8 @@
 			<form action="#" id="signin-form">
 				<h1 class="form-heading">Sign in</h1>
 				<div class="social-container">
-					<a href="/api/v1/facebook/login" class="social-link"><i class="fa fa-facebook"></i></a>
-					<a href="/api/v1/google/login" class="social-link" id="google-login"><i class="fa fa-google"></i></a>
+					<a href="/facebook/login" class="social-link"><i class="fa fa-facebook"></i></a>
+					<a href="/google/login" class="social-link" id="google-login"><i class="fa fa-google"></i></a>
 					<a href="#" class="social-link"><i class="fa fa-twitter"></i></a>
 				</div>
 				<div id="btn-outer">
@@ -60,7 +60,7 @@
 				<div class="overlay-panel overlay-right">
 					<h1>Welcome!</h1>
 					<p>Enter your personal details and start journey with us</p>
-					<a class="btn btn-outlined-green btn-rounded" id="signUp" href="/api/v1/register">Sign Up</a>
+					<a class="btn btn-outlined-green btn-rounded" id="signUp" href="/register">Sign Up</a>
 				</div>
 			</div>
 		</div>
@@ -115,7 +115,7 @@
 					channel:'sms'
 				    }
 					console.log(data)
-					axios.post(`${baseUrl}/api/v1/loginwithotp`, data).then((res)=>{
+					axios.post(`${baseUrl}/loginwithotp`, data).then((res)=>{
 						insertUrlParam('phoneNumber',parseInt(full_number))
 						openModal("success",`OTP has been sent to ${full_number}`);
 				}).catch((err)=>{
@@ -141,7 +141,7 @@
 					code:code
 				    }
 				console.log(data)
-				axios.post(`${baseUrl}/api/v1/verifymobileotp`, data).then((res)=>{
+				axios.post(`${baseUrl}/verifymobileotp`, data).then((res)=>{
 						//console.log(res)
 						if(res.data.status == "approved"){
 							openModal("success",`successfully logged in`);
@@ -208,7 +208,7 @@
 			let password = $("#password").val() 
 			// console.log(email, password)
 			// let url = `${baseUrl}/api/v1/login`
-			let url = `${baseUrl}/api/v1/local/login`
+			let url = `${baseUrl}/local/login`
 
 			if(email && password){
 				let body = {email, password}
@@ -238,7 +238,7 @@
             const data = { email : email }
 
 			// console.log(data)
-            axios.post(`${baseUrl}/api/v1/forgetPassword`,data,
+            axios.post(`${baseUrl}/forgetPassword`,data,
             ).then(res => {
               //console.log(res)
 				openModal("success",`Link has been sent to ${email}`);
@@ -253,7 +253,7 @@
 
 		// Window load event listener
 		window.addEventListener("load",()=>{
-        let url = `${baseUrl}/api/v1/googleAuth`;
+        let url = `${baseUrl}/googleAuth`;
 
         // Adding locations in dropdown
         axios.get(url).then(({data})=>{
