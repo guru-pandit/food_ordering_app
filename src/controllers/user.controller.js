@@ -554,8 +554,7 @@ const updateUserInfo = async (req, res) => {
 }
 
 //to login with mobile and otp
-
-const client = require("twilio")(config.accountSID, config.authToken)
+const client = require("twilio")(config.accountSID, config.authToken);
 
 const loginWithOtp = async (req, res) => {
     try {
@@ -576,6 +575,7 @@ const loginWithOtp = async (req, res) => {
     }
 }
 
+// Function to verify mobile otp
 const verifyMobileOtp = async (req, res) => {
     try {
         const { phoneNumber, code } = req.body;

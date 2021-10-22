@@ -16,19 +16,19 @@ module.exports = (app) => {
     app.get("/logout", userController.logoutUser);
 
     // Local auth with passport
-    app.post("/local/login", passport.authenticate('local', { successRedirect: "/api/v1/local/success", failureRedirect: "/api/v1/local/failure" }));
+    app.post("/local/login", passport.authenticate('local', { successRedirect: "/local/success", failureRedirect: "/local/failure" }));
     app.get("/local/success", userController.localAuthSuccess);
     app.get("/local/failure", userController.localAuthFailure);
 
     // Google auth with passport
     app.get("/google/login", passport.authenticate('google', { scope: ['email', 'profile'] }));
-    app.get("/google/callback", passport.authenticate('google', { successRedirect: "/api/v1/google/success", failureRedirect: "/api/v1/google/failure" }));
+    app.get("/google/callback", passport.authenticate('google', { successRedirect: "/google/success", failureRedirect: "/google/failure" }));
     app.get("/google/success", userController.googleAuthSuccess);
     app.get("/google/failure", userController.googleAuthFailure);
 
     // facebook auth with passport
     app.get("/facebook/login", passport.authenticate('facebook', { scope: ['email', 'public_profile'] }));
-    app.get("/facebook/callback", passport.authenticate('facebook', { successRedirect: "/api/v1/facebook/success", failureRedirect: "/api/v1/facebook/failure" }));
+    app.get("/facebook/callback", passport.authenticate('facebook', { successRedirect: "/facebook/success", failureRedirect: "/facebook/failure" }));
     app.get("/facebook/success", userController.facebookAuthSuccess);
     app.get("/facebook/failure", userController.facebookAuthFailure);
 

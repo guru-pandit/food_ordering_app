@@ -29,63 +29,54 @@
 	
 	<div class="container-fluid details-container">
 		<div class="card">
-      <div style="margin-bottom: 15px;
-    font-size: 14px;
-    color: #0C9463;
-    font-weight: 600;
-    cursor:pointer" id="go-to-home"><< go to home</div>
-			<div class="container-fliud">
-				<div class="wrapper row">
-					<div class="preview col-md-6" style="max-height:450px;">
-
-            <div
-      style="--swiper-navigation-color: #fff; --swiper-pagination-color: #fff"
-      class="swiper mySwiper2"
-    >
-      <div class="swiper-wrapper">
-        {{#each restaurant.image}}
-        <div class="swiper-slide">
-          <img src="{{this}}" />
-        </div>
-        {{/each}}
-      </div>
-      <div class="swiper-button-next"></div>
-      <div class="swiper-button-prev"></div>
-    </div>
-    <div thumbsSlider="" class="swiper mySwiper">
-      <div class="swiper-wrapper">
-        {{#each restaurant.image}}
-        <div class="swiper-slide">
-          <img src={{this}} />
-        </div>
-        {{/each}}
-      </div>
-    </div>
-						
-					</div>
-					<div class="details col-md-6">
-						<h2 class="product-title">{{restaurant.name}}</h2>
-						<div class="rating">
-							<ul class="list-inline stars pl-2" rating={{avgRatings}}>
-								<li><i class="fa fa-star"></i></li>
-                <li><i class="fa fa-star"></i></li>
-                <li><i class="fa fa-star"></i></li>
-                <li><i class="fa fa-star"></i></li>
-                <li><i class="fa fa-star"></i></li>
-							</ul>
-							<span class="review-no">{{reviewsCount}} reviews </span>
-						</div>
-						<p class="product-description">North Indian, Chinese, South Indian, Street Food, Ice Cream, Beverages</p>
-            <p class="product-description">{{restaurant.Location.landmark}}, {{restaurant.Location.City.name}}</p>
-            <p class="product-description">{{restaurant.openingTime}} – {{restaurant.closingTime}}</p>
-            <p class="product-description">Food will available between above time only</p>
-            <div>
-							<button class="add-to-cart btn btn-default" type="button" data-toggle="modal" data-target="#myModal"><span class="fa fa-star"></span> Add Reviews</button>
-							<button class="like btn btn-default" type="button"><span class="fa fa-heart"></span></button>
-			    	</div><br>
-        	</div>
-		    </div>
-	    </div><br>
+      <a href="/" class="go-to-home" id="go-to-home"><i class="fa fa-arrow-left"></i> Go to home</a>
+      <div class="container-fliud">
+				        <div class="wrapper row">
+				            <div class="preview col-md-6" style="max-height:450px;">
+                        <div style="--swiper-navigation-color: #fff; --swiper-pagination-color: #fff" class="swiper mySwiper2">
+                            <div class="swiper-wrapper">
+                              {{#each restaurant.image}}
+                                  <div class="swiper-slide">
+                                    <img src="{{this}}" />
+                                  </div>
+                              {{/each}}
+                            </div>
+                            <div class="swiper-button-next"></div>
+                            <div class="swiper-button-prev"></div>
+                        </div>
+                        <div thumbsSlider="" class="swiper mySwiper">
+                            <div class="swiper-wrapper">
+                                {{#each restaurant.image}}
+                                    <div class="swiper-slide">
+                                      <img src={{this}} />
+                                    </div>
+                                {{/each}}
+                            </div>
+                        </div>
+					          </div>
+                    <div class="details col-md-6">
+						            <h2 class="product-title mb-2">{{restaurant.name}}</h2>
+						            <div class="rating">
+                            <ul class="list-inline stars mb-0" rating={{avgRatings}}>
+                                <li><i class="fa fa-star p-0"></i></li>
+                                <li><i class="fa fa-star p-0"></i></li>
+                                <li><i class="fa fa-star p-0"></i></li>
+                                <li><i class="fa fa-star p-0"></i></li>
+                                <li><i class="fa fa-star p-0"></i></li>
+                            </ul>
+							              <span class="review-no mb-2">{{reviewsCount}} reviews </span>
+						            </div>
+                        <p class="product-description mb-2">North Indian, Chinese, South Indian, Street Food, Ice Cream, Beverages</p>
+                        <p class="product-description mb-2">{{restaurant.Location.landmark}}, {{restaurant.Location.city}}</p>
+                        <p class="product-description mb-2">{{restaurant.openingTime}} – {{restaurant.closingTime}}</p>
+                        <p class="product-description mb-3">Food will available between above time only</p>
+                        <div>
+                          <button class="btn btn-green add-to-cart" type="button" data-toggle="modal" data-target="#myModal"><span class="fa fa-star"></span> Add Reviews</button>
+                          <button class="btn btn-outlined-green like" type="button"><span class="fa fa-heart"></span></button>
+			    	            </div><br>
+        	          </div>
+		            </div>
+	          </div><br>
 
       <div class="tab">
         <button class="tablinks" onclick="openCity(event, 'Overview')">Overview</button>
@@ -95,18 +86,14 @@
         <button class="tablinks" onclick="openCity(event, 'Photos')">Photos</button>
       </div>
 
-      {{!-- <div id="Overview" class="tabcontent"> --}}
-        {{!-- <h3>About this place</h3> --}}
-        {{!-- <p><h4>Name : {{restaurant.name}}</h4></p> --}}
-        {{!-- <p><h5>Address : {{restaurant.address}}, {{restaurant.Location.landmark}}, {{restaurant.Location.City.name}}, {{restaurant.Location.state}}, {{restaurant.Location.country}}, </h5></p> --}}
-
-          {{!-- Overview tab --}}
-            <div id="Overview" class="tabcontent">
-                  <h4>About this place</h4>
-                  <p class="mb-0">Name : {{restaurant.name}}</p>
-                  <p class="mb-0">Address : {{restaurant.address}}, {{restaurant.Location.landmark}}, {{restaurant.Location.City.name}}, {{restaurant.Location.City.State.name}}, {{restaurant.Location.City.State.Country.name}} </p>
-                  <p class="mb-0">Contact : {{restaurant.contact}}</p>
-            </div>
+    
+      {{!-- Overview tab --}}
+          <div id="Overview" class="tabcontent">
+              <h4>About this place</h4>
+              <p class="mb-0">Name : {{restaurant.name}}</p>
+              <p class="mb-0">Address : {{restaurant.address}}, {{restaurant.Location.landmark}}, {{restaurant.Location.City.name}}, {{restaurant.Location.City.State.name}}, {{restaurant.Location.City.State.Country.name}} </p>
+              <p class="mb-0">Contact : {{restaurant.contact}}</p>
+          </div>
 
       {{!-- Order tab --}}
       <div id="Online-Order" class="tabcontent">
@@ -478,7 +465,7 @@ function placeOrder(){
       openModal("error", "All fields are required")
     }else{
       if(selectedPaymentMode==="cod"){
-          axios.post(`${baseUrl}/api/v1/createOrder`,body).then((order)=>{
+          axios.post(`${baseUrl}/createOrder`,body).then((order)=>{
           console.log(order.data.orderDetails)
           orderDetails = order.data.orderDetails
               openModal("success", "Order placed")
@@ -487,10 +474,10 @@ function placeOrder(){
             console.log(err)
           })
       }else{
-          axios.post(`${baseUrl}/api/v1/createOrder`,body).then((order)=>{
+          axios.post(`${baseUrl}/createOrder`,body).then((order)=>{
           console.log(order.data.orderDetails)
           orderDetails = order.data.orderDetails
-          axios.post(`${baseUrl}/api/v1/payment/order?totalPrice=${orderDetails.total}`).then((res)=>{
+          axios.post(`${baseUrl}/payment/order?totalPrice=${orderDetails.total}`).then((res)=>{
             console.log(res)
 
             let options = {
@@ -503,7 +490,7 @@ function placeOrder(){
                   "image": "https://example.com/your_logo",
                   "order_id": res.data.data.id,
                   "handler": function (response){
-                    axios.post(`${baseUrl}/api/v1/isordercomplete?orderId=${orderDetails.orderId}`,response).then(res=>{
+                    axios.post(`${baseUrl}/isordercomplete?orderId=${orderDetails.orderId}`,response).then(res=>{
                         // console.log(res.data.message);
                           if(res.data.message==="success"){
                               cartLS.destroy()
@@ -520,7 +507,7 @@ function placeOrder(){
 
             var rzp1 = new Razorpay(options);
                 rzp1.on('payment.failed', function (response){
-                //window.location = `${baseUrl}/api/v1/paymentfailure`;
+                //window.location = `${baseUrl}/paymentfailure`;
                 openModal("error", "Oh no, your payment failed")
             });
 
@@ -648,7 +635,7 @@ cartLS.onChange(renderCart)
         comment : comment
       }
 
-      axios.post(`${baseUrl}/api/v1/addnewreview?userId=2&restaurantId=${restaurantId}`,data).then(res => {
+      axios.post(`${baseUrl}/addnewreview?userId=2&restaurantId=${restaurantId}`,data).then(res => {
           console.log(res)
           alert("Your Review has been successfully submitted.");
       }).catch(err => {

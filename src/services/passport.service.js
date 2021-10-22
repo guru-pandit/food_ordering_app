@@ -19,7 +19,7 @@ passport.deserializeUser(function (user, done) {
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: "http://localhost:8080/api/v1/google/callback",
+    callbackURL: "http://localhost:8080/google/callback",
     passReqToCallback: true
 },
     function (request, accessToken, refreshToken, profile, done) {
@@ -31,7 +31,7 @@ passport.use(new GoogleStrategy({
 passport.use(new FacebookStrategy({
     clientID: process.env.FACEBOOK_CLIENT_ID,
     clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
-    callbackURL: "http://localhost:8080/api/v1/facebook/callback",
+    callbackURL: "http://localhost:8080/facebook/callback",
     profileFields: ['id', 'email', 'first_name', 'last_name']
 }, function (accessToken, refreshToken, profile, done) {
     return done(null, profile._json)
