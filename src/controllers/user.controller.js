@@ -28,15 +28,15 @@ const createUser = async (req, res) => {
             firstName: req.body.firstName,
             lastName: req.body.lastName,
             email: req.body.email,
-            countryCode: req.body.countryCode,
+            // countryCode: req.body.countryCode,
             contact: req.body.contact,
-            password: req.body.password,
-            gender: req.body.gender,
-            image: req.body.image,
-            address: req.body.address,
-            country: req.body.country,
-            state: req.body.state,
-            city: req.body.city,   
+            // password: req.body.password,
+            // gender: req.body.gender,
+            // image: req.body.image,
+            // address: req.body.address,
+            // country: req.body.country,
+            // state: req.body.state,
+            // city: req.body.city,   
         };
         // create new user
         const data = await User.create(user);
@@ -383,9 +383,9 @@ const resetPassword = async (req, res) => {
         //if not data found then return user does not exist
         return res.status(400).json({ error: "Invalid userId..." });
     } else {
-            let hashedPassword = await bcrypt.hashSync(password, 10);
-            data.password = hashedPassword
-            data.save()
+        let hashedPassword = await bcrypt.hashSync(password, 10);
+        data.password = hashedPassword
+        data.save()
 
         res.status(200).json({ message: "password change " });
     }
@@ -534,66 +534,66 @@ const facebookAuthFailure = (req, res) => {
 }
 
 //to update delivery address
-const updateUserInfo = async(req,res)=>{
-try{
-    let {userId} = req.params;
-    let {deliveryAddress} = req.body;
-    let user = await User.findOne({id : userId})
-    if(user!==null){
-        user.deliveryAddress = deliveryAddress;
-        let updatedUser = await user.save();
-        if(updatedUser!==null){
-            res.status(200).json({ message: "user updated successfully", user: updatedUser })
-        }else{
-            res.status(500).json({ message: "user NOT updated successfully" })
+const updateUserInfo = async (req, res) => {
+    try {
+        let { userId } = req.params;
+        let { deliveryAddress } = req.body;
+        let user = await User.findOne({ id: userId })
+        if (user !== null) {
+            user.deliveryAddress = deliveryAddress;
+            let updatedUser = await user.save();
+            if (updatedUser !== null) {
+                res.status(200).json({ message: "user updated successfully", user: updatedUser })
+            } else {
+                res.status(500).json({ message: "user NOT updated successfully" })
+            }
         }
-    }
- } catch (err) {
+    } catch (err) {
         res.status(500).json({ error: err.message || "Something went wrong" });
     }
 }
 
 //to login with mobile and otp
 
-const client = require("twilio")(config.accountSID,config.authToken)
+const client = require("twilio")(config.accountSID, config.authToken)
 
-const loginWithOtp = async(req,res)=>{
-    try{
-        const {phoneNumber,channel} = req.body;
+const loginWithOtp = async (req, res) => {
+    try {
+        const { phoneNumber, channel } = req.body;
         client
             .verify
             .services(config.serviceId)
             .verifications
             .create({
-                to:`+${phoneNumber}`,
-                channel:channel
+                to: `+${phoneNumber}`,
+                channel: channel
             })
-            .then((data)=>{
+            .then((data) => {
                 res.status(200).send(data);
             })
-    }catch(err){ 
+    } catch (err) {
         res.status(500).json({ error: err.message || "Something went wrong" });
     }
 }
 
-const verifyMobileOtp = async(req,res)=>{
-    try{
-        const {phoneNumber,code} = req.body;
-    client
-        .verify
-        .services(config.serviceId)
-        .verificationChecks
-        .create({
-            to:`+${phoneNumber}`,
-            code:code
-        })
-        .then((data)=>{
-            res.status(200).send(data);
-        })
-    }catch(err){
+const verifyMobileOtp = async (req, res) => {
+    try {
+        const { phoneNumber, code } = req.body;
+        client
+            .verify
+            .services(config.serviceId)
+            .verificationChecks
+            .create({
+                to: `+${phoneNumber}`,
+                code: code
+            })
+            .then((data) => {
+                res.status(200).send(data);
+            })
+    } catch (err) {
         res.status(500).json({ error: err.message || "Something went wrong" });
     }
 }
 
 
-module.exports = { createUser, verifyUser, loginUser, logoutUser, localAuthSuccess, localAuthFailure, googleAuthSuccess, googleAuthFailure, facebookAuthSuccess, facebookAuthFailure, dashboard, getUsersById, deleteUser, UpdateUser, getUsersByAddress, userPartialUpdate, getLoginPage, getRegisterPage, forgetPassword, resetPassword, verifyUserToken, addImage, updateUserInfo,loginWithOtp,verifyMobileOtp }
+module.exports = { createUser, verifyUser, loginUser, logoutUser, localAuthSuccess, localAuthFailure, googleAuthSuccess, googleAuthFailure, facebookAuthSuccess, facebookAuthFailure, dashboard, getUsersById, deleteUser, UpdateUser, getUsersByAddress, userPartialUpdate, getLoginPage, getRegisterPage, forgetPassword, resetPassword, verifyUserToken, addImage, updateUserInfo, loginWithOtp, verifyMobileOtp }

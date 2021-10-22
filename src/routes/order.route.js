@@ -3,25 +3,25 @@ const { isLoggedIn } = require("../middlewares/auth");
 
 module.exports = (app) => {
     // Place order
-    app.post("/api/v1/createOrder", orderController.createOrder);
+    app.post("/createOrder", orderController.createOrder);
     // Place order
-    app.post("/api/v1/order", orderController.placeOrder);
+    app.post("/order", orderController.placeOrder);
     //update order
-    app.post("/api/v1/updateorder/:orderId", orderController.updateOrder);
+    app.post("/updateorder/:orderId", orderController.updateOrder);
     // Get order by order id
-    app.get("/api/v1/order/:orderId", orderController.getOrderByOrderId);
+    app.get("/order/:orderId", orderController.getOrderByOrderId);
     // Get orders by user id
-    app.get("/api/v1/userOrders/:userId", orderController.getOrdersByUserId);
+    app.get("/userOrders/:userId", orderController.getOrdersByUserId);
     // payment
-    app.post("/api/v1/payment/order", orderController.orderPayment);
+    app.post("/payment/order", orderController.orderPayment);
     //checkout
-    app.get("/api/v1/payment/checkout", orderController.checkoutPayment)
+    app.get("/payment/checkout", orderController.checkoutPayment);
     //callback
-    app.post("/api/v1/isordercomplete", orderController.checkSuccessOrFailure)
+    app.post("/isordercomplete", orderController.checkSuccessOrFailure);
     //success
     // app.get("/api/v1/paymentsuccess", orderController.paymentSuccess);
     //failure
     // app.get("/api/v1/paymentfailure", orderController.paymentFailure);
     //to update delivery address
-    app.post("/api/v1/updateaddress/:orderId", orderController.updateAddress)
+    app.post("/updateaddress/:orderId", orderController.updateAddress);
 }
