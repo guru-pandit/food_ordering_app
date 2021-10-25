@@ -65,8 +65,8 @@
       if(password && confirmPassword){
           const data = { password :password ,confirmPassword:confirmPassword }
 
-          axios.post( `${baseUrl}/api/v1/resetPassword/${userId}`, data).then(res => {
-                  window.location=`${baseUrl}/api/v1/login`
+          axios.post( `${baseUrl}/resetPassword/${userId}`, data).then(res => {
+                  window.location=`${baseUrl}/login`
               }).catch(err => {
                   openModal(err.response.data.error)
               })

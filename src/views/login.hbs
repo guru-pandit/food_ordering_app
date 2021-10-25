@@ -22,11 +22,7 @@
 					<a href="/google/login" class="social-link" id="google-login"><i class="fa fa-google"></i></a>
 					<a href="#" class="social-link"><i class="fa fa-twitter"></i></a>
 				</div>
-				<div id="btn-outer">
-					<button type="button" id="btn-cwc" class="btn btn-green mt-3" style="width:245px;">Continue with Credentials</button>
-					<button type="button" id="btn-cwm" class="btn btn-green mt-3" style="width:245px;">Continue with Mobile</button>
-				</div>
-				<div id="credentials-div" style="display: none;">
+				<div id="credentials-div" style="width:100%">
 					<span class="separator">use your email</span>
 				<div class="input-container mt-2">
 					<i class="fa fa-envelope input-icon"></i>
@@ -38,7 +34,12 @@
 				</div>
 				<a href="#" id="forget-password" class="forget-password" style="display:block;"> Forgot your password?</a>
 				<button type="submit" id="login" class="btn btn-green btn-rounded" >Sign In</button>
-				<div id="go-back-btn" style="margin-top:10px;color:#dc3545;cursor:pointer"><< Go back </div>
+				{{!-- <div id="go-back-btn" style="margin-top:10px;color:#dc3545;cursor:pointer"><< Go back </div> --}}
+				</div>
+				<div style="margin-top: 10px;">Or</div>
+				<div id="btn-outer" style="width:100%">
+					{{!-- <button type="button" id="btn-cwc" class="btn btn-green mt-3" style="width:245px;">Continue with Credentials</button> --}}
+					<button type="button" id="btn-cwm" class="btn btn-outlined-green mt-3" style="width: 100%;">Continue with Mobile</button>
 				</div>
 				<div id="mobile-div" style="display: none; margin-top:10px;">
 					<input name="phone_number[main]" type="text" class="form-control mb-2 inptFielsd" id="phone"
@@ -156,14 +157,14 @@
 			}
 
 		 //to select login methods
-      $("#btn-cwc").click(function(){
-        $('#credentials-div').css({
-          'display':'block'
-        })
-        $('#btn-outer').css({
-          'display':'none'
-        })
-      })
+      //$("#btn-cwc").click(function(){
+       // $('#credentials-div').css({
+       //   'display':'block'
+        //})
+        //$('#btn-outer').css({
+        //  'display':'none'
+       // })
+      //})
 
       $("#btn-cwm").click(function(){
         $('#mobile-div').css({
@@ -172,24 +173,30 @@
         $('#btn-outer').css({
           'display':'none'
         })
-      })
-
-      $("#go-back-btn").click(function(){
-        $('#credentials-div').css({
+		$('#credentials-div').css({
           'display':'none'
         })
+      })
+
+      //$("#go-back-btn").click(function(){
+        //$('#credentials-div').css({
+        //  'display':'none'
+        //})
+		//$('#mobile-div').css({
+        //  'display':'none'
+        //})
+       // $('#btn-outer').css({
+       //   'display':'block'
+        //})
+      //})
+      $("#go-back-mobile").click(function(){
 		$('#mobile-div').css({
           'display':'none'
         })
         $('#btn-outer').css({
           'display':'block'
         })
-      })
-      $("#go-back-mobile").click(function(){
-		$('#mobile-div').css({
-          'display':'none'
-        })
-        $('#btn-outer').css({
+		$('#credentials-div').css({
           'display':'block'
         })
       })

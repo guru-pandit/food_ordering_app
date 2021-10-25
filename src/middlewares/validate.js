@@ -33,9 +33,27 @@ const checkDulicateEmail = async (req, res, next) => {
     }
 };
 
+const checkDulicateContact = async (req, res, next) => {
+    try {
+        let errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+        let { contact } = req.body;
+        let user = await User.findOne({ where: { contact } });
+        if (user) {
+            return res.status(400).send({ error: "User already exist" });
+        }
+        next();
+    } catch (err) {
+        return res.status(500).json({ error: err.message });
+    }
+};
+
 const validate = {
     checkConfirmPassword,
     checkDulicateEmail,
+    checkDulicateContact
 };
 
 module.exports = validate;
