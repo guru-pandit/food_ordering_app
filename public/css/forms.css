@@ -60,7 +60,6 @@ body {
 	margin: 0 0 .5rem 0;
 }
 
-
 .social-container a.social-link {
 	border: 1px solid var(--color-lightgray);
 	text-decoration: none;
@@ -123,6 +122,54 @@ form {
 	margin-bottom: 1rem;
 }
 
+#mobile-div{
+	padding: .1rem;
+}
+
+.input-container > .iti{
+	width: 100%;
+}
+
+#mobile-div > .iti{
+	width: 100%;
+	border: .15rem solid var(--color-gray);
+	border-radius: 5px;
+}
+
+.input-container > .iti .form-control{
+	border: none;
+	outline: none;
+	padding: .25rem .75rem;
+}
+
+#mobile-div > .iti .form-control{
+	border: none;
+	outline: none;
+}
+
+.input-container > .iti .form-control:focus{
+	border: none;
+	outline: none;
+	box-shadow: none;
+}
+
+#mobile-div > .iti .form-control:focus{
+	box-shadow: none;
+}
+
+.input-container .iti--separate-dial-code .iti__selected-flag,
+#mobile-div .iti--separate-dial-code .iti__selected-flag{
+	background-color: var(--color-white);
+}
+
+.iti--allow-dropdown .iti__flag-container:hover .iti__selected-flag{
+	background-color: var(--color-white) !important;
+}
+
+.iti__country-list{
+	width: 300px;
+}
+ 
 .input-container.error{
 	border-color: var(--color-red);
 	box-shadow: 0 0 .5rem .25rem rgb(220 53 69 / 15%);
@@ -134,7 +181,7 @@ form {
 }
 
 .input-inner{
-	padding: .3rem .25rem;
+	padding: .3rem .75rem;
 	border: none;
 	outline: none;
 	width: 100%;
@@ -156,8 +203,21 @@ form {
     justify-content: center;
 }
 
-.fa-lock.input-icon{
+.fa-lock.input-icon,
+.fa-user.input-icon{
 	font-size: 1.25rem;
+}
+
+.fa.input-icon{
+	position: relative;
+}
+
+.fa.input-icon::after{
+	content: "";
+    border: 1px solid rgba(0,0,0,0.2);
+    height: 75%;
+    position: absolute;
+    right: -5px;
 }
 
 a.forget-password{
