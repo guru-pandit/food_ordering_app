@@ -57,18 +57,53 @@ window.onclick = function (event) {
 
 // Review modal stars
 $("input[name='review-rating']").click(function () {
-    var sim = $("input[name='review-rating']:checked").val();
-    alert(sim)
-    // if (sim < 3) {
-    //     $('.myratings').css('color', 'red'); $(".myratings").text(sim);
-    // } else {
-    //     $('.myratings').css('color', 'green'); $(".myratings").text(sim);
-    // }
+    let sim = $("input[name='review-rating']:checked").val();
+    // alert(sim)
+    if (sim < 3) {
+        // $('.myratings').css('color', 'red');
+        $("#selected-rating").text(sim);
+    } else {
+        // $('.myratings').css('color', 'green');
+        $("#selected-rating").text(sim);
+    }
 });
 
+$(".review-modal-rating").on("reset", () => {
+    $("#selected-rating").text("0");
+})
 
 // Review modal js
+$("#open-review-modal").click(function () {
+    $("#review-modal").addClass("review-modal-active");
+})
 
+$("#close-review-modal").click(function () {
+    $("#review-modal").removeClass("review-modal-active");
+})
 
+$("#review-submit").click(function (e) {
+    e.preventDefault()
+    let ratingValue = $("input[name='review-rating']:checked").val();
+    let comment = $("#review-comment").val()
 
+    let stars = isNaN(parseFloat(ratingValue)) ? 0 : parseFloat(ratingValue)
 
+    const data = {
+        stars: stars,
+        comment: comment
+    }
+
+    console.log(data)
+
+    axios.post(`${baseUrl}/addnewreview?userId=2&restaurantId=${restaurantId}`, data).then(res => {
+        console.log(res)
+        // alert("Your Review has been successfully submitted.");
+        // openModal("success", "Review submitted successfully", () => {
+        //     $("#review-modal").removeClass("review-modal-active");
+        // })
+        $("#review-modal").removeClass("review-modal-active");
+    }).catch(err => {
+        // alert(err.response.data.error)
+        openModal("error", "Review not submitted")
+    })
+})

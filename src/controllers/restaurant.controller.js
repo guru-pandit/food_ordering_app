@@ -230,6 +230,7 @@ const getRestaurantsDetails = async (req, res) => {
 const addReview = async (req, res) => {
     try {
         // to take value from req.body
+        console.log(req.body)
         const review = {
             stars: req.body.stars > 5 ? 5 : req.body.stars,
             comment: req.body.comment,

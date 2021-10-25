@@ -693,14 +693,14 @@
   align-items: center;
   justify-content: center;
   background-color: rgba(0,0,0,0.5);
-  /* opacity: 0; */
-  /* visibility: hidden; */
-  opacity: 1;
-  visibility: visible;
+  opacity: 0;
+  visibility: hidden;
+  /* opacity: 1; */
+  /* visibility: visible; */
   transition: all .3s ease;
 }
 
-.review-modal-inner.modal-active{
+.review-modal.review-modal-active{
   visibility: visible;
   opacity: 1;
 }

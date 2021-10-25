@@ -71,7 +71,7 @@
                         <p class="product-description mb-2">{{restaurant.openingTime}} – {{restaurant.closingTime}}</p>
                         <p class="product-description mb-3">Food will available between above time only</p>
                         <div>
-                          <button class="btn btn-green add-to-cart" type="button" data-toggle="modal" data-target="#myModal"><span class="fa fa-star"></span> Add Reviews</button>
+                          <button class="btn btn-green add-to-cart" type="button" data-toggle="modal" data-target="#myModal" id="open-review-modal"><span class="fa fa-star"></span> Add Reviews</button>
                           <button class="btn btn-outlined-green like" type="button"><span class="fa fa-heart"></span></button>
 			    	            </div><br>
         	          </div>
@@ -259,13 +259,13 @@
                                 <input type="radio" id="starhalf" name="review-rating" value="0.5" />
                                 <label class="half" for="starhalf" title="Sucks big time - 0.5 stars"></label>
                             </div>
-                            <span class="selected-rating" id="selected-rating">4.5</span>
+                            <span class="selected-rating" id="selected-rating">0</span>
                         </form>
                         <form id="review-modal-feedback" class="review-modal-feedback" action="#">
                             <label for="review-comment" class="review-comment-label">Write your feedback:</label>
                             <textarea class="review-comment" name="review-comment" id="review-comment"></textarea>
                             <div class="w-100 text-center mb-3">
-                                <button class="btn btn-green" id="btn-submit" >Submit</button>
+                                <button class="btn btn-green" id="review-submit" >Submit</button>
                             </div>
                         </form>
                     </div>
@@ -635,26 +635,26 @@ cartLS.onChange(renderCart)
 
 
 // Review submit button
-  document.getElementById('btn-submit').onclick = function(e){
-      e.preventDefault();
-      const form = document.getElementById('feedback');
+  //document.getElementById('btn-submit').onclick = function(e){
+    //  e.preventDefault();
+      //const form = document.getElementById('feedback');
                 
       // getting the element's value
-      const stars = form.elements['rate'].value;
-      const comment = form.elements['review'].value;
+      //const stars = form.elements['rate'].value;
+      //const comment = form.elements['review'].value;
 
-      const data = {
-        stars : parseInt(stars),
-        comment : comment
-      }
+      //const data = {
+        //stars : parseInt(stars),
+      //  comment : comment
+      //}
 
-      axios.post(`${baseUrl}/addnewreview?userId=2&restaurantId=${restaurantId}`,data).then(res => {
-          console.log(res)
-          alert("Your Review has been successfully submitted.");
-      }).catch(err => {
-          alert(err.response.data.error)
-      })
-}
+      //axios.post(`${baseUrl}/addnewreview?userId=2&restaurantId=${restaurantId}`,data).then(res => {
+       //   console.log(res)
+         // alert("Your Review has been successfully submitted.");
+      //}).catch(err => {
+        //  alert(err.response.data.error)
+      //})
+//}
 
 
 // Order button/continue
