@@ -14,28 +14,15 @@ const home = (req, res) => {
             console.log("access-token: ", req.cookies["access-token"]);
 
             jwt.verify(req.cookies["access-token"], process.env.SECRET_KEY, function (err, decoded) {
-<<<<<<< HEAD
-
-=======
->>>>>>> loginSession
                 if (err) throw err
 
                 console.log("Decoded value:", decoded);
 
                 // check user exist in session or not
                 if (req.session.users?.includes(decoded.id)) {
-<<<<<<< HEAD
-
-                    User.findOne({ where: { id: decoded.id } }).then((user) => {
-                        // user.image = `${req.protocol}://${req.headers.host}/images/users/${user.id}/${user.image}`;
-
-                        user.image = `/images/users/${user.id}/${user.image}`;
-
-=======
                     User.findOne({ where: { id: decoded.id } }).then((user) => {
                         // user.image = `${req.protocol}://${req.headers.host}/images/users/${user.id}/${user.image}`;
                         user.image = `/images/users/${user.id}/${user.image}`;
->>>>>>> loginSession
                         res.render("index", { isLoggedIn: true, user })
                     })
                 } else {

@@ -230,7 +230,7 @@
           let templateString = rest.image !== null ? `<div class="rest-card" data-restaurantid=${rest.id} onclick="showRestaurant(this.dataset.restaurantid)">
                                     <div class="rest-img">
                                         <img src=${rest.image[0]} alt=""/>
-                                        <div class="rating">${rest.avgRatings} <i class="fa fa-star"></i></div>
+                                        <div class="rating">${rest.avgRatings !== null ? rest.avgRatings.toFixed(1): 0} <i class="fa fa-star"></i></div>
                                     </div>
                                     <h4 class="rest-heading">${rest.name}</h4>
                                     <p class="rest-address">${rest.Location.landmark}, ${rest.Location.City.name}</p>
