@@ -3,11 +3,25 @@ const jwt = require('jsonwebtoken');
 
 const isLoggedIn = async (req, res, next) => {
     try {
-        if (req.user) {
-            console.log(req.user);
-            next();
+        console.log("Auth(access-token): ", req.cookies["access-token"])
+        if (req.cookies["access-token"]) {
+            jwt.verify(req.cookies["access-token"], process.env.SECRET_KEY, function (err, decoded) {
+                if (err) throw err
+
+                // console.log("Auth(Decoded value):", decoded);
+                console.log("Auth(session-users):", req.session.users);
+
+                if (req.session.users?.includes(decoded.id)) {
+                    User.findOne({ where: { id: decoded.id } }).then((user) => {
+                        req.loggedInUser = user;
+                        next()
+                    })
+                } else {
+                    return res.status(400).redirect("/login")
+                }
+            });
         } else {
-            res.redirect("/api/v1/login");
+            return res.status(400).redirect("/login")
         }
     } catch (err) {
         res.status(500).json({ error: err.message || "Something went wrong" });

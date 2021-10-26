@@ -31,7 +31,7 @@
   transform: translateY(-50px)
 }
 
-.modal.active .mymodal-content{
+.dialog-modal.active .mymodal-content{
   animation-duration: 1s;
   animation-name: slidein;
   animation-fill-mode: forwards;
@@ -46,7 +46,7 @@
   }
 }
 
-.mymodal-content-success::before{
+.modal-content-success::before{
   position: absolute;
   content: "";
   width: 100%;
@@ -54,7 +54,7 @@
   background-image: linear-gradient(to right, #5fb395, #55ad8d, #4ba685, #41a07d, #369a75, #2f956f, #27916a, #1e8c64, #18875e, #118359, #097e53, #007a4e);
 }
 
-.mymodal-content-error::before{
+.modal-content-error::before{
   position: absolute;
   content: "";
   width: 100%;

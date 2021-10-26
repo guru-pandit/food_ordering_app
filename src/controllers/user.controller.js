@@ -102,56 +102,43 @@ const getLoginPage = async (req, res) => {
 }
 
 // Function to login user
-let sessionArray = []
-const loginUser = async (req, res) => {
-    try {
-        //take email and password
-        const { email, password } = req.body;
+// const loginUser = async (req, res) => {
+//     try {
+//         //take email and password
+//         const { email, password } = req.body;
 
-        //find email
-        const data = await User.findOne({ where: { email } });
-        if (!data) {
+//         //find email
+//         const data = await User.findOne({ where: { email } });
+//         if (!data) {
 
-            //if not data found then return user does not exist
-            return res.status(400).json({ error: "User does not exist" });
+//             //if not data found then return user does not exist
+//             return res.status(400).json({ error: "User does not exist" });
 
-            //if user there then convert there password into hashed
-        } else {
-            let isPassMatched = await bcrypt.compareSync(password, data.password);
+//             //if user there then convert there password into hashed
+//         } else {
+//             let isPassMatched = await bcrypt.compareSync(password, data.password);
 
-            //if password is match then generate a token
-            if (isPassMatched && data.isVerified == true) {
-                // req.session.email = data.email
-                // console.log(req.session);
-                // res.status(200).json({ message: "Successfully logged in" })
+//             //if password is match then generate a token
+//             if (isPassMatched && data.isVerified == true) {
+//                 // req.session.email = data.email
+//                 // console.log(req.session);
+//                 // res.status(200).json({ message: "Successfully logged in" })
 
-                let token = jwt.sign({ id: data.id, email: data.email }, process.env.SECRET_KEY);
-                // console.log(token)
-                sessionArray.push(data.email)
-                req.session.users = sessionArray
-                console.log(req.session.users)
-                res.cookie(`access-token`, token).json({ message: "Successfully logged in", user: data });
-            } else {
-                return res.status(400).json({ error: "Login failed" });
-            }
-        }
-    } catch (err) {
-        // console.log(err);
-        res.status(500).json({ error: err.message || "Something went wrong" });
-    }
-};
-
-// Function to logout user
-const logoutUser = async (req, res) => {
-    try {
-        // req.session = null;
-        req.logout();
-        res.redirect("/");
-    } catch (err) {
-        // console.log(err);
-        res.status(500).json({ error: err.message || "Something went wrong" });
-    }
-}
+//                 let token = jwt.sign({ id: data.id, email: data.email }, process.env.SECRET_KEY);
+//                 // console.log(token)
+//                 sessionArray.push(data.email)
+//                 req.session.users = sessionArray
+//                 console.log(req.session.users)
+//                 res.cookie(`access-token`, token).json({ message: "Successfully logged in", user: data });
+//             } else {
+//                 return res.status(400).json({ error: "Login failed" });
+//             }
+//         }
+//     } catch (err) {
+//         // console.log(err);
+//         res.status(500).json({ error: err.message || "Something went wrong" });
+//     }
+// };
 
 //user logout here
 // const logOut = async (req, res) => {
@@ -445,10 +432,28 @@ const addImage = async (req, res) => {
 }
 
 // Local authentication success
+let sessionArray = []
 const localAuthSuccess = async (req, res) => {
-    // console.log(req.user);
-    // res.status(200).redirect("/")
-    return res.status(200).json({ Message: "Authentication success" })
+    try {
+        console.log("LocalAuthSuccess(userid):", req.user);
+        // console.log("GoogleAuthSuccess(session):", req.session);
+        console.log("LocalAuthSuccess(cookie):", req.cookies);
+
+        if (sessionArray.includes(req.user)) {
+            return res.status(400).json({ error: "Already logged into another device" })
+        } else {
+            sessionArray.push(req.user);
+            req.session.users = sessionArray;
+            console.log("LocalAuthSuccess(session):", req.session);
+            // console.log("GoogleAuthSuccess(sesssionArray):", sessionArray);
+
+            let token = jwt.sign({ id: req.user }, process.env.SECRET_KEY);
+
+            res.cookie(`access-token`, token).redirect("/")
+        }
+    } catch (err) {
+        res.status(500).json({ error: err.message || "Something went wrong" });
+    }
 }
 
 // Local authentication failure
@@ -460,30 +465,21 @@ const localAuthFailure = (req, res) => {
 // Google authentication success
 const googleAuthSuccess = async (req, res) => {
     try {
-        // console.log(req.user)
-        let user = await User.findOne({ where: { email: req.user.email } })
-        // console.log(user);
+        console.log("GoogleAuthSuccess(userid):", req.user);
+        // console.log("GoogleAuthSuccess(session):", req.session);
+        console.log("GoogleAuthSuccess(cookie):", req.cookies);
 
-        // if no user found then create new user otherwise update google id
-        if (user === null) {
-            let body = {
-                firstName: req.user.given_name,
-                lastName: req.user.family_name,
-                email: req.user.email,
-                isVerified: true,
-                googleId: req.user.id
-            }
-            await User.create(body).then((newUser) => {
-                // console.log(newUser);
-                res.status(200).redirect("/")
-                // res.status(200).json({ message: "You have successfully registered" })
-            })
+        if (sessionArray.includes(req.user)) {
+            return res.status(400).json({ error: "Already logged into another device" })
         } else {
-            user.googleId = req.user.id;
-            user.isVerified = true
-            await user.save()
-            res.status(200).redirect("/")
-            // res.status(200).json({ message: "You have successfully registered" })
+            sessionArray.push(req.user);
+            req.session.users = sessionArray;
+            console.log("GoogleAuthSuccess(session):", req.session);
+            // console.log("GoogleAuthSuccess(sesssionArray):", sessionArray);
+
+            let token = jwt.sign({ id: req.user }, process.env.SECRET_KEY);
+
+            res.cookie(`access-token`, token).redirect("/")
         }
     } catch (err) {
         res.status(500).json({ error: err.message || "Something went wrong" });
@@ -498,30 +494,21 @@ const googleAuthFailure = (req, res) => {
 // Facebook authentication success
 const facebookAuthSuccess = async (req, res) => {
     try {
-        // console.log(req.user)
-        let user = await User.findOne({ where: { email: req.user.email } })
-        // console.log(user);
+        console.log("FacebookAuthSuccess(userid):", req.user);
+        // console.log("FacebookAuthSuccess(session):", req.session);
+        console.log("FacebookAuthSuccess(cookie):", req.cookies);
 
-        // if no user found then create new user otherwise update facebook id
-        if (user === null) {
-            let body = {
-                firstName: req.user.first_name,
-                lastName: req.user.last_name,
-                email: req.user.email,
-                isVerified: true,
-                facebookId: req.user.id
-            }
-            await User.create(body).then((newUser) => {
-                // console.log(newUser);
-                res.status(200).redirect("/")
-                // res.status(200).json({ message: "You have successfully registered" })
-            })
+        if (sessionArray.includes(req.user)) {
+            return res.status(400).json({ error: "Already logged into another device" })
         } else {
-            user.facebookId = req.user.id;
-            user.isVerified = true
-            await user.save()
-            res.status(200).redirect("/")
-            // res.status(200).json({ message: "You have successfully registered" })
+            sessionArray.push(req.user);
+            req.session.users = sessionArray;
+            console.log("FacebookAuthSuccess(session):", req.session);
+            // console.log("FacebookAuthSuccess(sesssionArray):", sessionArray);
+
+            let token = jwt.sign({ id: req.user }, process.env.SECRET_KEY);
+
+            res.cookie(`access-token`, token).redirect("/")
         }
     } catch (err) {
         res.status(500).json({ error: err.message || "Something went wrong" });
@@ -531,6 +518,30 @@ const facebookAuthSuccess = async (req, res) => {
 // Facebook authentication failure
 const facebookAuthFailure = (req, res) => {
     return res.status(400).json({ error: "Authentication failed" })
+}
+
+// Function to logout user
+const logoutUser = async (req, res) => {
+    try {
+        // req.session = null;
+        // req.logout();
+        console.log("logout(loggedInUser)", req.loggedInUser);
+        res.clearCookie("access-token")
+
+        if (req.session.users) {
+            sessionArray = req.session.users.filter((userId) => {
+                return userId !== req.loggedInUser.id
+            })
+            req.session.users = sessionArray
+            console.log("logout(session):", req.session);
+            res.redirect("/");
+        } else {
+            res.redirect("/");
+        }
+    } catch (err) {
+        // console.log(err);
+        res.status(500).json({ error: err.message || "Something went wrong" });
+    }
 }
 
 //to update delivery address
@@ -596,4 +607,4 @@ const verifyMobileOtp = async (req, res) => {
 }
 
 
-module.exports = { createUser, verifyUser, loginUser, logoutUser, localAuthSuccess, localAuthFailure, googleAuthSuccess, googleAuthFailure, facebookAuthSuccess, facebookAuthFailure, dashboard, getUsersById, deleteUser, UpdateUser, getUsersByAddress, userPartialUpdate, getLoginPage, getRegisterPage, forgetPassword, resetPassword, verifyUserToken, addImage, updateUserInfo, loginWithOtp, verifyMobileOtp }
+module.exports = { createUser, verifyUser, logoutUser, localAuthSuccess, localAuthFailure, googleAuthSuccess, googleAuthFailure, facebookAuthSuccess, facebookAuthFailure, dashboard, getUsersById, deleteUser, UpdateUser, getUsersByAddress, userPartialUpdate, getLoginPage, getRegisterPage, forgetPassword, resetPassword, verifyUserToken, addImage, updateUserInfo, loginWithOtp, verifyMobileOtp }

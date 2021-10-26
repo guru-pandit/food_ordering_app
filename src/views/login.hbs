@@ -32,20 +32,21 @@
 						<i class="fa fa-lock input-icon"></i>
 						<input type="password" placeholder="Password" id="password" name="password" class="input-inner" onkeyup="validate(event)"  />
 					</div>
-					<a href="#" id="forget-password" class="forget-password" style="display:block;"> Forgot your password?</a>
+					<a href="#" id="forget-password" class="forget-password d-block"> Forgot your password?</a>
 					<button type="submit" id="login" class="btn btn-green btn-rounded" >Sign In</button>
 				{{!-- <div id="go-back-btn" style="margin-top:10px;color:#dc3545;cursor:pointer"><< Go back </div> --}}
 				</div>
-				<div style="margin-top: 10px;">Or</div>
+				<span class="separator my-2">Or</span>
 				<div id="btn-outer" style="width:100%">
 					{{!-- <button type="button" id="btn-cwc" class="btn btn-green mt-3" style="width:245px;">Continue with Credentials</button> --}}
-					<button type="button" id="btn-cwm" class="btn btn-outlined-green mt-3" style="width: 100%;">Continue with Mobile</button>
+					<button type="button" id="btn-cwm" class="btn btn-outlined-green w-100">Continue with Mobile</button>
 				</div>
-				<div id="mobile-div" style="display: none; margin-top:10px;">
+				<div id="mobile-div" style="display: none;">
 					<input name="phone_number[main]" type="text" class="form-control mb-2 inptFielsd" id="phone"
 					placeholder="Phone Number" />
-					<button type="button" id="mobile-continue" class="btn btn-green mt-3">Continue</button>
-					<div id="go-back-mobile" style="margin-top:10px;color:#dc3545;cursor:pointer"><< Go back </div>
+					<button type="button" id="mobile-continue" class="btn btn-green btn-rounded my-3">Send OTP</button>
+					{{!-- <div id="go-back-mobile" style="margin-top:10px;color:#dc3545;cursor:pointer"><< Go back </div> --}}
+					<button type="button" id="go-back-mobile" class="btn btn-outlined-green w-100">Continue with Email</button>
 				</div>
 				<div id="otp-div" style="display: none; margin-top:10px;">
 					<input type="text" class="form-control" id="otp-input"
