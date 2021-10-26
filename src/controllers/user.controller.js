@@ -559,17 +559,22 @@ const client = require("twilio")(config.accountSID, config.authToken);
 const loginWithOtp = async (req, res) => {
     try {
         const { phoneNumber, channel } = req.body;
-        client
-            .verify
-            .services(config.serviceId)
-            .verifications
-            .create({
-                to: `+${phoneNumber}`,
-                channel: channel
-            })
-            .then((data) => {
-                res.status(200).send(data);
-            })
+        const user = await User.findOne({ where: { contact: phoneNumber } })
+        if (!user) {
+            res.status(400).json({ error: "mobile number is not registered!!" })
+        } else {
+            client
+                .verify
+                .services(config.serviceId)
+                .verifications
+                .create({
+                    to: `+${phoneNumber}`,
+                    channel: channel
+                })
+                .then((data) => {
+                    res.status(200).send(data);
+                })
+        }
     } catch (err) {
         res.status(500).json({ error: err.message || "Something went wrong" });
     }
@@ -587,8 +592,25 @@ const verifyMobileOtp = async (req, res) => {
                 to: `+${phoneNumber}`,
                 code: code
             })
-            .then((data) => {
-                res.status(200).send(data);
+            .then(async (data) => {
+                //console.log(data.to)
+                let contact = (data.to).slice(1)
+                //console.log("contact after slice", contact)
+
+                //find user using contact
+                const user = await User.findOne({ where: { contact } });
+                if (!user) {
+                    //if not user found then return user does not exist
+                    return res.status(400).json({ error: "User does not exist" });
+                } else {
+                    let token = jwt.sign({ id: user.id, email: user.email }, process.env.SECRET_KEY);
+                    // console.log(token)
+                    sessionArray.push(user.id)
+                    req.session.users = sessionArray
+                    console.log(req.session.users)
+                    res.cookie(`access-token`, token).json({ message: "Successfully logged in", user: data });
+                }
+                // res.status(200).send(data);
             })
     } catch (err) {
         res.status(500).json({ error: err.message || "Something went wrong" });

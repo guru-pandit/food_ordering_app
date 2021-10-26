@@ -144,7 +144,7 @@
 				console.log(data)
 				axios.post(`${baseUrl}/verifymobileotp`, data).then((res)=>{
 						//console.log(res)
-						if(res.data.status == "approved"){
+						if(res.data.user.status == "approved"){
 							openModal("success",`successfully logged in`);
 							window.location = `${baseUrl}/`
 						}else{

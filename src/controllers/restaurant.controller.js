@@ -7,24 +7,39 @@ const path = require("path");
 const userRoute = require("../routes/user.route");
 
 // This function renders the homepage as per the login status of the user
-const home = async (req, res) => {
+const home = (req, res) => {
     try {
-        if (req.user) {
-            // console.log(req.user.email);
-            await User.findOne({ where: { email: req.user.email } }).then((user) => {
-                // user.image = `${req.protocol}://${req.headers.host}/images/users/${user.id}/${user.image}`
-                user.image = `/images/users/${user.id}/${user.image}`
-                // console.log(user);
-                res.status(200).render("index", { isLoggedIn: true, user })
-            })
+        // console.log("home:", req);
+        if (req.cookies["access-token"]) {
+            console.log("access-token: ", req.cookies["access-token"]);
+
+            jwt.verify(req.cookies["access-token"], process.env.SECRET_KEY, function (err, decoded) {
+
+                if (err) throw err
+
+                console.log("Decoded value:", decoded);
+
+                // check user exist in session or not
+                if (req.session.users?.includes(decoded.id)) {
+
+                    User.findOne({ where: { id: decoded.id } }).then((user) => {
+                        // user.image = `${req.protocol}://${req.headers.host}/images/users/${user.id}/${user.image}`;
+
+                        user.image = `/images/users/${user.id}/${user.image}`;
+
+                        res.render("index", { isLoggedIn: true, user })
+                    })
+                } else {
+                    res.render("index", { isLoggedIn: false })
+                }
+            });
         } else {
-            res.status(200).render("index", { isLoggedIn: false })
+            res.render("index", { isLoggedIn: false })
         }
     } catch (err) {
         res.status(500).json({ error: err.message || "Something went wrong" });
     }
 }
-
 //to get all restaurants
 const getAllRestaurants = async (req, res) => {
     try {
