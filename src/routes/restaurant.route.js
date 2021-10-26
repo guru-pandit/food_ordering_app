@@ -12,7 +12,7 @@ module.exports = (app) => {
    //to get restaurants details by restaurantId
    app.get("/restaurantsdetails", restaurantController.getRestaurantsDetails)
    //to add review
-   app.post("/addnewreview", restaurantController.addReview)
+   app.post("/addnewreview", isLoggedIn, restaurantController.addReview)
    //to filter restaurant
    app.post("/filterrestaurants", restaurantController.filterRestaurant)
    //to search restaurant

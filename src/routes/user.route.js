@@ -2,6 +2,7 @@
 const userController = require("../controllers").user;
 const { body } = require("express-validator");
 const { checkDulicateEmail, checkConfirmPassword, checkDulicateContact } = require("../middlewares/validate")
+const { isLoggedIn } = require("../middlewares/auth")
 const { uploadImage } = require("../services/upload.service")
 const passport = require("passport");
 
@@ -13,7 +14,7 @@ module.exports = (app) => {
 
     // Rendering login page and logout route
     app.get("/login", userController.getLoginPage)
-    app.get("/logout", userController.logoutUser);
+    app.get("/logout", isLoggedIn, userController.logoutUser);
 
     // Local auth with passport
     app.post("/local/login", passport.authenticate('local', { successRedirect: "/local/success", failureRedirect: "/local/failure" }));

@@ -95,12 +95,13 @@ $("#review-submit").click(function (e) {
 
     console.log(data)
 
-    axios.post(`${baseUrl}/addnewreview?userId=2&restaurantId=${restaurantId}`, data).then(res => {
-        console.log(res)
+    axios.post(`${baseUrl}/addnewreview?restaurantId=${restaurantId}`, data).then(res => {
+        // console.log(res.request.responseURL)
         // alert("Your Review has been successfully submitted.");
         // openModal("success", "Review submitted successfully", () => {
         //     $("#review-modal").removeClass("review-modal-active");
         // })
+
         $("#review-modal").removeClass("review-modal-active");
     }).catch(err => {
         // alert(err.response.data.error)

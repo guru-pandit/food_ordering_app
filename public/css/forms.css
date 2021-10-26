@@ -224,7 +224,7 @@ a.forget-password{
 	font-size: .8rem;
 	font-weight: 600;
 	text-decoration: none;
-	margin-bottom: 1rem;
+	margin-bottom: .75rem;
 	letter-spacing: 1px;
 	color: var(--color-lightgray);
 	transition: all .3s ease;

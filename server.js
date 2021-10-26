@@ -7,6 +7,7 @@ const db = require("./src/models");
 const cookieParser = require("cookie-parser");
 const session = require('express-session')
 const passport = require("passport")
+const logger = require("morgan")
 require("./src/services/passport.service")
 require('dotenv').config();
 global.__basedir = __dirname;
@@ -18,6 +19,7 @@ let corsOptions = {
 };
 
 app.use(cors(corsOptions));
+app.use(logger('dev'))
 app.use(cookieParser());
 app.use(express.json());
 app.use(session({ secret: process.env.SESSION_SECRET, resave: false, saveUninitialized: false }))

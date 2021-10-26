@@ -14,19 +14,28 @@ const home = (req, res) => {
             console.log("access-token: ", req.cookies["access-token"]);
 
             jwt.verify(req.cookies["access-token"], process.env.SECRET_KEY, function (err, decoded) {
+<<<<<<< HEAD
 
+=======
+>>>>>>> loginSession
                 if (err) throw err
 
                 console.log("Decoded value:", decoded);
 
                 // check user exist in session or not
                 if (req.session.users?.includes(decoded.id)) {
+<<<<<<< HEAD
 
                     User.findOne({ where: { id: decoded.id } }).then((user) => {
                         // user.image = `${req.protocol}://${req.headers.host}/images/users/${user.id}/${user.image}`;
 
                         user.image = `/images/users/${user.id}/${user.image}`;
 
+=======
+                    User.findOne({ where: { id: decoded.id } }).then((user) => {
+                        // user.image = `${req.protocol}://${req.headers.host}/images/users/${user.id}/${user.image}`;
+                        user.image = `/images/users/${user.id}/${user.image}`;
+>>>>>>> loginSession
                         res.render("index", { isLoggedIn: true, user })
                     })
                 } else {
@@ -245,24 +254,26 @@ const getRestaurantsDetails = async (req, res) => {
 const addReview = async (req, res) => {
     try {
         // to take value from req.body
-        console.log(req.body)
+        console.log("AddReview(body):", req.body)
         const review = {
             stars: req.body.stars > 5 ? 5 : req.body.stars,
             comment: req.body.comment,
-            userId: req.query.userId,
+            userId: req.loggedInUser.id,
             restaurantId: req.query.restaurantId,
             commentedAt: Date.now()
         }
+
+        console.log("AddReview(review):", review)
         //to create review
-        const response = await Review.create(review)
+        // const response = await Review.create(review)
         //to check whether review is created or not
         if (response !== null) {
             //to find restaurant based on restaurant id which is passed in req.body
-            const restaurant = await Restaurant.findOne({
-                where: { id: review.restaurantId },
-                //to include review model details in restaurant
-                include: [{ model: Review }]
-            })
+            // const restaurant = await Restaurant.findOne({
+            // where: { id: review.restaurantId },
+            //to include review model details in restaurant
+            // include: [{ model: Review }]
+            // })
             //console.log(restaurant.Reviews)
             let totalrating = 0
 
@@ -270,19 +281,19 @@ const addReview = async (req, res) => {
             let totallen = restaurant.Reviews.length
 
             //to calculate total ratings of restaurant
-            restaurant.Reviews.map((item) => {
-                totalrating += item.stars
-                //console.log(totalrating)
-            })
+            // restaurant.Reviews.map((item) => {
+            // totalrating += item.stars
+            //console.log(totalrating)
+            // })
 
             //to calculate average rating of restaurant
-            restaurant.avgRatings = totalrating / totallen;
+            // restaurant.avgRatings = totalrating / totallen;
             //console.log(restaurant.avgRatings)
 
             //to update "avgRatings" with calculated average ratings in restaurant table
-            restaurant.save()
+            // restaurant.save()
 
-            res.status(200).json({ message: "Review added successfully", review: response })
+            // res.status(200).json({ message: "Review added successfully", review: response })
         } else {
             return res.status(500).json({ message: "Review NOT added successfully" })
         }
@@ -443,6 +454,7 @@ const searchRestaurant = async (req, res) => {
     }
 }
 
+// Function to add restaurnt time
 const addTime = async (req, res) => {
     try {
         const { restaurantId } = req.params;
