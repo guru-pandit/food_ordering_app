@@ -5,7 +5,7 @@ module.exports = {
     return Promise.all([
       queryInterface.changeColumn('Restaurants', 'image',
         {
-          type: Sequelize.JSON,
+          type: 'JSON USING CAST("image" as JSON)',
         })
     ]);
   },

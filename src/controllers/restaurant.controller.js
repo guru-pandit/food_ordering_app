@@ -202,7 +202,7 @@ const getRestaurantsDetails = async (req, res) => {
                     ]
                 },
                 { model: Menuitem },
-                { model: Review },
+                { model: Review, include: [{ model: User, attributes: ["id", "firstName", "lastName", "image"] }] },
             ]
         })
         if (restaurantDetails !== null) {
@@ -227,7 +227,20 @@ const getRestaurantsDetails = async (req, res) => {
                 menu.image.images = menuImgPath
             })
 
-            // res.status(200).json({ message: "Restaurant Details Fetched Successfully", restaurants: restaurantDetails, menuitems: restaurantDetails.Menuitems })
+            restaurantDetails.Reviews.map((rev) => {
+                let dt = new Date(rev.commentedAt)
+                // console.log(dt);
+                // let year = dt.getFullYear();
+                // let month = `${dt.getMonth() + 1}`.padStart(2, "0");
+                // let date = `${dt.getDate()}`.padStart(2, "0");
+                // let dateString = `${date}-${month}-${year}`
+                // console.log(typeof dateString);
+                // rev.commentedAt = dateString.toString();
+                // rev.User.image = `${req.protocol}://${req.headers.host}/images/users/${rev.User.id}/${rev.User.image}`
+                rev.User.image = `/images/users/${rev.User.id}/${rev.User.image}`;
+            })
+
+            // res.status(200).json({ message: "Restaurant Details Fetched Successfully", restaurants: restaurantDetails, menuitems: restaurantDetails.Menuitems, reviews: restaurantDetails.Reviews })
             res.render('details', { restaurant: restaurantDetails, reviews: restaurantDetails.Reviews, reviewsCount: reviewsCount, avgRatings: avgRatings, menuitems: restaurantDetails.Menuitems })
         } else {
             res.status(500).json({ message: "Restaurants Details NOT Fetched Successfully" })
@@ -251,39 +264,46 @@ const addReview = async (req, res) => {
         }
 
         console.log("AddReview(review):", review)
+
         //to create review
-        // const response = await Review.create(review)
-        //to check whether review is created or not
-        if (response !== null) {
-            //to find restaurant based on restaurant id which is passed in req.body
-            // const restaurant = await Restaurant.findOne({
-            // where: { id: review.restaurantId },
-            //to include review model details in restaurant
-            // include: [{ model: Review }]
-            // })
-            //console.log(restaurant.Reviews)
-            let totalrating = 0
+        Review.create(review).then((data) => {
+            if (data !== null) {
+                Restaurant.findOne({
+                    where: { id: review.restaurantId },
+                    //to include review model details in restaurant
+                    include: [{ model: Review }]
+                }).then((rest) => {
+                    let totalRating = 0
+                    //to find length of "restaurant.Reviews" array
+                    let totalLength = rest.Reviews.length;
+                    console.log(totalRating, totalLength);
 
-            //to find length of "restaurant.Reviews" array
-            let totallen = restaurant.Reviews.length
+                    //to calculate total ratings of restaurant
+                    rest.Reviews.map((item) => {
+                        totalRating += item.stars
+                    })
+                    console.log(totalRating)
 
-            //to calculate total ratings of restaurant
-            // restaurant.Reviews.map((item) => {
-            // totalrating += item.stars
-            //console.log(totalrating)
-            // })
+                    //to calculate average rating of restaurant
+                    rest.avgRatings = (totalRating / totalLength).toFixed(1);
+                    console.log(rest.avgRatings)
 
-            //to calculate average rating of restaurant
-            // restaurant.avgRatings = totalrating / totallen;
-            //console.log(restaurant.avgRatings)
+                    //to update "avgRatings" with calculated average ratings in restaurant table
+                    rest.save()
 
-            //to update "avgRatings" with calculated average ratings in restaurant table
-            // restaurant.save()
+                    res.status(200).json({ message: "Review added successfully", review: data })
 
-            // res.status(200).json({ message: "Review added successfully", review: response })
-        } else {
-            return res.status(500).json({ message: "Review NOT added successfully" })
-        }
+                }).catch((err) => {
+                    console.log(err.message);
+                    res.status(500).json({ error: err.message || "something went wrong" })
+                })
+            } else {
+                return res.status(400).json({ message: "Review not added" })
+            }
+        }).catch((err) => {
+            console.log(err.message);
+            res.status(500).json({ error: err.message || "something went wrong" })
+        })
     } catch (err) {
         res.status(500).json({ error: err.message || "something went wrong" })
     }
