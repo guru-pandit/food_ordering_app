@@ -96,16 +96,16 @@ $("#review-submit").click(function (e) {
     console.log(data)
 
     axios.post(`${baseUrl}/addnewreview?restaurantId=${restaurantId}`, data).then(res => {
-        console.log(res.request.responseURL)
+        // console.log("Review-Response: ", res)
+        // console.log(res.request.responseURL)
         // alert("Your Review has been successfully submitted.");
         // openModal("success", "Review submitted successfully", () => {
         //     $("#review-modal").removeClass("review-modal-active");
         // })
-
         $("#review-modal").removeClass("review-modal-active");
-        // window.location = res.request.responseURL
     }).catch(err => {
         // alert(err.response.data.error)
-        openModal("error", "Review not submitted")
+        window.location = `${baseUrl}/login`
+        // openModal("error", "Review not submitted")
     })
 })

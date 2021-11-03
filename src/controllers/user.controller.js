@@ -625,4 +625,4 @@ const verifyMobileOtp = async (req, res) => {
 }
 
 
-module.exports = { createUser, verifyUser, setPassword, forgetPassword, verifyPasswordToken, logoutUser, localAuthSuccess, localAuthFailure, googleAuthSuccess, googleAuthFailure, facebookAuthSuccess, facebookAuthFailure, dashboard, getUsersById, deleteUser, UpdateUser, getUsersByAddress, userPartialUpdate, getLoginPage, getRegisterPage, addImage, updateUserInfo, loginWithOtp, verifyMobileOtp }
+module.exports = { createUser, verifyUser, setPassword, forgetPassword, verifyPasswordToken, logoutUser, localAuthSuccess, localAuthFailure, googleAuthSuccess, googleAuthFailure, facebookAuthSuccess, facebookAuthFailure, getUsersById, deleteUser, UpdateUser, getUsersByAddress, userPartialUpdate, getLoginPage, getRegisterPage, addImage, updateUserInfo, loginWithOtp, verifyMobileOtp }

@@ -14,14 +14,18 @@ const isLoggedIn = async (req, res, next) => {
                 if (req.session.users?.includes(decoded.id)) {
                     User.findOne({ where: { id: decoded.id } }).then((user) => {
                         req.loggedInUser = user;
-                        next()
+                        next();
                     })
                 } else {
-                    return res.status(400).redirect("/login")
+                    // res.status(400).redirect("/login");
+                    res.status(400).json({ error: "Please login to continue..." });
+                    return;
                 }
             });
         } else {
-            return res.status(400).redirect("/login")
+            // res.status(400).redirect("/login");
+            res.status(400).json({ error: "Please login to continue..." });
+            return;
         }
     } catch (err) {
         res.status(500).json({ error: err.message || "Something went wrong" });
