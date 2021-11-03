@@ -38,7 +38,7 @@ const publicDirectory = path.join(__dirname, './public');
 app.use(express.static(publicDirectory));
 
 // calling sync() method
-db.sequelize.sync();
+db.sequelize.sync({ logging: false });
 // In Development, you need to drop existing tables and re-sync database. for that use force:true as following
 // db.sequelize.sync({ force: true }).then(() => {
 //   console.log("Drop and re-sync DB");

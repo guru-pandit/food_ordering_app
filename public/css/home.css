@@ -819,6 +819,12 @@ input[type="range"]:active::-webkit-slider-thumb{
   font-size: 1rem;
 }
 
+.user-menu .profile-highlight .details #profile-email {
+  font-weight: 500;
+  font-size: .75rem;
+  color: var(--color-lightgray);
+}
+
 
 .user-menu .footer {
   border-top: 1px solid rgba(0,0,0,0.1);

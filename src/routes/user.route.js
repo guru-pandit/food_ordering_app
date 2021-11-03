@@ -1,7 +1,7 @@
 // Controller Imports
 const userController = require("../controllers").user;
 const { body } = require("express-validator");
-const { checkDulicateEmail, checkConfirmPassword, checkDulicateContact } = require("../middlewares/validate")
+const { checkDulicateEmail, checkConfirmPassword, checkDulicateContact, validatePassword, validateEmail, validateFirstName, validateLastName } = require("../middlewares/validate")
 const { isLoggedIn } = require("../middlewares/auth")
 const { uploadImage } = require("../services/upload.service")
 const passport = require("passport");
@@ -10,7 +10,13 @@ const passport = require("passport");
 module.exports = (app) => {
     // Register using email
     app.get("/register", userController.getRegisterPage)
-    app.post("/register", [body("firstName").trim().isString().notEmpty().withMessage("Name is required").isLength({ min: 3 }).withMessage('wrong firstname length'), body("lastName").trim().notEmpty().withMessage("Name is required").isLength({ min: 3 }).withMessage('wrong lastname length'), body("email").trim().isLength({ min: 1 }).withMessage("Email must be specified.").isEmail().withMessage({ message: "Not an email" }), body("contact").trim().isLength({ min: 1 }).withMessage("Contact must be specified."), checkDulicateEmail, checkDulicateContact], userController.createUser);
+    app.post("/register", [
+        validateFirstName,
+        validateLastName,
+        validateEmail,
+        checkDulicateEmail,
+        checkDulicateContact
+    ], userController.createUser);
 
     // Rendering login page and logout route
     app.get("/login", userController.getLoginPage)
@@ -43,16 +49,27 @@ module.exports = (app) => {
     // Get user by their ID
     app.get("/user/:id", userController.getUsersById);
 
+    // Verify user
+    app.get("/verifyUser", userController.verifyUser);
 
-    app.get("/api/v1/dashboard", userController.dashboard);
+    // Set Password
+    app.post("/setPassword/:userId", [
+        validatePassword,
+        checkConfirmPassword
+    ], userController.setPassword);
+
+    // Forget password
+    app.post("/forgetPassword", [
+        validateEmail
+    ], userController.forgetPassword);
+    app.get("/verifyPasswordToken", userController.verifyPasswordToken);
+
+
+    // app.get("/api/v1/dashboard", userController.dashboard);
     app.delete("/api/v1/deleteUser/:id", userController.deleteUser);
     app.put("/api/v1/updateUser/:id", userController.UpdateUser);
-    app.get("/verifyUser", userController.verifyUser);
     app.get("/api/v1/getUserByAddress", userController.getUsersByAddress);
     app.patch("/api/v1/userPartialUpdate/:id", userController.userPartialUpdate);
-    app.post("/forgetPassword", [body("email").trim().isEmail().withMessage({ message: "Not an email", })], userController.forgetPassword);
-    app.post("/resetPassword/:userId", [body("password").trim().matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[#$@!%&*?])[A-Za-z\d#$@!%&*?]{8,20}$/).withMessage("Password must be contain one capital letter,one special charecter ,Number and Should be minimum 8 character long  "), checkConfirmPassword], userController.resetPassword);
-    app.get("/verifyUserToken", userController.verifyUserToken);
 
     //to update delivery address
     app.post("/api/v1/updatedeliveryaddress/:userId", userController.updateUserInfo)

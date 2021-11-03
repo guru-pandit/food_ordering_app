@@ -242,20 +242,23 @@
                 
             // getting the element's value
             const email = form.elements['email'].value;
-                
             const data = { email : email }
 
-			// console.log(data)
-            axios.post(`${baseUrl}/forgetPassword`,data,
-            ).then(res => {
-              //console.log(res)
-				openModal("success",`Link has been sent to ${email}`);
-			  //alert(`Password reset link has been sent to ${email}`)
-            })
-            .catch(err => {
-              // console.log(err.response.data)
-			  openModal("error",err.response.data.error);
-            })
+			if(email){
+				// console.log(data)
+				axios.post(`${baseUrl}/forgetPassword`,data,
+				).then(res => {
+					//console.log(res)
+					openModal("success",`Link has been sent to ${email}`);
+					//alert(`Password reset link has been sent to ${email}`)
+				})
+				.catch(err => {
+					// console.log(err.response.data)
+					openModal("error",err.response.data.error);
+				})
+			}else{
+				openModal("error","Please fill all the fields");
+			}
         }
 
 

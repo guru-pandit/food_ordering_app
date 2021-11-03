@@ -31,7 +31,7 @@ const passwordResetMail = (req, user, passToken) => {
         to: user.email,
         subject: "change your password",
         html: `<h2>${userFullName} change your password here ...<h2>
-        <a href="${req.protocol}://${req.headers.host}/verifyUserToken?passToken=${passToken.token}&userId=${user.id}">Click Here </a>`
+        <a href="${req.protocol}://${req.headers.host}/verifyPasswordToken?passToken=${passToken.token}&userId=${user.id}">Click Here </a>`
     };
     transporter.sendMail(mailOptions)
 }

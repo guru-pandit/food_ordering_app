@@ -6,16 +6,17 @@ const crypto = require("crypto");//convert token into hexabytes
 const { sendVerificationMail, passwordResetMail } = require("../services/mail.service");//import service file
 const config = require('../config/otpConfig');
 const jwt = require('jsonwebtoken');
-const fs = require("fs")
-const path = require("path")
+const fs = require("fs");
+const path = require("path");
 const Op = db.Sequelize.Op;
 
-// Function to render register page
+// This function render register page
 const getRegisterPage = async (req, res) => {
-    res.render('register')
+    res.render('register');
 }
 
-//create user
+// Function creats the new user in database
+// and also sends email verification mail to the registered email
 const createUser = async (req, res) => {
     try {
         let errors = validationResult(req); // expressvalidator
@@ -41,25 +42,19 @@ const createUser = async (req, res) => {
         // create new user
         const data = await User.create(user);
         if (data) {
-
             //get current date
-            let currentDate = new Date()
+            let currentDate = new Date();
             const token = {
-
-                //convert token into random bytes
                 token: crypto.randomBytes(64).toString("hex"),
-
-                //take user id
                 userId: data.id,
-
-                //expired token after 30 min
+                isUsed: false,
                 expiredAt: new Date(currentDate.getTime() + 30 * 60000)
             }
 
             sendVerificationMail(req, data, token);
 
             //create token here
-            await Token.create(token)
+            await Token.create(token);
             return res.status(200).json({
                 message: "Successfully registered, Please verify your email to continue",
                 user: data,
@@ -69,36 +64,117 @@ const createUser = async (req, res) => {
                 message: "Successfully registered, Please verify your email to continue",
             })
         }
-
     } catch (err) {
         // console.log(err);
         res.status(500).json({ error: err.message || "Something went wrong" });
     }
 };
 
-//verifyUser here
+// Verifies the user token sent to the registered email 
+// if token valid then renders a setPassword page to set the password
 const verifyUser = async (req, res) => {
-    //to take query parameter from url
-    let { token } = req.query
-    let tokenData = await Token.findOne({ where: { token: token } })
-    let currentDate = new Date()
+    let { token } = req.query;
+    let tokenData = await Token.findOne({ where: { token: token } });
+    let currentDate = new Date();
+    console.log("UserController-tokenData: ", tokenData);
 
-    // to check token expired or not
-    //if token expired is less than current date then it will expired
-    if (tokenData.expiredAt < currentDate) {
+    // to check token expired or is used or not
+    // if token expiredAt is less than current date then it will expired 
+    if (tokenData.expiredAt < currentDate || tokenData.isUsed === true) {
+        tokenData.isUsed = true;
+        await tokenData.save();
         res.status(400).json({ message: "Token has been expired" })
     } else {
         let user = await User.findOne({ where: { id: tokenData.userId } })
-        user.isVerified = true
-        user.save()
+        tokenData.isUsed = true;
+        await tokenData.save();
+        user.isVerified = true;
+        await user.save();
         // console.log(user)
         res.render("setPassword");
     }
 }
 
+// Function to set the password
+const setPassword = async (req, res) => {
+    const { userId } = req.params;
+    const { password } = req.body;
+    console.log("UserController-setPassword - UserId: " + userId + " Password: " + password);
+    //check if this id exist in database
+    // console.log("userId :-" + userId);
+    const data = await User.findOne({ where: { id: userId } });
+    if (!data) {
+        //if not data found then return user does not exist
+        return res.status(400).json({ error: "Invalid userId..." });
+    } else {
+        data.password = password;
+        await data.save();
+        res.status(200).json({ message: "password change " });
+    }
+};
+
+// Function to send password reset token to the email address and save to the database
+const forgetPassword = async (req, res) => {
+    try {
+        const { email } = req.body;
+        // res.send(email);
+        const user = await User.findOne({ where: { email } });
+        if (!user) {
+            //if not data found then return user does not exist
+            return res.status(400).json({ error: "User does not exist" });
+        } else {
+            let currentDate = new Date();
+            // console.log(currentDate)
+            const passToken = {
+                token: crypto.randomBytes(64).toString("hex"),
+                userId: user.id,
+                isUsed: false,
+                expiredAt: new Date(currentDate.getTime() + 15 * 60000)
+            }
+
+            await passwordToken.create(passToken);
+            // console.log(tokenData); //save in database
+            passwordResetMail(req, user, passToken);
+            //console.log(req.protocol);
+            res.status(200).json({ message: 'Password reset link has been sent to your email address...' });
+        }
+    } catch (err) {
+        // console.log(err);
+        res.status(500).json({ error: err.message || "Something went wrong" });
+    }
+}
+
+// Verifying the pasword token and if token valid then render set password page
+const verifyPasswordToken = async (req, res) => {
+    try {
+        //to take query parameter from url
+        let { passToken } = req.query;
+        // console.log("passToken" + passToken);
+        let tokenData = await passwordToken.findOne({ where: { token: passToken } });
+        let currentDate = new Date();
+        // console.log(tokenData)
+        if (tokenData !== null) {
+            // to check token expired or not
+            //if token expired is less than current date then it will expired
+            if (tokenData.expiredAt < currentDate || tokenData.isUsed) {
+                res.status(400).json({ error: "Token expired or link already used" });
+                //res.render("error", { message: "Link expired or already has been used", redirectTo: "/api/v1/login" })
+            } else {
+                tokenData.isUsed = true;
+                tokenData.save();
+                res.render("setPassword");
+            }
+        } else {
+            res.status(400).json({ error: "Token not found" });
+        }
+    } catch (err) {
+        res.status(500).json({ error: err.message || "Something went wrong" });
+    }
+}
+
 // Function to render login page
 const getLoginPage = async (req, res) => {
-    res.render('login')
+    res.render('login');
 }
 
 // Function to login user
@@ -175,28 +251,28 @@ const getLoginPage = async (req, res) => {
 
 
 // app dashboard
-const dashboard = async (req, res) => {
+// const dashboard = async (req, res) => {
 
-    //if user session is not there
-    if (!req.session.user) {
+//     //if user session is not there
+//     if (!req.session.user) {
 
-        //then you cannot allow to access
-        return res.status(401).send("You can not allow to access this page ");
+//         //then you cannot allow to access
+//         return res.status(401).send("You can not allow to access this page ");
 
-    } else {
+//     } else {
 
-        //how many time you visit page
-        if (req.session.page_views) {
-            req.session.page_views++;
-            res.send("You visited this page " + req.session.page_views + " times");
-        } else {
-            req.session.page_views = 1;
-            res.send("Welcome to this page for the first time!");
-        }
-    }
-    // return res.status(200).send("welcome to food ordering app");
+//         //how many time you visit page
+//         if (req.session.page_views) {
+//             req.session.page_views++;
+//             res.send("You visited this page " + req.session.page_views + " times");
+//         } else {
+//             req.session.page_views = 1;
+//             res.send("Welcome to this page for the first time!");
+//         }
+//     }
+//     // return res.status(200).send("welcome to food ordering app");
 
-}
+// }
 
 //get user by id 
 const getUsersById = async (req, res) => {
@@ -297,86 +373,6 @@ const userPartialUpdate = async (req, res) => {
     }
 };
 
-const forgetPassword = async (req, res) => {
-    try {
-        const { email } = req.body;
-        // res.send(email);
-        const user = await User.findOne({ where: { email } });
-        if (!user) {
-
-            //if not data found then return user does not exist
-            return res.status(400).json({ error: "User does not exist" });
-
-            //if user there then convert there password into hashed
-        } else {
-            let currentDate = new Date()
-            // console.log(currentDate)
-            const passToken = {
-                token: crypto.randomBytes(64).toString("hex"),
-                userId: user.id,
-                isUsed: false,
-                expiredAt: new Date(currentDate.getTime() + 15 * 60000)
-
-            }
-
-            const tokenData = await passwordToken.create(passToken)
-            // console.log(tokenData)//save in database
-            passwordResetMail(req, user, passToken);
-
-
-            //console.log(req.protocol)
-            res.send('Password reset link has been sent to your email address...')
-
-        }
-    } catch (err) {
-        // console.log(err);
-        res.status(500).json({ error: err.message || "Something went wrong" });
-    }
-
-}
-
-const verifyUserToken = async (req, res) => {
-    //to take query parameter from url
-    let { passToken } = req.query;
-    // console.log("passToken" + passToken)
-    let tokenData = await passwordToken.findOne({ where: { token: passToken } })
-    let currentDate = new Date()
-    // console.log(tokenData)
-    if (tokenData !== null) {
-        // to check token expired or not
-        //if token expired is less than current date then it will expired
-        if (tokenData.expiredAt < currentDate || tokenData.isUsed) {
-            // res.status(400).json({ error: "Token expired or link already used" })
-            res.render("error", { message: "Link expired or already has been used", redirectTo: "/api/v1/login" })
-        } else {
-            tokenData.isUsed = true;
-            tokenData.save()
-            res.render("resetPass")
-        }
-
-    } else {
-        res.status(400).json({ error: "token not found" })
-    }
-
-}
-
-const resetPassword = async (req, res) => {
-    const { userId } = req.params
-    const { password, confirmPassword } = req.body
-    //check if this id exist in database
-    // console.log("userId :-" + userId);
-    const data = await User.findOne({ where: { id: userId } });
-    if (!data) {
-        //if not data found then return user does not exist
-        return res.status(400).json({ error: "Invalid userId..." });
-    } else {
-        let hashedPassword = await bcrypt.hashSync(password, 10);
-        data.password = hashedPassword
-        data.save()
-
-        res.status(200).json({ message: "password change " });
-    }
-};
 
 // Function to add image
 const addImage = async (req, res) => {
@@ -629,4 +625,4 @@ const verifyMobileOtp = async (req, res) => {
 }
 
 
-module.exports = { createUser, verifyUser, logoutUser, localAuthSuccess, localAuthFailure, googleAuthSuccess, googleAuthFailure, facebookAuthSuccess, facebookAuthFailure, dashboard, getUsersById, deleteUser, UpdateUser, getUsersByAddress, userPartialUpdate, getLoginPage, getRegisterPage, forgetPassword, resetPassword, verifyUserToken, addImage, updateUserInfo, loginWithOtp, verifyMobileOtp }
+module.exports = { createUser, verifyUser, setPassword, forgetPassword, verifyPasswordToken, logoutUser, localAuthSuccess, localAuthFailure, googleAuthSuccess, googleAuthFailure, facebookAuthSuccess, facebookAuthFailure, dashboard, getUsersById, deleteUser, UpdateUser, getUsersByAddress, userPartialUpdate, getLoginPage, getRegisterPage, addImage, updateUserInfo, loginWithOtp, verifyMobileOtp }
