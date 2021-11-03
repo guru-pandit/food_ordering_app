@@ -17,7 +17,6 @@ function openModal(type, msg, callback) {
                                 </div>
                                 <h3 class="modal-head" id="modal-text">Success</h3>
                                 <p class="modal-text" id="modal-text">${msg}</p>
-                               
                                 </div> 
                         </div>`
 
@@ -99,10 +98,10 @@ $("#review-submit").click(function (e) {
         // console.log("Review-Response: ", res)
         // console.log(res.request.responseURL)
         // alert("Your Review has been successfully submitted.");
-        // openModal("success", "Review submitted successfully", () => {
-        //     $("#review-modal").removeClass("review-modal-active");
-        // })
-        $("#review-modal").removeClass("review-modal-active");
+        openModal("success", "Review submitted successfully", () => {
+            $("#review-modal").removeClass("review-modal-active");
+        })
+        // $("#review-modal").removeClass("review-modal-active");
     }).catch(err => {
         // alert(err.response.data.error)
         window.location = `${baseUrl}/login`
