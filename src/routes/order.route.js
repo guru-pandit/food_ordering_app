@@ -3,9 +3,9 @@ const { isLoggedIn } = require("../middlewares/auth");
 
 module.exports = (app) => {
     // Place order
-    app.post("/createOrder", orderController.createOrder);
+    app.post("/createOrder", isLoggedIn, orderController.createOrder);
     // Place order
-    app.post("/order", orderController.placeOrder);
+    //app.post("/order", orderController.placeOrder);
     //update order
     app.post("/updateorder/:orderId", orderController.updateOrder);
     // Get order by order id

@@ -14,7 +14,7 @@ const createOrder = async (req, res) => {
             total: req.body.total,
             gst: req.body.gst,
             deliveryCharges: req.body.deliveryCharges,
-            userId: req.body.userId,
+            userId: req.loggedInUser.id,
             restaurantId: req.body.restaurantId,
             transactionId: null,
             orderedAt: Date.now(),

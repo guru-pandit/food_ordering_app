@@ -348,7 +348,7 @@
     </div>
   </div>
   <!-- The Modal -->
-	<div id="dialog-modal" class="dialog-modal active">
+	<div id="dialog-modal" class="dialog-modal">
 		<!-- Modal content -->
 	</div>
 </div>
@@ -474,7 +474,6 @@ function placeOrder(){
             total: grandTotal,
             gst: gst,
             deliveryCharges: delCharge,
-            userId: 2,
             restaurantId: restaurantId
   }
 
@@ -489,6 +488,7 @@ function placeOrder(){
               openModal("success", "Order placed")
       
           }).catch((err)=>{
+            window.location = `${baseUrl}/login`
             console.log(err)
           })
       }else{
