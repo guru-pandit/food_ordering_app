@@ -5,10 +5,12 @@ const path = require("path");
 const cors = require("cors");
 const db = require("./src/models");
 const cookieParser = require("cookie-parser");
-const session = require('express-session')
-const passport = require("passport")
-const logger = require("morgan")
-require("./src/services/passport.service")
+const session = require('express-session');
+const passport = require("passport");
+const logger = require("morgan");
+const swaggerUI = require("swagger-ui-express");
+const swaggerDocs = require("./swagger")
+require("./src/services/passport.service");
 require('dotenv').config();
 global.__basedir = __dirname;
 
@@ -43,6 +45,9 @@ db.sequelize.sync({ logging: false });
 // db.sequelize.sync({ force: true }).then(() => {
 //   console.log("Drop and re-sync DB");
 // });
+
+// Swagger UI 
+app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerDocs));
 
 // Routes
 require("./src/routes")(app);
