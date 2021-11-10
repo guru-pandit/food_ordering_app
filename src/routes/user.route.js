@@ -64,6 +64,8 @@ module.exports = (app) => {
     ], userController.forgetPassword);
     app.get("/verifyPasswordToken", userController.verifyPasswordToken);
 
+    // Render profile page
+    app.get("/profile", userController.getProfilePage);
 
     // app.get("/api/v1/dashboard", userController.dashboard);
     app.delete("/api/v1/deleteUser/:id", userController.deleteUser);

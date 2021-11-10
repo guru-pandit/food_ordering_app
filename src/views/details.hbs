@@ -479,7 +479,7 @@ function placeOrder(){
 
 
     if(selectedPaymentMode===undefined || selectedAddress===undefined){
-      openModal("error", "All fields are required")
+      openModal("error", "All fields are required");
     }else{
       if(selectedPaymentMode==="cod"){
           axios.post(`${baseUrl}/createOrder`,body).then((order)=>{

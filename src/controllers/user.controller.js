@@ -10,6 +10,11 @@ const fs = require("fs");
 const path = require("path");
 const Op = db.Sequelize.Op;
 
+// Function to render profile page
+const getProfilePage = (req, res) => {
+    res.render("profile")
+}
+
 // This function render register page
 const getRegisterPage = async (req, res) => {
     res.render('register');
@@ -625,4 +630,29 @@ const verifyMobileOtp = async (req, res) => {
 }
 
 
-module.exports = { createUser, verifyUser, setPassword, forgetPassword, verifyPasswordToken, logoutUser, localAuthSuccess, localAuthFailure, googleAuthSuccess, googleAuthFailure, facebookAuthSuccess, facebookAuthFailure, getUsersById, deleteUser, UpdateUser, getUsersByAddress, userPartialUpdate, getLoginPage, getRegisterPage, addImage, updateUserInfo, loginWithOtp, verifyMobileOtp }
+module.exports = {
+    getProfilePage,
+    getRegisterPage,
+    createUser,
+    verifyUser,
+    setPassword,
+    forgetPassword,
+    verifyPasswordToken,
+    getLoginPage,
+    logoutUser,
+    localAuthSuccess,
+    localAuthFailure,
+    googleAuthSuccess,
+    googleAuthFailure,
+    facebookAuthSuccess,
+    facebookAuthFailure,
+    getUsersById,
+    deleteUser,
+    UpdateUser,
+    getUsersByAddress,
+    userPartialUpdate,
+    addImage,
+    updateUserInfo,
+    loginWithOtp,
+    verifyMobileOtp
+}
