@@ -348,7 +348,7 @@
     </div>
   </div>
   <!-- The Modal -->
-	<div id="dialog-modal" class="dialog-modal active">
+	<div id="dialog-modal" class="dialog-modal">
 		<!-- Modal content -->
 	</div>
 </div>
@@ -480,7 +480,7 @@ function placeOrder(){
 
 
     if(selectedPaymentMode===undefined || selectedAddress===undefined){
-      openModal("error", "All fields are required")
+      openModal("error", "All fields are required");
     }else{
       if(selectedPaymentMode==="cod"){
           axios.post(`${baseUrl}/createOrder`,body).then((order)=>{

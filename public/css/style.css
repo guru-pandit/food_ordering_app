@@ -60,6 +60,11 @@ body{
   transition: all .3s ease;
 }
 
+.btn-small{
+  padding: 0.25rem 0.5rem;
+  font-size: .9rem;
+}
+
 .btn-green{
   color: var(--color-white);
   background-color: var(--color-green);
@@ -68,6 +73,7 @@ body{
 
 .btn-green:hover{
   filter: brightness(.9);
+  color: var(--color-white) !important;
 }
 
 .btn-red{
